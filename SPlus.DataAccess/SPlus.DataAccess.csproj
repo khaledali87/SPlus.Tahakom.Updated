@@ -1,0 +1,1180 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\EntityFramework.6.4.4\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{B1B7C3CB-CE5C-414E-AD2F-C6BD49BA37C1}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SPlus.DataAccess</RootNamespace>
+    <AssemblyName>SPlus.DataAccess</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DelegateDecompiler, Version=1.0.0.0, Culture=neutral, PublicKeyToken=93b26a10a04705bd, processorArchitecture=MSIL">
+      <HintPath>..\packages\DelegateDecompiler.0.28.0\lib\net45\DelegateDecompiler.dll</HintPath>
+    </Reference>
+    <Reference Include="DelegateDecompiler.EntityFramework, Version=1.0.0.0, Culture=neutral, PublicKeyToken=93b26a10a04705bd, processorArchitecture=MSIL">
+      <HintPath>..\packages\DelegateDecompiler.EntityFramework.0.28.0\lib\net45\DelegateDecompiler.EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Reflection, Version=1.1.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mono.Reflection.Core.1.1.1\lib\net45\Mono.Reflection.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.DirectoryServices.AccountManagement" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DataAccess\AttachmentDataAccess.cs" />
+    <Compile Include="DataAccess\UserDataAccess.cs" />
+    <Compile Include="Migrations\202208030742465_Initial_Migration.cs" />
+    <Compile Include="Migrations\202208030742465_Initial_Migration.designer.cs">
+      <DependentUpon>202208030742465_Initial_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202208030748484_Initial_Migration1.cs" />
+    <Compile Include="Migrations\202208030748484_Initial_Migration1.designer.cs">
+      <DependentUpon>202208030748484_Initial_Migration1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202208030758505_Initial_Migration2.cs" />
+    <Compile Include="Migrations\202208030758505_Initial_Migration2.designer.cs">
+      <DependentUpon>202208030758505_Initial_Migration2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202208030822418_Initial_Migration3.cs" />
+    <Compile Include="Migrations\202208030822418_Initial_Migration3.designer.cs">
+      <DependentUpon>202208030822418_Initial_Migration3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202208031358534_CreateAttachementsWithKPIRelation.cs" />
+    <Compile Include="Migrations\202208031358534_CreateAttachementsWithKPIRelation.designer.cs">
+      <DependentUpon>202208031358534_CreateAttachementsWithKPIRelation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202208031423048_CreateAttachementsWithKPIRelation1.cs" />
+    <Compile Include="Migrations\202208031423048_CreateAttachementsWithKPIRelation1.designer.cs">
+      <DependentUpon>202208031423048_CreateAttachementsWithKPIRelation1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202208041047517_SetRelationKPITypeAndWorkflows.cs" />
+    <Compile Include="Migrations\202208041047517_SetRelationKPITypeAndWorkflows.designer.cs">
+      <DependentUpon>202208041047517_SetRelationKPITypeAndWorkflows.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202208041115186_SetRelationKPITypeAndWorkflows_Fix.cs" />
+    <Compile Include="Migrations\202208041115186_SetRelationKPITypeAndWorkflows_Fix.designer.cs">
+      <DependentUpon>202208041115186_SetRelationKPITypeAndWorkflows_Fix.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202208041121102_SetRelationKPITypeAndWorkflows_Fix2.cs" />
+    <Compile Include="Migrations\202208041121102_SetRelationKPITypeAndWorkflows_Fix2.designer.cs">
+      <DependentUpon>202208041121102_SetRelationKPITypeAndWorkflows_Fix2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202208041557075_SetRelationKPITypeAndWorkflows_Fix3.cs" />
+    <Compile Include="Migrations\202208041557075_SetRelationKPITypeAndWorkflows_Fix3.designer.cs">
+      <DependentUpon>202208041557075_SetRelationKPITypeAndWorkflows_Fix3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202208051540286_SetRelatioKPITypeAndKPI.cs" />
+    <Compile Include="Migrations\202208051540286_SetRelatioKPITypeAndKPI.designer.cs">
+      <DependentUpon>202208051540286_SetRelatioKPITypeAndKPI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202208051614224_CreateWorkflowIDAtWorkflowTable.cs" />
+    <Compile Include="Migrations\202208051614224_CreateWorkflowIDAtWorkflowTable.designer.cs">
+      <DependentUpon>202208051614224_CreateWorkflowIDAtWorkflowTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202208051711429_CreateWorkflowBaseTable.cs" />
+    <Compile Include="Migrations\202208051711429_CreateWorkflowBaseTable.designer.cs">
+      <DependentUpon>202208051711429_CreateWorkflowBaseTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202208061359119_SetupRequestAndDelegation.cs" />
+    <Compile Include="Migrations\202208061359119_SetupRequestAndDelegation.designer.cs">
+      <DependentUpon>202208061359119_SetupRequestAndDelegation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202208061404405_SetupRequestAndDelegation-Fix.cs" />
+    <Compile Include="Migrations\202208061404405_SetupRequestAndDelegation-Fix.designer.cs">
+      <DependentUpon>202208061404405_SetupRequestAndDelegation-Fix.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202208071249596_SetPerspectiveThemeSOAndKPIWeight.cs" />
+    <Compile Include="Migrations\202208071249596_SetPerspectiveThemeSOAndKPIWeight.designer.cs">
+      <DependentUpon>202208071249596_SetPerspectiveThemeSOAndKPIWeight.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202208091335223_CreateAuditTrailAndExceptions.cs" />
+    <Compile Include="Migrations\202208091335223_CreateAuditTrailAndExceptions.designer.cs">
+      <DependentUpon>202208091335223_CreateAuditTrailAndExceptions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202208101113263_DelegationRelationswithUser_Fix.cs" />
+    <Compile Include="Migrations\202208101113263_DelegationRelationswithUser_Fix.designer.cs">
+      <DependentUpon>202208101113263_DelegationRelationswithUser_Fix.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202208101124450_EnableCascadeDelete.cs" />
+    <Compile Include="Migrations\202208101124450_EnableCascadeDelete.designer.cs">
+      <DependentUpon>202208101124450_EnableCascadeDelete.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202208290921126_CreateAttachmentContent.cs" />
+    <Compile Include="Migrations\202208290921126_CreateAttachmentContent.designer.cs">
+      <DependentUpon>202208290921126_CreateAttachmentContent.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202208300805462_CreateKPIUpdateFormAndWFRequestRelations.cs" />
+    <Compile Include="Migrations\202208300805462_CreateKPIUpdateFormAndWFRequestRelations.designer.cs">
+      <DependentUpon>202208300805462_CreateKPIUpdateFormAndWFRequestRelations.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202208310815355_AddAttachmentRelationToPerspectiveAndTheme.cs" />
+    <Compile Include="Migrations\202208310815355_AddAttachmentRelationToPerspectiveAndTheme.designer.cs">
+      <DependentUpon>202208310815355_AddAttachmentRelationToPerspectiveAndTheme.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202209011019497_CreateParameterAndParameterValuesTableAndRelations.cs" />
+    <Compile Include="Migrations\202209011019497_CreateParameterAndParameterValuesTableAndRelations.designer.cs">
+      <DependentUpon>202209011019497_CreateParameterAndParameterValuesTableAndRelations.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202209021709393_CreateMatrixRelations.cs" />
+    <Compile Include="Migrations\202209021709393_CreateMatrixRelations.designer.cs">
+      <DependentUpon>202209021709393_CreateMatrixRelations.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202209031526532_SetupNotificationConfigurationAndReminderRelation.cs" />
+    <Compile Include="Migrations\202209031526532_SetupNotificationConfigurationAndReminderRelation.designer.cs">
+      <DependentUpon>202209031526532_SetupNotificationConfigurationAndReminderRelation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202209040900145_AddCodeColumnToResourcesTable.cs" />
+    <Compile Include="Migrations\202209040900145_AddCodeColumnToResourcesTable.designer.cs">
+      <DependentUpon>202209040900145_AddCodeColumnToResourcesTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202209061816467_RequireUpdateAddedForKPI.cs" />
+    <Compile Include="Migrations\202209061816467_RequireUpdateAddedForKPI.designer.cs">
+      <DependentUpon>202209061816467_RequireUpdateAddedForKPI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202209061916586_AddUserAndRequestStepRelation.cs" />
+    <Compile Include="Migrations\202209061916586_AddUserAndRequestStepRelation.designer.cs">
+      <DependentUpon>202209061916586_AddUserAndRequestStepRelation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202209061924531_FixUserAndRequestStepRelation.cs" />
+    <Compile Include="Migrations\202209061924531_FixUserAndRequestStepRelation.designer.cs">
+      <DependentUpon>202209061924531_FixUserAndRequestStepRelation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202209120712376_FixRelationsOfStrategicObjectiveWithThemesAndPerspectives.cs" />
+    <Compile Include="Migrations\202209120712376_FixRelationsOfStrategicObjectiveWithThemesAndPerspectives.designer.cs">
+      <DependentUpon>202209120712376_FixRelationsOfStrategicObjectiveWithThemesAndPerspectives.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202209121023183_AddAttachmentAndLevelsRelations.cs" />
+    <Compile Include="Migrations\202209121023183_AddAttachmentAndLevelsRelations.designer.cs">
+      <DependentUpon>202209121023183_AddAttachmentAndLevelsRelations.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202209121107155_FixUserAndDelegationRelation.cs" />
+    <Compile Include="Migrations\202209121107155_FixUserAndDelegationRelation.designer.cs">
+      <DependentUpon>202209121107155_FixUserAndDelegationRelation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202209121519054_ChangeAttachmentTypePropertyToOptional.cs" />
+    <Compile Include="Migrations\202209121519054_ChangeAttachmentTypePropertyToOptional.designer.cs">
+      <DependentUpon>202209121519054_ChangeAttachmentTypePropertyToOptional.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202209140800579_FixTypoInAttachmentTableAndProperties.cs" />
+    <Compile Include="Migrations\202209140800579_FixTypoInAttachmentTableAndProperties.designer.cs">
+      <DependentUpon>202209140800579_FixTypoInAttachmentTableAndProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202209141203169_DeleteWFRequestRelations.cs" />
+    <Compile Include="Migrations\202209141203169_DeleteWFRequestRelations.designer.cs">
+      <DependentUpon>202209141203169_DeleteWFRequestRelations.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202209141206330_FixKPIUpdateformAndWFRequestRelations.cs" />
+    <Compile Include="Migrations\202209141206330_FixKPIUpdateformAndWFRequestRelations.designer.cs">
+      <DependentUpon>202209141206330_FixKPIUpdateformAndWFRequestRelations.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202209161657300_DeleteExceptions.cs" />
+    <Compile Include="Migrations\202209161657300_DeleteExceptions.designer.cs">
+      <DependentUpon>202209161657300_DeleteExceptions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202209171840098_FixSponsorTypo.cs" />
+    <Compile Include="Migrations\202209171840098_FixSponsorTypo.designer.cs">
+      <DependentUpon>202209171840098_FixSponsorTypo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202209180816465_FixReminderConfigurationRelation.cs" />
+    <Compile Include="Migrations\202209180816465_FixReminderConfigurationRelation.designer.cs">
+      <DependentUpon>202209180816465_FixReminderConfigurationRelation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202209181142166_AddBaseWorkflowIDToWFRequest.cs" />
+    <Compile Include="Migrations\202209181142166_AddBaseWorkflowIDToWFRequest.designer.cs">
+      <DependentUpon>202209181142166_AddBaseWorkflowIDToWFRequest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202209181301588_AddManualLockColumnToKPI.cs" />
+    <Compile Include="Migrations\202209181301588_AddManualLockColumnToKPI.designer.cs">
+      <DependentUpon>202209181301588_AddManualLockColumnToKPI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202209191107093_AddDeletedOnUserAndRenameAllowLockPropertyOnKPI.cs" />
+    <Compile Include="Migrations\202209191107093_AddDeletedOnUserAndRenameAllowLockPropertyOnKPI.designer.cs">
+      <DependentUpon>202209191107093_AddDeletedOnUserAndRenameAllowLockPropertyOnKPI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202209191300183_EditGroupsIsEditableAndIsDeletable.cs" />
+    <Compile Include="Migrations\202209191300183_EditGroupsIsEditableAndIsDeletable.designer.cs">
+      <DependentUpon>202209191300183_EditGroupsIsEditableAndIsDeletable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202209191710013_CleanUpNotificationModel.cs" />
+    <Compile Include="Migrations\202209191710013_CleanUpNotificationModel.designer.cs">
+      <DependentUpon>202209191710013_CleanUpNotificationModel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202209220848096_UpdateKPITypeApproverToInt.cs" />
+    <Compile Include="Migrations\202209220848096_UpdateKPITypeApproverToInt.designer.cs">
+      <DependentUpon>202209220848096_UpdateKPITypeApproverToInt.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202209231643053_UpdateRequestCode.cs" />
+    <Compile Include="Migrations\202209231643053_UpdateRequestCode.designer.cs">
+      <DependentUpon>202209231643053_UpdateRequestCode.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202209231730499_RemoveIconFieldFromKPIType.cs" />
+    <Compile Include="Migrations\202209231730499_RemoveIconFieldFromKPIType.designer.cs">
+      <DependentUpon>202209231730499_RemoveIconFieldFromKPIType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202209241506222_RemoveRequestStepActionBy.cs" />
+    <Compile Include="Migrations\202209241506222_RemoveRequestStepActionBy.designer.cs">
+      <DependentUpon>202209241506222_RemoveRequestStepActionBy.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202209251440551_AddActionByToRequestSteps.cs" />
+    <Compile Include="Migrations\202209251440551_AddActionByToRequestSteps.designer.cs">
+      <DependentUpon>202209251440551_AddActionByToRequestSteps.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202209251452305_FixActionByModelOnRequestStep.cs" />
+    <Compile Include="Migrations\202209251452305_FixActionByModelOnRequestStep.designer.cs">
+      <DependentUpon>202209251452305_FixActionByModelOnRequestStep.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202209291313359_RemoveNameColumnFromKPIType.cs" />
+    <Compile Include="Migrations\202209291313359_RemoveNameColumnFromKPIType.designer.cs">
+      <DependentUpon>202209291313359_RemoveNameColumnFromKPIType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202210031253374_ReplaceOrgStructureWithDivionAndDepartmentInKPI.cs" />
+    <Compile Include="Migrations\202210031253374_ReplaceOrgStructureWithDivionAndDepartmentInKPI.designer.cs">
+      <DependentUpon>202210031253374_ReplaceOrgStructureWithDivionAndDepartmentInKPI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202210041033355_AddCalculationMethodToKPI.cs" />
+    <Compile Include="Migrations\202210041033355_AddCalculationMethodToKPI.designer.cs">
+      <DependentUpon>202210041033355_AddCalculationMethodToKPI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202210041047468_FixKPIValueAndOutOfTargetType.cs" />
+    <Compile Include="Migrations\202210041047468_FixKPIValueAndOutOfTargetType.designer.cs">
+      <DependentUpon>202210041047468_FixKPIValueAndOutOfTargetType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202210311403377_CreateStructure.cs" />
+    <Compile Include="Migrations\202210311403377_CreateStructure.designer.cs">
+      <DependentUpon>202210311403377_CreateStructure.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202210311736115_UpdateStructure.cs" />
+    <Compile Include="Migrations\202210311736115_UpdateStructure.designer.cs">
+      <DependentUpon>202210311736115_UpdateStructure.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202210311752116_UpdateStructure1.cs" />
+    <Compile Include="Migrations\202210311752116_UpdateStructure1.designer.cs">
+      <DependentUpon>202210311752116_UpdateStructure1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202210312004159_AddValue.cs" />
+    <Compile Include="Migrations\202210312004159_AddValue.designer.cs">
+      <DependentUpon>202210312004159_AddValue.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202210312043244_UpdateStrategyType.cs" />
+    <Compile Include="Migrations\202210312043244_UpdateStrategyType.designer.cs">
+      <DependentUpon>202210312043244_UpdateStrategyType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211010934139_AddWeightToOrgStructure.cs" />
+    <Compile Include="Migrations\202211010934139_AddWeightToOrgStructure.designer.cs">
+      <DependentUpon>202211010934139_AddWeightToOrgStructure.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211020849120_CreateStrategicInitiativeAndUpdateKPIModel.cs" />
+    <Compile Include="Migrations\202211020849120_CreateStrategicInitiativeAndUpdateKPIModel.designer.cs">
+      <DependentUpon>202211020849120_CreateStrategicInitiativeAndUpdateKPIModel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211021018480_UpdateKPIModel.cs" />
+    <Compile Include="Migrations\202211021018480_UpdateKPIModel.designer.cs">
+      <DependentUpon>202211021018480_UpdateKPIModel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211021105039_AddStrategicInitiativeAndKPIJunctionTable.cs" />
+    <Compile Include="Migrations\202211021105039_AddStrategicInitiativeAndKPIJunctionTable.designer.cs">
+      <DependentUpon>202211021105039_AddStrategicInitiativeAndKPIJunctionTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211021237179_UpdateStrategicInitiativeTable.cs" />
+    <Compile Include="Migrations\202211021237179_UpdateStrategicInitiativeTable.designer.cs">
+      <DependentUpon>202211021237179_UpdateStrategicInitiativeTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211021241574_StrategicInitiativeRemoveUserRelation.cs" />
+    <Compile Include="Migrations\202211021241574_StrategicInitiativeRemoveUserRelation.designer.cs">
+      <DependentUpon>202211021241574_StrategicInitiativeRemoveUserRelation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211021346222_StrategicInitiativeUpdateTable.cs" />
+    <Compile Include="Migrations\202211021346222_StrategicInitiativeUpdateTable.designer.cs">
+      <DependentUpon>202211021346222_StrategicInitiativeUpdateTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211030748422_SetStrategicObjectiveasOptionalForKPI.cs" />
+    <Compile Include="Migrations\202211030748422_SetStrategicObjectiveasOptionalForKPI.designer.cs">
+      <DependentUpon>202211030748422_SetStrategicObjectiveasOptionalForKPI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211030856291_MakeUnitDetailsOptionalforKPI.cs" />
+    <Compile Include="Migrations\202211030856291_MakeUnitDetailsOptionalforKPI.designer.cs">
+      <DependentUpon>202211030856291_MakeUnitDetailsOptionalforKPI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211060827386_UpdateConfigurationTable.cs" />
+    <Compile Include="Migrations\202211060827386_UpdateConfigurationTable.designer.cs">
+      <DependentUpon>202211060827386_UpdateConfigurationTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211081223241_UpdateKPIModel1.cs" />
+    <Compile Include="Migrations\202211081223241_UpdateKPIModel1.designer.cs">
+      <DependentUpon>202211081223241_UpdateKPIModel1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211090953117_RemoveKPICommentStringConstraint.cs" />
+    <Compile Include="Migrations\202211090953117_RemoveKPICommentStringConstraint.designer.cs">
+      <DependentUpon>202211090953117_RemoveKPICommentStringConstraint.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211100830105_RemoveStringConstraintFromStrategy.cs" />
+    <Compile Include="Migrations\202211100830105_RemoveStringConstraintFromStrategy.designer.cs">
+      <DependentUpon>202211100830105_RemoveStringConstraintFromStrategy.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211201003402_DGDA_FirstMigration.cs" />
+    <Compile Include="Migrations\202211201003402_DGDA_FirstMigration.designer.cs">
+      <DependentUpon>202211201003402_DGDA_FirstMigration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211201135206_ReplacePerspectiveWithTheme.cs" />
+    <Compile Include="Migrations\202211201135206_ReplacePerspectiveWithTheme.designer.cs">
+      <DependentUpon>202211201135206_ReplacePerspectiveWithTheme.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211201353568_AddThemesObjectivesRelationshipTableAdd.cs" />
+    <Compile Include="Migrations\202211201353568_AddThemesObjectivesRelationshipTableAdd.designer.cs">
+      <DependentUpon>202211201353568_AddThemesObjectivesRelationshipTableAdd.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211210954409_AddStrategicObjectiveOwnerAndStrategyRelations.cs" />
+    <Compile Include="Migrations\202211210954409_AddStrategicObjectiveOwnerAndStrategyRelations.designer.cs">
+      <DependentUpon>202211210954409_AddStrategicObjectiveOwnerAndStrategyRelations.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211210957218_ChangeOwnerAndStrategyToRequiredInStrategicObjectives.cs" />
+    <Compile Include="Migrations\202211210957218_ChangeOwnerAndStrategyToRequiredInStrategicObjectives.designer.cs">
+      <DependentUpon>202211210957218_ChangeOwnerAndStrategyToRequiredInStrategicObjectives.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211211007109_RemoveStrategyAndStrategicObjectiveRelation.cs" />
+    <Compile Include="Migrations\202211211007109_RemoveStrategyAndStrategicObjectiveRelation.designer.cs">
+      <DependentUpon>202211211007109_RemoveStrategyAndStrategicObjectiveRelation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211221105100_UpdateKPITable.cs" />
+    <Compile Include="Migrations\202211221105100_UpdateKPITable.designer.cs">
+      <DependentUpon>202211221105100_UpdateKPITable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211231046168_Add_Manager_To_OrgStructure_And_ChangeSO_Owner_To_Optional.cs" />
+    <Compile Include="Migrations\202211231046168_Add_Manager_To_OrgStructure_And_ChangeSO_Owner_To_Optional.designer.cs">
+      <DependentUpon>202211231046168_Add_Manager_To_OrgStructure_And_ChangeSO_Owner_To_Optional.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211231057170_ChangeOrgStructureManagerToRequired.cs" />
+    <Compile Include="Migrations\202211231057170_ChangeOrgStructureManagerToRequired.designer.cs">
+      <DependentUpon>202211231057170_ChangeOrgStructureManagerToRequired.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211231227484_AddAsset-District-Workstream_Tables_And_Relations.cs" />
+    <Compile Include="Migrations\202211231227484_AddAsset-District-Workstream_Tables_And_Relations.designer.cs">
+      <DependentUpon>202211231227484_AddAsset-District-Workstream_Tables_And_Relations.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211241045128_AddIsRangeAndSourceToKPI.cs" />
+    <Compile Include="Migrations\202211241045128_AddIsRangeAndSourceToKPI.designer.cs">
+      <DependentUpon>202211241045128_AddIsRangeAndSourceToKPI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211241052565_UpdateSourceAndIsRangetoRequiredInKPI.cs" />
+    <Compile Include="Migrations\202211241052565_UpdateSourceAndIsRangetoRequiredInKPI.designer.cs">
+      <DependentUpon>202211241052565_UpdateSourceAndIsRangetoRequiredInKPI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211241209417_AddCommentFlagToWFStepsAndREquestSteps.cs" />
+    <Compile Include="Migrations\202211241209417_AddCommentFlagToWFStepsAndREquestSteps.designer.cs">
+      <DependentUpon>202211241209417_AddCommentFlagToWFStepsAndREquestSteps.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211241411363_AddActivityTypeAndItRelatedTables.cs" />
+    <Compile Include="Migrations\202211241411363_AddActivityTypeAndItRelatedTables.designer.cs">
+      <DependentUpon>202211241411363_AddActivityTypeAndItRelatedTables.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211271123290_Add-ActivitiesAndItsRelatedTables.cs" />
+    <Compile Include="Migrations\202211271123290_Add-ActivitiesAndItsRelatedTables.designer.cs">
+      <DependentUpon>202211271123290_Add-ActivitiesAndItsRelatedTables.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211271215335_FixAssetsUserRelations.cs" />
+    <Compile Include="Migrations\202211271215335_FixAssetsUserRelations.designer.cs">
+      <DependentUpon>202211271215335_FixAssetsUserRelations.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211271300577_FixActivitiesRelation.cs" />
+    <Compile Include="Migrations\202211271300577_FixActivitiesRelation.designer.cs">
+      <DependentUpon>202211271300577_FixActivitiesRelation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211271351501_AddUnlockDateToActivity.cs" />
+    <Compile Include="Migrations\202211271351501_AddUnlockDateToActivity.designer.cs">
+      <DependentUpon>202211271351501_AddUnlockDateToActivity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211280831098_RemoveBaselineFromActivity.cs" />
+    <Compile Include="Migrations\202211280831098_RemoveBaselineFromActivity.designer.cs">
+      <DependentUpon>202211280831098_RemoveBaselineFromActivity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211280848222_UpdateActivityRangeTypeToDecimal.cs" />
+    <Compile Include="Migrations\202211280848222_UpdateActivityRangeTypeToDecimal.designer.cs">
+      <DependentUpon>202211280848222_UpdateActivityRangeTypeToDecimal.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211281328128_AddProgressAndStatusToAssets.cs" />
+    <Compile Include="Migrations\202211281328128_AddProgressAndStatusToAssets.designer.cs">
+      <DependentUpon>202211281328128_AddProgressAndStatusToAssets.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211291049203_AddIsVerifiedFlagtoMeasures.cs" />
+    <Compile Include="Migrations\202211291049203_AddIsVerifiedFlagtoMeasures.designer.cs">
+      <DependentUpon>202211291049203_AddIsVerifiedFlagtoMeasures.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211291118417_AddIsVerifiedFlagtoRequestStep.cs" />
+    <Compile Include="Migrations\202211291118417_AddIsVerifiedFlagtoRequestStep.designer.cs">
+      <DependentUpon>202211291118417_AddIsVerifiedFlagtoRequestStep.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211291156303_UpdateIsVerifiedFlag.cs" />
+    <Compile Include="Migrations\202211291156303_UpdateIsVerifiedFlag.designer.cs">
+      <DependentUpon>202211291156303_UpdateIsVerifiedFlag.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211291420085_UpdateIsVerifiedFlagToActivity.cs" />
+    <Compile Include="Migrations\202211291420085_UpdateIsVerifiedFlagToActivity.designer.cs">
+      <DependentUpon>202211291420085_UpdateIsVerifiedFlagToActivity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211300827512_FixStartDateType.cs" />
+    <Compile Include="Migrations\202211300827512_FixStartDateType.designer.cs">
+      <DependentUpon>202211300827512_FixStartDateType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211300929352_AddStatusTOKPIAndActivity.cs" />
+    <Compile Include="Migrations\202211300929352_AddStatusTOKPIAndActivity.designer.cs">
+      <DependentUpon>202211300929352_AddStatusTOKPIAndActivity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202211300935361_RemoveStatusToKPIAndActivity.cs" />
+    <Compile Include="Migrations\202211300935361_RemoveStatusToKPIAndActivity.designer.cs">
+      <DependentUpon>202211300935361_RemoveStatusToKPIAndActivity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202212010858492_DeleteActivityStatuses.cs" />
+    <Compile Include="Migrations\202212010858492_DeleteActivityStatuses.designer.cs">
+      <DependentUpon>202212010858492_DeleteActivityStatuses.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202212041029147_AddITemTypeToNotifications.cs" />
+    <Compile Include="Migrations\202212041029147_AddITemTypeToNotifications.designer.cs">
+      <DependentUpon>202212041029147_AddITemTypeToNotifications.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202302010933449_AddIsCompletedFlagForActivity.cs" />
+    <Compile Include="Migrations\202302010933449_AddIsCompletedFlagForActivity.designer.cs">
+      <DependentUpon>202302010933449_AddIsCompletedFlagForActivity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202303301400139_strategyNewField.cs" />
+    <Compile Include="Migrations\202303301400139_strategyNewField.designer.cs">
+      <DependentUpon>202303301400139_strategyNewField.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202304020855568_newDivisionalObjective.cs" />
+    <Compile Include="Migrations\202304020855568_newDivisionalObjective.designer.cs">
+      <DependentUpon>202304020855568_newDivisionalObjective.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202304020952025_updatedivision.cs" />
+    <Compile Include="Migrations\202304020952025_updatedivision.designer.cs">
+      <DependentUpon>202304020952025_updatedivision.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202304021004309_updatedivisionV.1.cs" />
+    <Compile Include="Migrations\202304021004309_updatedivisionV.1.designer.cs">
+      <DependentUpon>202304021004309_updatedivisionV.1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202304021005403_updatedivisionV.2.cs" />
+    <Compile Include="Migrations\202304021005403_updatedivisionV.2.designer.cs">
+      <DependentUpon>202304021005403_updatedivisionV.2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202304021214423_updatedivision_V3.cs" />
+    <Compile Include="Migrations\202304021214423_updatedivision_V3.designer.cs">
+      <DependentUpon>202304021214423_updatedivision_V3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202304021406198_updatedivision_V4.cs" />
+    <Compile Include="Migrations\202304021406198_updatedivision_V4.designer.cs">
+      <DependentUpon>202304021406198_updatedivision_V4.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202304021428162_removeisoperationalfromstrategy.cs" />
+    <Compile Include="Migrations\202304021428162_removeisoperationalfromstrategy.designer.cs">
+      <DependentUpon>202304021428162_removeisoperationalfromstrategy.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202306051011458_CleanSolution.cs" />
+    <Compile Include="Migrations\202306051011458_CleanSolution.designer.cs">
+      <DependentUpon>202306051011458_CleanSolution.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202306051128373_UpdateStrategicObjective.cs" />
+    <Compile Include="Migrations\202306051128373_UpdateStrategicObjective.designer.cs">
+      <DependentUpon>202306051128373_UpdateStrategicObjective.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202306051221489_RemoveManyToManyThemesObjectivesRelation.cs" />
+    <Compile Include="Migrations\202306051221489_RemoveManyToManyThemesObjectivesRelation.designer.cs">
+      <DependentUpon>202306051221489_RemoveManyToManyThemesObjectivesRelation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202306051224149_SetRequiredRelationBetweenThemeAndStrategicObjective.cs" />
+    <Compile Include="Migrations\202306051224149_SetRequiredRelationBetweenThemeAndStrategicObjective.designer.cs">
+      <DependentUpon>202306051224149_SetRequiredRelationBetweenThemeAndStrategicObjective.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202306051315135_DeleteTables.cs" />
+    <Compile Include="Migrations\202306051315135_DeleteTables.designer.cs">
+      <DependentUpon>202306051315135_DeleteTables.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202306060923074_UpdateDivisionalObjective.cs" />
+    <Compile Include="Migrations\202306060923074_UpdateDivisionalObjective.designer.cs">
+      <DependentUpon>202306060923074_UpdateDivisionalObjective.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202306061017020_UpdateDivisionalObjective2.cs" />
+    <Compile Include="Migrations\202306061017020_UpdateDivisionalObjective2.designer.cs">
+      <DependentUpon>202306061017020_UpdateDivisionalObjective2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202306061021230_UpdateDivisionalObjectiveRelation.cs" />
+    <Compile Include="Migrations\202306061021230_UpdateDivisionalObjectiveRelation.designer.cs">
+      <DependentUpon>202306061021230_UpdateDivisionalObjectiveRelation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202306061342077_UpdateKPIType.cs" />
+    <Compile Include="Migrations\202306061342077_UpdateKPIType.designer.cs">
+      <DependentUpon>202306061342077_UpdateKPIType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202306070936128_AddPerspectiveTable.cs" />
+    <Compile Include="Migrations\202306070936128_AddPerspectiveTable.designer.cs">
+      <DependentUpon>202306070936128_AddPerspectiveTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202306071044044_UpdateKPIDetails.cs" />
+    <Compile Include="Migrations\202306071044044_UpdateKPIDetails.designer.cs">
+      <DependentUpon>202306071044044_UpdateKPIDetails.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202306140800419_UpdateKPIDetails1.cs" />
+    <Compile Include="Migrations\202306140800419_UpdateKPIDetails1.designer.cs">
+      <DependentUpon>202306140800419_UpdateKPIDetails1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202306141135336_UpdateRequestStepAndKPIForm.cs" />
+    <Compile Include="Migrations\202306141135336_UpdateRequestStepAndKPIForm.designer.cs">
+      <DependentUpon>202306141135336_UpdateRequestStepAndKPIForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202306141333248_UpdateRequestStepAndRequest.cs" />
+    <Compile Include="Migrations\202306141333248_UpdateRequestStepAndRequest.designer.cs">
+      <DependentUpon>202306141333248_UpdateRequestStepAndRequest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202306181201193_UpdateKPIMeasures.cs" />
+    <Compile Include="Migrations\202306181201193_UpdateKPIMeasures.designer.cs">
+      <DependentUpon>202306181201193_UpdateKPIMeasures.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202306210908218_FixKPIRequiredFields.cs" />
+    <Compile Include="Migrations\202306210908218_FixKPIRequiredFields.designer.cs">
+      <DependentUpon>202306210908218_FixKPIRequiredFields.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202306220913449_AddKPISourceField.cs" />
+    <Compile Include="Migrations\202306220913449_AddKPISourceField.designer.cs">
+      <DependentUpon>202306220913449_AddKPISourceField.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202308031049017_Create_KPIHistoryTable.cs" />
+    <Compile Include="Migrations\202308031049017_Create_KPIHistoryTable.designer.cs">
+      <DependentUpon>202308031049017_Create_KPIHistoryTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202308070740154_Update_KPIHistoryTable.cs" />
+    <Compile Include="Migrations\202308070740154_Update_KPIHistoryTable.designer.cs">
+      <DependentUpon>202308070740154_Update_KPIHistoryTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202310011140340_changeKPIRequest.cs" />
+    <Compile Include="Migrations\202310011140340_changeKPIRequest.designer.cs">
+      <DependentUpon>202310011140340_changeKPIRequest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202310021330196_AddDepartemntToKPI.cs" />
+    <Compile Include="Migrations\202310021330196_AddDepartemntToKPI.designer.cs">
+      <DependentUpon>202310021330196_AddDepartemntToKPI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202310221220022_Create_KPIAffect.cs" />
+    <Compile Include="Migrations\202310221220022_Create_KPIAffect.designer.cs">
+      <DependentUpon>202310221220022_Create_KPIAffect.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202310240748209_AddPerspectiveBackground.cs" />
+    <Compile Include="Migrations\202310240748209_AddPerspectiveBackground.designer.cs">
+      <DependentUpon>202310240748209_AddPerspectiveBackground.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202401231241116_Rename-KPIDepartmentToOrgStructure.cs" />
+    <Compile Include="Migrations\202401231241116_Rename-KPIDepartmentToOrgStructure.designer.cs">
+      <DependentUpon>202401231241116_Rename-KPIDepartmentToOrgStructure.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202401240751032_Add-OrgStructureAbbreviation.cs" />
+    <Compile Include="Migrations\202401240751032_Add-OrgStructureAbbreviation.designer.cs">
+      <DependentUpon>202401240751032_Add-OrgStructureAbbreviation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202401250733305_Add-ConstantToParameters.cs" />
+    <Compile Include="Migrations\202401250733305_Add-ConstantToParameters.designer.cs">
+      <DependentUpon>202401250733305_Add-ConstantToParameters.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202401250739382_Add-BusinessUnitWeight.cs" />
+    <Compile Include="Migrations\202401250739382_Add-BusinessUnitWeight.designer.cs">
+      <DependentUpon>202401250739382_Add-BusinessUnitWeight.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202401250844494_Update_DivisionalRelation.cs" />
+    <Compile Include="Migrations\202401250844494_Update_DivisionalRelation.designer.cs">
+      <DependentUpon>202401250844494_Update_DivisionalRelation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202401251200161_Add-BusinessUnitWeightTOHistory.cs" />
+    <Compile Include="Migrations\202401251200161_Add-BusinessUnitWeightTOHistory.designer.cs">
+      <DependentUpon>202401251200161_Add-BusinessUnitWeightTOHistory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202401281340040_Add-AccumulutiveOutOfTargetToKPIHistory.cs" />
+    <Compile Include="Migrations\202401281340040_Add-AccumulutiveOutOfTargetToKPIHistory.designer.cs">
+      <DependentUpon>202401281340040_Add-AccumulutiveOutOfTargetToKPIHistory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202405231000586_Create_SessionTable.cs" />
+    <Compile Include="Migrations\202405231000586_Create_SessionTable.designer.cs">
+      <DependentUpon>202405231000586_Create_SessionTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202405231227159_Create_TwoFactorTable.cs" />
+    <Compile Include="Migrations\202405231227159_Create_TwoFactorTable.designer.cs">
+      <DependentUpon>202405231227159_Create_TwoFactorTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202405260945356_update_TwoFactorTable.cs" />
+    <Compile Include="Migrations\202405260945356_update_TwoFactorTable.designer.cs">
+      <DependentUpon>202405260945356_update_TwoFactorTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202408261054112_Create-UserActivityModel.cs" />
+    <Compile Include="Migrations\202408261054112_Create-UserActivityModel.Designer.cs">
+      <DependentUpon>202408261054112_Create-UserActivityModel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202501200834425_Update-DecimalPrecision.cs" />
+    <Compile Include="Migrations\202501200834425_Update-DecimalPrecision.Designer.cs">
+      <DependentUpon>202501200834425_Update-DecimalPrecision.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202501280952160_Add-OrgStructureYear.cs" />
+    <Compile Include="Migrations\202501280952160_Add-OrgStructureYear.Designer.cs">
+      <DependentUpon>202501280952160_Add-OrgStructureYear.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202502040845053_AddIsConstantTargetFiled.cs" />
+    <Compile Include="Migrations\202502040845053_AddIsConstantTargetFiled.designer.cs">
+      <DependentUpon>202502040845053_AddIsConstantTargetFiled.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202503040952053_AdjustKPIDecimalPrecision.cs" />
+    <Compile Include="Migrations\202503040952053_AdjustKPIDecimalPrecision.Designer.cs">
+      <DependentUpon>202503040952053_AdjustKPIDecimalPrecision.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202503041201589_Add-YearToStrategy.cs" />
+    <Compile Include="Migrations\202503041201589_Add-YearToStrategy.Designer.cs">
+      <DependentUpon>202503041201589_Add-YearToStrategy.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202503051141236_Add-GroupToOrgStructure.cs" />
+    <Compile Include="Migrations\202503051141236_Add-GroupToOrgStructure.Designer.cs">
+      <DependentUpon>202503051141236_Add-GroupToOrgStructure.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202503061249505_Rollback-DecimalPrecision.cs" />
+    <Compile Include="Migrations\202503061249505_Rollback-DecimalPrecision.Designer.cs">
+      <DependentUpon>202503061249505_Rollback-DecimalPrecision.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="EntityModel.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\IAttachmentRepository.cs" />
+    <Compile Include="Repositories\IRepository.cs" />
+    <Compile Include="Repositories\IUserRepository.cs" />
+    <Compile Include="Repositories\Repository.cs" />
+    <Compile Include="UnitOfWork\IUnitOfWork.cs" />
+    <Compile Include="UnitOfWork\IUnitOfWorkFactory.cs" />
+    <Compile Include="UnitOfWork\UnitOfWork.cs" />
+    <Compile Include="UnitOfWork\UnitOfWorkFactory.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.Config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SPlus.Model\SPlus.Model.csproj">
+      <Project>{bf7196d2-4d00-40bf-9abc-0bfb4becc592}</Project>
+      <Name>SPlus.Model</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\202208030742465_Initial_Migration.resx">
+      <DependentUpon>202208030742465_Initial_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202208030748484_Initial_Migration1.resx">
+      <DependentUpon>202208030748484_Initial_Migration1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202208030758505_Initial_Migration2.resx">
+      <DependentUpon>202208030758505_Initial_Migration2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202208030822418_Initial_Migration3.resx">
+      <DependentUpon>202208030822418_Initial_Migration3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202208031358534_CreateAttachementsWithKPIRelation.resx">
+      <DependentUpon>202208031358534_CreateAttachementsWithKPIRelation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202208031423048_CreateAttachementsWithKPIRelation1.resx">
+      <DependentUpon>202208031423048_CreateAttachementsWithKPIRelation1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202208041047517_SetRelationKPITypeAndWorkflows.resx">
+      <DependentUpon>202208041047517_SetRelationKPITypeAndWorkflows.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202208041115186_SetRelationKPITypeAndWorkflows_Fix.resx">
+      <DependentUpon>202208041115186_SetRelationKPITypeAndWorkflows_Fix.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202208041121102_SetRelationKPITypeAndWorkflows_Fix2.resx">
+      <DependentUpon>202208041121102_SetRelationKPITypeAndWorkflows_Fix2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202208041557075_SetRelationKPITypeAndWorkflows_Fix3.resx">
+      <DependentUpon>202208041557075_SetRelationKPITypeAndWorkflows_Fix3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202208051540286_SetRelatioKPITypeAndKPI.resx">
+      <DependentUpon>202208051540286_SetRelatioKPITypeAndKPI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202208051614224_CreateWorkflowIDAtWorkflowTable.resx">
+      <DependentUpon>202208051614224_CreateWorkflowIDAtWorkflowTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202208051711429_CreateWorkflowBaseTable.resx">
+      <DependentUpon>202208051711429_CreateWorkflowBaseTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202208061359119_SetupRequestAndDelegation.resx">
+      <DependentUpon>202208061359119_SetupRequestAndDelegation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202208061404405_SetupRequestAndDelegation-Fix.resx">
+      <DependentUpon>202208061404405_SetupRequestAndDelegation-Fix.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202208071249596_SetPerspectiveThemeSOAndKPIWeight.resx">
+      <DependentUpon>202208071249596_SetPerspectiveThemeSOAndKPIWeight.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202208091335223_CreateAuditTrailAndExceptions.resx">
+      <DependentUpon>202208091335223_CreateAuditTrailAndExceptions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202208101113263_DelegationRelationswithUser_Fix.resx">
+      <DependentUpon>202208101113263_DelegationRelationswithUser_Fix.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202208101124450_EnableCascadeDelete.resx">
+      <DependentUpon>202208101124450_EnableCascadeDelete.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202208290921126_CreateAttachmentContent.resx">
+      <DependentUpon>202208290921126_CreateAttachmentContent.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202208300805462_CreateKPIUpdateFormAndWFRequestRelations.resx">
+      <DependentUpon>202208300805462_CreateKPIUpdateFormAndWFRequestRelations.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202208310815355_AddAttachmentRelationToPerspectiveAndTheme.resx">
+      <DependentUpon>202208310815355_AddAttachmentRelationToPerspectiveAndTheme.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209011019497_CreateParameterAndParameterValuesTableAndRelations.resx">
+      <DependentUpon>202209011019497_CreateParameterAndParameterValuesTableAndRelations.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209021709393_CreateMatrixRelations.resx">
+      <DependentUpon>202209021709393_CreateMatrixRelations.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209031526532_SetupNotificationConfigurationAndReminderRelation.resx">
+      <DependentUpon>202209031526532_SetupNotificationConfigurationAndReminderRelation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209040900145_AddCodeColumnToResourcesTable.resx">
+      <DependentUpon>202209040900145_AddCodeColumnToResourcesTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209061816467_RequireUpdateAddedForKPI.resx">
+      <DependentUpon>202209061816467_RequireUpdateAddedForKPI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209061916586_AddUserAndRequestStepRelation.resx">
+      <DependentUpon>202209061916586_AddUserAndRequestStepRelation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209061924531_FixUserAndRequestStepRelation.resx">
+      <DependentUpon>202209061924531_FixUserAndRequestStepRelation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209120712376_FixRelationsOfStrategicObjectiveWithThemesAndPerspectives.resx">
+      <DependentUpon>202209120712376_FixRelationsOfStrategicObjectiveWithThemesAndPerspectives.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209121023183_AddAttachmentAndLevelsRelations.resx">
+      <DependentUpon>202209121023183_AddAttachmentAndLevelsRelations.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209121107155_FixUserAndDelegationRelation.resx">
+      <DependentUpon>202209121107155_FixUserAndDelegationRelation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209121519054_ChangeAttachmentTypePropertyToOptional.resx">
+      <DependentUpon>202209121519054_ChangeAttachmentTypePropertyToOptional.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209140800579_FixTypoInAttachmentTableAndProperties.resx">
+      <DependentUpon>202209140800579_FixTypoInAttachmentTableAndProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209141203169_DeleteWFRequestRelations.resx">
+      <DependentUpon>202209141203169_DeleteWFRequestRelations.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209141206330_FixKPIUpdateformAndWFRequestRelations.resx">
+      <DependentUpon>202209141206330_FixKPIUpdateformAndWFRequestRelations.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209161657300_DeleteExceptions.resx">
+      <DependentUpon>202209161657300_DeleteExceptions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209171840098_FixSponsorTypo.resx">
+      <DependentUpon>202209171840098_FixSponsorTypo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209180816465_FixReminderConfigurationRelation.resx">
+      <DependentUpon>202209180816465_FixReminderConfigurationRelation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209181142166_AddBaseWorkflowIDToWFRequest.resx">
+      <DependentUpon>202209181142166_AddBaseWorkflowIDToWFRequest.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209181301588_AddManualLockColumnToKPI.resx">
+      <DependentUpon>202209181301588_AddManualLockColumnToKPI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209191107093_AddDeletedOnUserAndRenameAllowLockPropertyOnKPI.resx">
+      <DependentUpon>202209191107093_AddDeletedOnUserAndRenameAllowLockPropertyOnKPI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209191300183_EditGroupsIsEditableAndIsDeletable.resx">
+      <DependentUpon>202209191300183_EditGroupsIsEditableAndIsDeletable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209191710013_CleanUpNotificationModel.resx">
+      <DependentUpon>202209191710013_CleanUpNotificationModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209220848096_UpdateKPITypeApproverToInt.resx">
+      <DependentUpon>202209220848096_UpdateKPITypeApproverToInt.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209231643053_UpdateRequestCode.resx">
+      <DependentUpon>202209231643053_UpdateRequestCode.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209231730499_RemoveIconFieldFromKPIType.resx">
+      <DependentUpon>202209231730499_RemoveIconFieldFromKPIType.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209241506222_RemoveRequestStepActionBy.resx">
+      <DependentUpon>202209241506222_RemoveRequestStepActionBy.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209251440551_AddActionByToRequestSteps.resx">
+      <DependentUpon>202209251440551_AddActionByToRequestSteps.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209251452305_FixActionByModelOnRequestStep.resx">
+      <DependentUpon>202209251452305_FixActionByModelOnRequestStep.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209291313359_RemoveNameColumnFromKPIType.resx">
+      <DependentUpon>202209291313359_RemoveNameColumnFromKPIType.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202210031253374_ReplaceOrgStructureWithDivionAndDepartmentInKPI.resx">
+      <DependentUpon>202210031253374_ReplaceOrgStructureWithDivionAndDepartmentInKPI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202210041033355_AddCalculationMethodToKPI.resx">
+      <DependentUpon>202210041033355_AddCalculationMethodToKPI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202210041047468_FixKPIValueAndOutOfTargetType.resx">
+      <DependentUpon>202210041047468_FixKPIValueAndOutOfTargetType.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202210311403377_CreateStructure.resx">
+      <DependentUpon>202210311403377_CreateStructure.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202210311736115_UpdateStructure.resx">
+      <DependentUpon>202210311736115_UpdateStructure.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202210311752116_UpdateStructure1.resx">
+      <DependentUpon>202210311752116_UpdateStructure1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202210312004159_AddValue.resx">
+      <DependentUpon>202210312004159_AddValue.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202210312043244_UpdateStrategyType.resx">
+      <DependentUpon>202210312043244_UpdateStrategyType.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211010934139_AddWeightToOrgStructure.resx">
+      <DependentUpon>202211010934139_AddWeightToOrgStructure.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211020849120_CreateStrategicInitiativeAndUpdateKPIModel.resx">
+      <DependentUpon>202211020849120_CreateStrategicInitiativeAndUpdateKPIModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211021018480_UpdateKPIModel.resx">
+      <DependentUpon>202211021018480_UpdateKPIModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211021105039_AddStrategicInitiativeAndKPIJunctionTable.resx">
+      <DependentUpon>202211021105039_AddStrategicInitiativeAndKPIJunctionTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211021237179_UpdateStrategicInitiativeTable.resx">
+      <DependentUpon>202211021237179_UpdateStrategicInitiativeTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211021241574_StrategicInitiativeRemoveUserRelation.resx">
+      <DependentUpon>202211021241574_StrategicInitiativeRemoveUserRelation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211021346222_StrategicInitiativeUpdateTable.resx">
+      <DependentUpon>202211021346222_StrategicInitiativeUpdateTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211030748422_SetStrategicObjectiveasOptionalForKPI.resx">
+      <DependentUpon>202211030748422_SetStrategicObjectiveasOptionalForKPI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211030856291_MakeUnitDetailsOptionalforKPI.resx">
+      <DependentUpon>202211030856291_MakeUnitDetailsOptionalforKPI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211060827386_UpdateConfigurationTable.resx">
+      <DependentUpon>202211060827386_UpdateConfigurationTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211081223241_UpdateKPIModel1.resx">
+      <DependentUpon>202211081223241_UpdateKPIModel1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211090953117_RemoveKPICommentStringConstraint.resx">
+      <DependentUpon>202211090953117_RemoveKPICommentStringConstraint.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211100830105_RemoveStringConstraintFromStrategy.resx">
+      <DependentUpon>202211100830105_RemoveStringConstraintFromStrategy.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211201003402_DGDA_FirstMigration.resx">
+      <DependentUpon>202211201003402_DGDA_FirstMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211201135206_ReplacePerspectiveWithTheme.resx">
+      <DependentUpon>202211201135206_ReplacePerspectiveWithTheme.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211201353568_AddThemesObjectivesRelationshipTableAdd.resx">
+      <DependentUpon>202211201353568_AddThemesObjectivesRelationshipTableAdd.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211210954409_AddStrategicObjectiveOwnerAndStrategyRelations.resx">
+      <DependentUpon>202211210954409_AddStrategicObjectiveOwnerAndStrategyRelations.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211210957218_ChangeOwnerAndStrategyToRequiredInStrategicObjectives.resx">
+      <DependentUpon>202211210957218_ChangeOwnerAndStrategyToRequiredInStrategicObjectives.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211211007109_RemoveStrategyAndStrategicObjectiveRelation.resx">
+      <DependentUpon>202211211007109_RemoveStrategyAndStrategicObjectiveRelation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211221105100_UpdateKPITable.resx">
+      <DependentUpon>202211221105100_UpdateKPITable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211231046168_Add_Manager_To_OrgStructure_And_ChangeSO_Owner_To_Optional.resx">
+      <DependentUpon>202211231046168_Add_Manager_To_OrgStructure_And_ChangeSO_Owner_To_Optional.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211231057170_ChangeOrgStructureManagerToRequired.resx">
+      <DependentUpon>202211231057170_ChangeOrgStructureManagerToRequired.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211231227484_AddAsset-District-Workstream_Tables_And_Relations.resx">
+      <DependentUpon>202211231227484_AddAsset-District-Workstream_Tables_And_Relations.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211241045128_AddIsRangeAndSourceToKPI.resx">
+      <DependentUpon>202211241045128_AddIsRangeAndSourceToKPI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211241052565_UpdateSourceAndIsRangetoRequiredInKPI.resx">
+      <DependentUpon>202211241052565_UpdateSourceAndIsRangetoRequiredInKPI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211241209417_AddCommentFlagToWFStepsAndREquestSteps.resx">
+      <DependentUpon>202211241209417_AddCommentFlagToWFStepsAndREquestSteps.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211241411363_AddActivityTypeAndItRelatedTables.resx">
+      <DependentUpon>202211241411363_AddActivityTypeAndItRelatedTables.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211271123290_Add-ActivitiesAndItsRelatedTables.resx">
+      <DependentUpon>202211271123290_Add-ActivitiesAndItsRelatedTables.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211271215335_FixAssetsUserRelations.resx">
+      <DependentUpon>202211271215335_FixAssetsUserRelations.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211271300577_FixActivitiesRelation.resx">
+      <DependentUpon>202211271300577_FixActivitiesRelation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211271351501_AddUnlockDateToActivity.resx">
+      <DependentUpon>202211271351501_AddUnlockDateToActivity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211280831098_RemoveBaselineFromActivity.resx">
+      <DependentUpon>202211280831098_RemoveBaselineFromActivity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211280848222_UpdateActivityRangeTypeToDecimal.resx">
+      <DependentUpon>202211280848222_UpdateActivityRangeTypeToDecimal.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211281328128_AddProgressAndStatusToAssets.resx">
+      <DependentUpon>202211281328128_AddProgressAndStatusToAssets.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211291049203_AddIsVerifiedFlagtoMeasures.resx">
+      <DependentUpon>202211291049203_AddIsVerifiedFlagtoMeasures.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211291118417_AddIsVerifiedFlagtoRequestStep.resx">
+      <DependentUpon>202211291118417_AddIsVerifiedFlagtoRequestStep.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211291156303_UpdateIsVerifiedFlag.resx">
+      <DependentUpon>202211291156303_UpdateIsVerifiedFlag.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211291420085_UpdateIsVerifiedFlagToActivity.resx">
+      <DependentUpon>202211291420085_UpdateIsVerifiedFlagToActivity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211300827512_FixStartDateType.resx">
+      <DependentUpon>202211300827512_FixStartDateType.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211300929352_AddStatusTOKPIAndActivity.resx">
+      <DependentUpon>202211300929352_AddStatusTOKPIAndActivity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202211300935361_RemoveStatusToKPIAndActivity.resx">
+      <DependentUpon>202211300935361_RemoveStatusToKPIAndActivity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202212010858492_DeleteActivityStatuses.resx">
+      <DependentUpon>202212010858492_DeleteActivityStatuses.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202212041029147_AddITemTypeToNotifications.resx">
+      <DependentUpon>202212041029147_AddITemTypeToNotifications.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202302010933449_AddIsCompletedFlagForActivity.resx">
+      <DependentUpon>202302010933449_AddIsCompletedFlagForActivity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202303301400139_strategyNewField.resx">
+      <DependentUpon>202303301400139_strategyNewField.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202304020855568_newDivisionalObjective.resx">
+      <DependentUpon>202304020855568_newDivisionalObjective.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202304020952025_updatedivision.resx">
+      <DependentUpon>202304020952025_updatedivision.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202304021004309_updatedivisionV.1.resx">
+      <DependentUpon>202304021004309_updatedivisionV.1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202304021005403_updatedivisionV.2.resx">
+      <DependentUpon>202304021005403_updatedivisionV.2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202304021214423_updatedivision_V3.resx">
+      <DependentUpon>202304021214423_updatedivision_V3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202304021406198_updatedivision_V4.resx">
+      <DependentUpon>202304021406198_updatedivision_V4.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202304021428162_removeisoperationalfromstrategy.resx">
+      <DependentUpon>202304021428162_removeisoperationalfromstrategy.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202306051011458_CleanSolution.resx">
+      <DependentUpon>202306051011458_CleanSolution.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202306051128373_UpdateStrategicObjective.resx">
+      <DependentUpon>202306051128373_UpdateStrategicObjective.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202306051221489_RemoveManyToManyThemesObjectivesRelation.resx">
+      <DependentUpon>202306051221489_RemoveManyToManyThemesObjectivesRelation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202306051224149_SetRequiredRelationBetweenThemeAndStrategicObjective.resx">
+      <DependentUpon>202306051224149_SetRequiredRelationBetweenThemeAndStrategicObjective.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202306051315135_DeleteTables.resx">
+      <DependentUpon>202306051315135_DeleteTables.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202306060923074_UpdateDivisionalObjective.resx">
+      <DependentUpon>202306060923074_UpdateDivisionalObjective.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202306061017020_UpdateDivisionalObjective2.resx">
+      <DependentUpon>202306061017020_UpdateDivisionalObjective2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202306061021230_UpdateDivisionalObjectiveRelation.resx">
+      <DependentUpon>202306061021230_UpdateDivisionalObjectiveRelation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202306061342077_UpdateKPIType.resx">
+      <DependentUpon>202306061342077_UpdateKPIType.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202306070936128_AddPerspectiveTable.resx">
+      <DependentUpon>202306070936128_AddPerspectiveTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202306071044044_UpdateKPIDetails.resx">
+      <DependentUpon>202306071044044_UpdateKPIDetails.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202306140800419_UpdateKPIDetails1.resx">
+      <DependentUpon>202306140800419_UpdateKPIDetails1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202306141135336_UpdateRequestStepAndKPIForm.resx">
+      <DependentUpon>202306141135336_UpdateRequestStepAndKPIForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202306141333248_UpdateRequestStepAndRequest.resx">
+      <DependentUpon>202306141333248_UpdateRequestStepAndRequest.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202306181201193_UpdateKPIMeasures.resx">
+      <DependentUpon>202306181201193_UpdateKPIMeasures.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202306210908218_FixKPIRequiredFields.resx">
+      <DependentUpon>202306210908218_FixKPIRequiredFields.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202306220913449_AddKPISourceField.resx">
+      <DependentUpon>202306220913449_AddKPISourceField.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202308031049017_Create_KPIHistoryTable.resx">
+      <DependentUpon>202308031049017_Create_KPIHistoryTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202308070740154_Update_KPIHistoryTable.resx">
+      <DependentUpon>202308070740154_Update_KPIHistoryTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202310011140340_changeKPIRequest.resx">
+      <DependentUpon>202310011140340_changeKPIRequest.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202310021330196_AddDepartemntToKPI.resx">
+      <DependentUpon>202310021330196_AddDepartemntToKPI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202310221220022_Create_KPIAffect.resx">
+      <DependentUpon>202310221220022_Create_KPIAffect.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202310240748209_AddPerspectiveBackground.resx">
+      <DependentUpon>202310240748209_AddPerspectiveBackground.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202401231241116_Rename-KPIDepartmentToOrgStructure.resx">
+      <DependentUpon>202401231241116_Rename-KPIDepartmentToOrgStructure.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202401240751032_Add-OrgStructureAbbreviation.resx">
+      <DependentUpon>202401240751032_Add-OrgStructureAbbreviation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202401250733305_Add-ConstantToParameters.resx">
+      <DependentUpon>202401250733305_Add-ConstantToParameters.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202401250739382_Add-BusinessUnitWeight.resx">
+      <DependentUpon>202401250739382_Add-BusinessUnitWeight.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202401250844494_Update_DivisionalRelation.resx">
+      <DependentUpon>202401250844494_Update_DivisionalRelation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202401251200161_Add-BusinessUnitWeightTOHistory.resx">
+      <DependentUpon>202401251200161_Add-BusinessUnitWeightTOHistory.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202401281340040_Add-AccumulutiveOutOfTargetToKPIHistory.resx">
+      <DependentUpon>202401281340040_Add-AccumulutiveOutOfTargetToKPIHistory.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202405231000586_Create_SessionTable.resx">
+      <DependentUpon>202405231000586_Create_SessionTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202405231227159_Create_TwoFactorTable.resx">
+      <DependentUpon>202405231227159_Create_TwoFactorTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202405260945356_update_TwoFactorTable.resx">
+      <DependentUpon>202405260945356_update_TwoFactorTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202408261054112_Create-UserActivityModel.resx">
+      <DependentUpon>202408261054112_Create-UserActivityModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202501200834425_Update-DecimalPrecision.resx">
+      <DependentUpon>202501200834425_Update-DecimalPrecision.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202501280952160_Add-OrgStructureYear.resx">
+      <DependentUpon>202501280952160_Add-OrgStructureYear.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202502040845053_AddIsConstantTargetFiled.resx">
+      <DependentUpon>202502040845053_AddIsConstantTargetFiled.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202503040952053_AdjustKPIDecimalPrecision.resx">
+      <DependentUpon>202503040952053_AdjustKPIDecimalPrecision.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202503041201589_Add-YearToStrategy.resx">
+      <DependentUpon>202503041201589_Add-YearToStrategy.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202503051141236_Add-GroupToOrgStructure.resx">
+      <DependentUpon>202503051141236_Add-GroupToOrgStructure.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202503061249505_Rollback-DecimalPrecision.resx">
+      <DependentUpon>202503061249505_Rollback-DecimalPrecision.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.4\build\EntityFramework.props'))" />
+    <Error Condition="!Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.4\build\EntityFramework.targets'))" />
+  </Target>
+  <Import Project="..\packages\EntityFramework.6.4.4\build\EntityFramework.targets" Condition="Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.targets')" />
+</Project>

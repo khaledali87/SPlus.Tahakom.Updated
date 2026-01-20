@@ -1,0 +1,40 @@
+9/1/2025 12:28:02 AM	AttachmentController
+MoveNext
+Unexpected end of MIME multipart stream. MIME multipart message is not complete.
+
+9/1/2025 12:34:23 AM	AttachmentController
+MoveNext
+Unexpected end of MIME multipart stream. MIME multipart message is not complete.
+
+9/1/2025 12:37:33 AM	AttachmentController
+MoveNext
+Access to the path 'C:\tfs\New folder (3)\Tahakom\SPlus.API\SplusLogs\files' is denied.
+
+9/1/2025 12:38:28 AM	AttachmentController
+MoveNext
+Access to the path 'C:\tfs\New folder (3)\Tahakom\SPlus.API\SplusLogs\files' is denied.
+
+9/1/2025 12:39:47 AM	AttachmentController
+MoveNext
+Access to the path 'C:\tfs\New folder (3)\Tahakom\SPlus.API\SplusLogs\files' is denied.
+
+9/1/2025 12:44:30 AM	AttachmentController
+MoveNext
+PDF file not found: C:\WINDOWS\TEMP\test.pdf
+
+9/1/2025 12:46:23 AM	AttachmentController
+MoveNext
+Unexpected end of MIME multipart stream. MIME multipart message is not complete.
+
+9/1/2025 9:13:27 AM	File
+MoveNext
+True
+
+9/1/2025 9:13:28 AM	File
+MoveNext
+Page 1 contains external URI: https://invoice.stripe.com/i/acct_1MExQ9BjIQrRQnux/live_YWNjdF8xTUV4UTlCaklRclJRbnV4LF9TcDRaSnZvbmJTN2NrTWdyNnpQRTFVODhTUVhHbzNiLDE0NjczMTQ0MQ0200VqjEbEpM?s=pd
+
+9/1/2025 9:14:35 AM	AttachmentController
+MoveNext
+Object reference not set to an instance of an object.
+

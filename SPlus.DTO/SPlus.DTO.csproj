@@ -1,0 +1,221 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{244C0897-E388-45D5-A1D5-DE6F7F2FC4AA}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SPlus.DTO</RootNamespace>
+    <AssemblyName>SPlus.DTO</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Attachment\ActivityAttachmentDTO.cs" />
+    <Compile Include="Attachment\KPIAttachmentDTO.cs" />
+    <Compile Include="Balance Score Card\BalanceScoreCardDTO.cs" />
+    <Compile Include="Balance Score Card\BalanceScoreCardKPIWithDetailDTO.cs" />
+    <Compile Include="Balance Score Card\BalanceScoreDepratmentDetailsDTO.cs" />
+    <Compile Include="Balance Score Card\DepartmentOrgStructureCardDTO.cs" />
+    <Compile Include="Balance Score Card\OperationalBalanceScoreCardKPIHistoryDTO.cs" />
+    <Compile Include="Balance Score Card\OperationalBalanceScoreCardOrgStructureDTO.cs" />
+    <Compile Include="Balance Score Card\OrgStructureCardDTO.cs" />
+    <Compile Include="Central Administrartion\Divisional Objective\CADivisionalObjectiveDTO.cs" />
+    <Compile Include="Central Administrartion\Divisional Objective\CADivisionalObjectiveWeightDTO.cs" />
+    <Compile Include="Central Administrartion\Divisional Objective\CAODivisionalObjectiveKPIDTO.cs" />
+    <Compile Include="Central Administrartion\KPI Type\ListingStatusDTO.cs" />
+    <Compile Include="Central Administrartion\KPI Type\ReminderConfigurationDTO.cs" />
+    <Compile Include="Central Administrartion\KPI\CAKPIDTO.cs" />
+    <Compile Include="Central Administrartion\KPI\CAKPIWeightDTO.cs" />
+    <Compile Include="Central Administrartion\KPI\CAKPIListingDTO.cs" />
+    <Compile Include="Central Administrartion\KPI\KPIUpdateWeightDTO.cs" />
+    <Compile Include="Central Administrartion\KPI\ValidateParameterDTO.cs" />
+    <Compile Include="Central Administrartion\KPI\SimpleKPIDTO.cs" />
+    <Compile Include="Central Administrartion\KPI\SimpleStrategicObjectiveDTO.cs" />
+    <Compile Include="Central Administrartion\OrgStructure\CADepartmentKPIsDTO.cs" />
+    <Compile Include="Central Administrartion\OrgStructure\CADivisionKPIsDTO.cs" />
+    <Compile Include="Central Administrartion\OrgStructure\CAOrgStructureDivisionalObjectiveDTO.cs" />
+    <Compile Include="Central Administrartion\OrgStructure\CAOrgStructureWeightDTO.cs" />
+    <Compile Include="Central Administrartion\OrgStructure\CAOrgWeightDTO.cs" />
+    <Compile Include="Central Administrartion\Permissions\User\ReplaceUserDTO.cs" />
+    <Compile Include="Central Administrartion\Permissions\User\UserSSOLoginDTO.cs" />
+    <Compile Include="Central Administrartion\Perspective\CASingularPerspectiveDTO .cs" />
+    <Compile Include="Central Administrartion\Perspective\CAPerspectiveDTO.cs" />
+    <Compile Include="Central Administrartion\Strategic Objective\CAStrategicObjectiveWeightDTO.cs" />
+    <Compile Include="Central Administrartion\Strategic Objective\CAStrategicObjectiveKPIsDTO.cs" />
+    <Compile Include="Central Administrartion\Strategic Objective\CAStrategicObjectiveDTO.cs" />
+    <Compile Include="Central Administrartion\Strategic Objective\StrategicObjectiveDTO.cs" />
+    <Compile Include="Central Administrartion\Strategic Objective\CAStrategicObjectiveDivisionalWeightDTO.cs" />
+    <Compile Include="Central Administrartion\Strategic Objective\StrategicObjectiveListDTO - Copy.cs" />
+    <Compile Include="Central Administrartion\Strategy\CAStrategyObjectiveListDTO.cs" />
+    <Compile Include="Central Administrartion\Strategy\CAStrategyPerspectiveDTO.cs" />
+    <Compile Include="Central Administrartion\Theme\CAThemeDTO.cs" />
+    <Compile Include="Central Administrartion\Theme\CAThemeStrategicObjectiveDTO.cs" />
+    <Compile Include="Central Administrartion\Theme\CAThemeWeightDTO.cs" />
+    <Compile Include="Central Administrartion\Theme\ThemeListDTO.cs" />
+    <Compile Include="Central Administrartion\Theme\SingularThemeDTO.cs" />
+    <Compile Include="Central Administrartion\Weight\OrgStructureWeightDTO.cs" />
+    <Compile Include="CoparateSectorFilterDTO.cs" />
+    <Compile Include="CreateKPIFormDTO.cs" />
+    <Compile Include="Dashboards\CRDashboard\CRDashboardDTO.cs" />
+    <Compile Include="Dashboards\DivisionalObjectiveDTO.cs" />
+    <Compile Include="Dashboards\KPIRelationDashboard\KPIRelationDTO.cs" />
+    <Compile Include="Dashboards\KPIRelationDashboard\KPIRelationPerspectiveDTO.cs" />
+    <Compile Include="Dashboards\KPIRelationDashboard\KPIReleationKPIDTO.cs" />
+    <Compile Include="Dashboards\OperationalDashboardDTO.cs" />
+    <Compile Include="Dashboards\OperationalOrgStructureDTO.cs" />
+    <Compile Include="Dashboards\StrategicObjectiveDashboard\StrategicObjectiveDashboardDTO.cs" />
+    <Compile Include="Dashboards\StrategyPerformanceDashboard.cs" />
+    <Compile Include="Dashboards\StrategyPerformanceSODTO.cs" />
+    <Compile Include="Dashboards\StrategyPerformanceTheme.cs" />
+    <Compile Include="Dashboards\ThemeDashboardDTO.cs" />
+    <Compile Include="Delegation\SystemDelegationDTO.cs" />
+    <Compile Include="Divisional objective\DivisionalObjectiveWithCardDTO.cs" />
+    <Compile Include="Divisional objective\DivisionalObjectiveWithLEDDTO.cs" />
+    <Compile Include="KPIChangeRequestFormDTO.cs" />
+    <Compile Include="KPI\KPIAffectDTO.cs" />
+    <Compile Include="KPI\KPICardDTO.cs" />
+    <Compile Include="KPI\KPILEDDTO.cs" />
+    <Compile Include="MitigationActionRequestFormDTO.cs" />
+    <Compile Include="ObjectiveWeightDTO.cs" />
+    <Compile Include="Operational Strategy\OperationalDetailsDTO.cs" />
+    <Compile Include="Operational Strategy\OperationalLevelDTO.cs" />
+    <Compile Include="OrgStructure\OperationalStrategyDepartmentDTO.cs" />
+    <Compile Include="OrgStructure\OperationalStrategyDivisionDTO.cs" />
+    <Compile Include="OrgStructure\OrgStructureMapDTO.cs" />
+    <Compile Include="Strategy Map\StrategyMapDTO.cs" />
+    <Compile Include="Strategy\ChartDTO.cs" />
+    <Compile Include="Task Center\MyRequestDTO.cs" />
+    <Compile Include="Task Center\TaskCenterListDTO.cs" />
+    <Compile Include="Theme\ThemeDTO.cs" />
+    <Compile Include="Theme\ThemeObjectiveDTO.cs" />
+    <Compile Include="Theme\ThemeStrategicObjectiveDetailsDTO.cs" />
+    <Compile Include="Strategic Objective\StrategicObjectiveKPICardDTO.cs" />
+    <Compile Include="Corporate Strategy\CorporateStrategyDTO.cs" />
+    <Compile Include="Operational Strategy\OperationalStrategyDTO.cs" />
+    <Compile Include="Corporate Strategy\StrategyStrategicObjectiveDetailsDTO.cs" />
+    <Compile Include="Strategy\StrategyObjectiveDTO.cs" />
+    <Compile Include="Value\ValueDTO.cs" />
+    <Compile Include="Strategic Initiative\StrategicInitiativeDTO.cs" />
+    <Compile Include="Central Administrartion\Strategy\CAStrategyWeightDTO.cs" />
+    <Compile Include="Central Administrartion\Strategy\CAStrategyObjectiveDTO.cs" />
+    <Compile Include="Central Administrartion\Strategy\CAStrategyThemeDTO.cs" />
+    <Compile Include="Central Administrartion\Strategy\CAStrategyDTO.cs" />
+    <Compile Include="Central Administrartion\Weight\KPIWeightDTO.cs" />
+    <Compile Include="Central Administrartion\Weight\StrategicObjectiveWeightDTO.cs" />
+    <Compile Include="Central Administrartion\Weight\ThemeWeightDTO.cs" />
+    <Compile Include="Central Administrartion\Weight\UpdateWeightDTO.cs" />
+    <Compile Include="Central Administrartion\Weight\WeightDTO.cs" />
+    <Compile Include="Dashboard\GeneralDashboardDTO.cs" />
+    <Compile Include="Dashboard\DashboardKPIDetailsDTO.cs" />
+    <Compile Include="Dashboard\KPIByDivisionDTO.cs" />
+    <Compile Include="Dashboard\KPIByPerspectiveDTO.cs" />
+    <Compile Include="Dashboard\KPIByStatusDTO.cs" />
+    <Compile Include="Dashboard\KPIByStrategicObjectiveDTO.cs" />
+    <Compile Include="Dashboard\KPIByUpdateStatusDTO.cs" />
+    <Compile Include="Dashboard\StrategicObjectiveByPerspectiveDTO.cs" />
+    <Compile Include="Delegation\ActiveDelegationDTO.cs" />
+    <Compile Include="KPI\KPIDetailsDTO.cs" />
+    <Compile Include="Login\ActivatedDelegationDTO.cs" />
+    <Compile Include="Task Center\ApprovalDTO.cs" />
+    <Compile Include="Task Center\TaskCenterDTO.cs" />
+    <Compile Include="Task Center\UpdateListDTO.cs" />
+    <Compile Include="WFHistoryDTO.cs" />
+    <Compile Include="Workflow\ActionDTO.cs" />
+    <Compile Include="Attachment\AttachmentDTO.cs" />
+    <Compile Include="Balance Score Card\BalanceScoreCardKPI.cs" />
+    <Compile Include="Balance Score Card\BalanceScoreCardPerspective.cs" />
+    <Compile Include="Balance Score Card\BalanceScoreCardStrategicObjective.cs" />
+    <Compile Include="Balance Score Card\BalanceScoreCardStrategicObjectiveDetails.cs" />
+    <Compile Include="Balance Score Card\BalanceScoreCardTheme.cs" />
+    <Compile Include="BaseDTO.cs" />
+    <Compile Include="Central Administrartion\KPI\UpdateKPIDTO.cs" />
+    <Compile Include="Central Administrartion\Notification Configuration\NotificationConfigutrationListDTO.cs" />
+    <Compile Include="Central Administrartion\Permissions\Group\GroupListDTO.cs" />
+    <Compile Include="Central Administrartion\OrgStructure\OrgStructureListDTO.cs" />
+    <Compile Include="Central Administrartion\Permissions\User\UserListDTO.cs" />
+    <Compile Include="Central Administrartion\Strategic Objective\StrategicObjectiveListDTO.cs" />
+    <Compile Include="Central Administrartion\Strategic Objective\UpdateStrategicObjectiveDTO.cs" />
+    <Compile Include="Central Administrartion\System Threshold\UpdateSystemPerformanceThresholdDTO.cs" />
+    <Compile Include="Delegation\DelegationDTO.cs" />
+    <Compile Include="Central Administrartion\Permissions\Group\GroupDTO.cs" />
+    <Compile Include="Central Administrartion\KPI\KPICommentDTO.cs" />
+    <Compile Include="Central Administrartion\KPI\KPIDTO.cs" />
+    <Compile Include="Central Administrartion\KPI\KPIMeasureDTO.cs" />
+    <Compile Include="Central Administrartion\KPI Type\KPITypeDTO.cs" />
+    <Compile Include="Login\LoginDTO.cs" />
+    <Compile Include="Handshake\LookupDTO.cs" />
+    <Compile Include="Handshake\LookupValueDTO.cs" />
+    <Compile Include="Central Administrartion\Permissions\MatrixDTO.cs" />
+    <Compile Include="Central Administrartion\Notification Configuration\NotificationConfigurationDTO.cs" />
+    <Compile Include="Central Administrartion\Notification Configuration\NotificationDTO.cs" />
+    <Compile Include="Central Administrartion\Notification Configuration\NotificationParameterDTO.cs" />
+    <Compile Include="Central Administrartion\OrgStructure\OrgStructureDTO.cs" />
+    <Compile Include="Central Administrartion\KPI\ParameterDTO.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Central Administrartion\Permissions\ResourceDTO.cs" />
+    <Compile Include="Central Administrartion\Permissions\Group\SingularGroupDTO.cs" />
+    <Compile Include="Central Administrartion\KPI\SingularKPIDTO.cs" />
+    <Compile Include="Central Administrartion\KPI Type\SingularKPITypeDTO.cs" />
+    <Compile Include="Central Administrartion\Strategic Objective\SingularStrategicObjectiveDTO.cs" />
+    <Compile Include="Central Administrartion\Permissions\SingularUserDTO.cs" />
+    <Compile Include="Workflow\RequestDetailsDTO.cs" />
+    <Compile Include="Workflow\SaveWFFormUpdateKPIDTO.cs" />
+    <Compile Include="Workflow\SingularWorkflowDTO.cs" />
+    <Compile Include="Central Administrartion\KPI Type\StatusDTO.cs" />
+    <Compile Include="Strategic Objective\StrategicObjectiveKPILEDDTO.cs" />
+    <Compile Include="Central Administrartion\System Threshold\SystemPerformanceThresholdDTO.cs" />
+    <Compile Include="Central Administrartion\Permissions\UserDTO.cs" />
+    <Compile Include="Workflow\WFFormUpdateKPIDTO.cs" />
+    <Compile Include="Workflow\RequestDTO.cs" />
+    <Compile Include="Workflow\WFRequestDTO.cs" />
+    <Compile Include="Workflow\WFRequestStepDTO.cs" />
+    <Compile Include="Workflow\WorkflowDTO.cs" />
+    <Compile Include="Workflow\WorkflowStepDTO.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Report\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

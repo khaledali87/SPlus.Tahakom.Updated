@@ -1,0 +1,12 @@
+1/11/2026 11:47:42 AM	BalanceScoreCardController
+ReadOperational
+A timeout occurred while waiting for memory resources to execute the query in resource pool 'default' (2). Rerun the query.
+
+1/11/2026 11:49:40 AM	BalanceScoreCardController
+ReadOperational
+A timeout occurred while waiting for memory resources to execute the query in resource pool 'default' (2). Rerun the query.
+
+1/11/2026 11:52:31 AM	BalanceScoreCardController
+ReadOperational
+A timeout occurred while waiting for memory resources to execute the query in resource pool 'default' (2). Rerun the query.
+

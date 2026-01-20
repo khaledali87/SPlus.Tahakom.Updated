@@ -1,0 +1,106 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30717.126
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPlus.BLL", "SPlus.BLL\SPlus.BLL.csproj", "{82E6895F-FA6A-46D2-B223-65D5CA695934}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPlus.API", "SPlus.API\SPlus.API.csproj", "{4B0D61A7-4AE9-4BF9-A6CD-FDCC499EA1AA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPlus.Model", "SPlus.Model\SPlus.Model.csproj", "{BF7196D2-4D00-40BF-9ABC-0BFB4BECC592}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPlus.Helper", "SPlus.Helper\SPlus.Helper.csproj", "{94EF3D97-3649-4DB4-8DA8-678E723E98FC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPlus.Integration", "SPlus.Integration\SPlus.Integration.csproj", "{27B6E855-5552-4C5A-BDB5-2C4085945495}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPlus.DataAccess", "SPlus.DataAccess\SPlus.DataAccess.csproj", "{B1B7C3CB-CE5C-414E-AD2F-C6BD49BA37C1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPlus.DTO", "SPlus.DTO\SPlus.DTO.csproj", "{244C0897-E388-45D5-A1D5-DE6F7F2FC4AA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tahakum.SPlus.HangFireAPI", "SPlus.HangFireAPI\Tahakum.SPlus.HangFireAPI.csproj", "{2B2C717B-4CA5-486F-B557-70F08A321D16}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPlus.UseCases", "SPlus.UseCases\SPlus.UseCases.csproj", "{849CBED6-2CBB-426D-9AB7-4475221EC171}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{82E6895F-FA6A-46D2-B223-65D5CA695934}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82E6895F-FA6A-46D2-B223-65D5CA695934}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82E6895F-FA6A-46D2-B223-65D5CA695934}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82E6895F-FA6A-46D2-B223-65D5CA695934}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B0D61A7-4AE9-4BF9-A6CD-FDCC499EA1AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B0D61A7-4AE9-4BF9-A6CD-FDCC499EA1AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B0D61A7-4AE9-4BF9-A6CD-FDCC499EA1AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B0D61A7-4AE9-4BF9-A6CD-FDCC499EA1AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF7196D2-4D00-40BF-9ABC-0BFB4BECC592}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF7196D2-4D00-40BF-9ABC-0BFB4BECC592}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF7196D2-4D00-40BF-9ABC-0BFB4BECC592}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF7196D2-4D00-40BF-9ABC-0BFB4BECC592}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94EF3D97-3649-4DB4-8DA8-678E723E98FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94EF3D97-3649-4DB4-8DA8-678E723E98FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94EF3D97-3649-4DB4-8DA8-678E723E98FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94EF3D97-3649-4DB4-8DA8-678E723E98FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27B6E855-5552-4C5A-BDB5-2C4085945495}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27B6E855-5552-4C5A-BDB5-2C4085945495}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27B6E855-5552-4C5A-BDB5-2C4085945495}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27B6E855-5552-4C5A-BDB5-2C4085945495}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1B7C3CB-CE5C-414E-AD2F-C6BD49BA37C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1B7C3CB-CE5C-414E-AD2F-C6BD49BA37C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1B7C3CB-CE5C-414E-AD2F-C6BD49BA37C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1B7C3CB-CE5C-414E-AD2F-C6BD49BA37C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{244C0897-E388-45D5-A1D5-DE6F7F2FC4AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{244C0897-E388-45D5-A1D5-DE6F7F2FC4AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{244C0897-E388-45D5-A1D5-DE6F7F2FC4AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{244C0897-E388-45D5-A1D5-DE6F7F2FC4AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B2C717B-4CA5-486F-B557-70F08A321D16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B2C717B-4CA5-486F-B557-70F08A321D16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B2C717B-4CA5-486F-B557-70F08A321D16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B2C717B-4CA5-486F-B557-70F08A321D16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{849CBED6-2CBB-426D-9AB7-4475221EC171}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{849CBED6-2CBB-426D-9AB7-4475221EC171}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{849CBED6-2CBB-426D-9AB7-4475221EC171}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{849CBED6-2CBB-426D-9AB7-4475221EC171}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E398DAA7-0246-4B21-A198-25C060919976}
+	EndGlobalSection
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 10
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://dev.azure.com/pplusmw
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = SPlus.BLL\\SPlus.BLL.csproj
+		SccProjectName1 = SPlus.BLL
+		SccLocalPath1 = SPlus.BLL
+		SccProjectUniqueName2 = SPlus.API\\SPlus.API.csproj
+		SccProjectName2 = SPlus.API
+		SccLocalPath2 = SPlus.API
+		SccProjectUniqueName3 = SPlus.Model\\SPlus.Model.csproj
+		SccProjectName3 = SPlus.Model
+		SccLocalPath3 = SPlus.Model
+		SccProjectUniqueName4 = SPlus.Helper\\SPlus.Helper.csproj
+		SccProjectName4 = SPlus.Helper
+		SccLocalPath4 = SPlus.Helper
+		SccProjectUniqueName5 = SPlus.Integration\\SPlus.Integration.csproj
+		SccProjectName5 = SPlus.Integration
+		SccLocalPath5 = SPlus.Integration
+		SccProjectUniqueName6 = SPlus.DataAccess\\SPlus.DataAccess.csproj
+		SccProjectName6 = SPlus.DataAccess
+		SccLocalPath6 = SPlus.DataAccess
+		SccProjectUniqueName7 = SPlus.DTO\\SPlus.DTO.csproj
+		SccProjectName7 = SPlus.DTO
+		SccLocalPath7 = SPlus.DTO
+		SccProjectUniqueName8 = SPlus.UseCases\\SPlus.UseCases.csproj
+		SccProjectName8 = SPlus.UseCases
+		SccLocalPath8 = SPlus.UseCases
+		SccProjectUniqueName9 = SPlus.HangFireAPI\\Tahakum.SPlus.HangFireAPI.csproj
+		SccProjectName9 = SPlus.HangFireAPI
+		SccLocalPath9 = SPlus.HangFireAPI
+	EndGlobalSection
+EndGlobal

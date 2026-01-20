@@ -1,0 +1,142 @@
+﻿<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{743C0C48-AF3E-4C24-9F9B-5891B022D61D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SyncJobs</RootNamespace>
+    <AssemblyName>SyncJobs</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetOfficeVersion>16.0</TargetOfficeVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{C1CDDADD-2546-481F-9697-4EA41081F2FC};{14822709-B5A1-4724-98CA-57A101D1B079};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
+    <MinimumOfficeToolsVersion>14.0</MinimumOfficeToolsVersion>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <SandboxedSolution>False</SandboxedSolution>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.SharePoint">
+      <HintPath>..\SPlus.API\bin\Microsoft.SharePoint.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.DirectoryServices.AccountManagement" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="Microsoft.SharePoint.Client.ServerRuntime">
+      <HintPath>..\..\..\Master\SyncJobs\bin\Debug\Microsoft.SharePoint.Client.ServerRuntime.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Features\PortfolioSyncJobFeature\PortfolioSyncJobFeature.EventReceiver.cs">
+      <DependentUpon>PortfolioSyncJobFeature.feature</DependentUpon>
+    </Compile>
+    <Compile Include="Features\UsersSyncJobFeature\UsersSyncJobFeature.EventReceiver.cs">
+      <DependentUpon>UsersSyncJobFeature.feature</DependentUpon>
+    </Compile>
+    <Compile Include="Helper.cs" />
+    <Compile Include="Features\WorkflowEngineFeature\WorkflowEngineFeature.EventReceiver.cs">
+      <DependentUpon>WorkflowEngineFeature.feature</DependentUpon>
+    </Compile>
+    <Compile Include="Helpers\Email.cs" />
+    <Compile Include="Helpers\Encryption.cs" />
+    <Compile Include="Helpers\Extentions.cs" />
+    <Compile Include="Models\Delegation.cs" />
+    <Compile Include="Models\EmailTemplate.cs" />
+    <Compile Include="Models\enumNotificationEventType.cs" />
+    <Compile Include="Models\General.cs" />
+    <Compile Include="Models\Group.cs" />
+    <Compile Include="Models\Instance.cs" />
+    <Compile Include="Models\KPI.cs" />
+    <Compile Include="Models\KPIMeasure.cs" />
+    <Compile Include="Models\KPIType.cs" />
+    <Compile Include="Models\Notification.cs" />
+    <Compile Include="Models\NotificationConfiguration.cs" />
+    <Compile Include="Models\Portfolio.cs" />
+    <Compile Include="Models\ReminderConfiguration.cs" />
+    <Compile Include="Models\ReminderRegistry.cs" />
+    <Compile Include="Models\UserInfo.cs" />
+    <Compile Include="Models\UserRelation.cs" />
+    <Compile Include="Models\WFRequest.cs" />
+    <Compile Include="Models\WFRequestStep.cs" />
+    <Compile Include="PortfolioSyncJob.cs" />
+    <Compile Include="UsersSyncJob.cs" />
+    <Compile Include="WorkflowEngine.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Features\PortfolioSyncJobFeature\PortfolioSyncJobFeature.feature">
+      <FeatureId>{c4da3d26-fb42-4416-99bf-75bc85216000}</FeatureId>
+    </None>
+    <None Include="Features\UsersSyncJobFeature\UsersSyncJobFeature.feature">
+      <FeatureId>{59cbe258-1417-4ae0-9d53-b8bf026c701d}</FeatureId>
+    </None>
+    <None Include="Features\WorkflowEngineFeature\WorkflowEngineFeature.feature">
+      <FeatureId>{c5db5f55-d1d4-4572-a15a-1b190d30ad5b}</FeatureId>
+    </None>
+    <None Include="key.snk" />
+    <None Include="packages.config" />
+    <None Include="Package\Package.package">
+      <PackageId>{7eb80580-3098-4e42-817a-72f72dfc22f7}</PackageId>
+    </None>
+    <None Include="Package\Package.Template.xml">
+      <DependentUpon>Package.package</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Features\PortfolioSyncJobFeature\PortfolioSyncJobFeature.Template.xml">
+      <DependentUpon>PortfolioSyncJobFeature.feature</DependentUpon>
+    </Content>
+    <Content Include="Features\UsersSyncJobFeature\UsersSyncJobFeature.Template.xml">
+      <DependentUpon>UsersSyncJobFeature.feature</DependentUpon>
+    </Content>
+    <Content Include="Features\WorkflowEngineFeature\WorkflowEngineFeature.Template.xml">
+      <DependentUpon>WorkflowEngineFeature.feature</DependentUpon>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(VSToolsPath)\SharePointTools\Microsoft.VisualStudio.SharePoint.targets" Condition="'$(VSToolsPath)' != ''" />
+</Project>

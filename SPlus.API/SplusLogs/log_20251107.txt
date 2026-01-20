@@ -1,0 +1,54 @@
+11/7/2025 1:51:36 PM	RequestController
+ReadByKPIID
+Cannot deserialize the current JSON object (e.g. {"name":"value"}) into type 'System.Collections.Generic.List`1[SPlus.Model.Domain.Attachment]' because the type requires a JSON array (e.g. [1,2,3]) to deserialize correctly.
+To fix this error either change the JSON to a JSON array (e.g. [1,2,3]) or change the deserialized type so that it is a normal .NET type (e.g. not a primitive type like integer, not a collection type like an array or List<T>) that can be deserialized from a JSON object. JsonObjectAttribute can also be added to the type to force it to deserialize from a JSON object.
+Path 'Attachment.ID', line 1, position 150.
+
+11/7/2025 1:54:40 PM	RequestController
+ReadByKPIID
+Cannot deserialize the current JSON object (e.g. {"name":"value"}) into type 'System.Collections.Generic.List`1[SPlus.Model.Domain.Attachment]' because the type requires a JSON array (e.g. [1,2,3]) to deserialize correctly.
+To fix this error either change the JSON to a JSON array (e.g. [1,2,3]) or change the deserialized type so that it is a normal .NET type (e.g. not a primitive type like integer, not a collection type like an array or List<T>) that can be deserialized from a JSON object. JsonObjectAttribute can also be added to the type to force it to deserialize from a JSON object.
+Path 'Attachment.ID', line 1, position 150.
+
+11/7/2025 1:59:37 PM	RequestController
+ReadByKPIID
+Cannot deserialize the current JSON object (e.g. {"name":"value"}) into type 'System.Collections.Generic.List`1[SPlus.Model.Domain.Attachment]' because the type requires a JSON array (e.g. [1,2,3]) to deserialize correctly.
+To fix this error either change the JSON to a JSON array (e.g. [1,2,3]) or change the deserialized type so that it is a normal .NET type (e.g. not a primitive type like integer, not a collection type like an array or List<T>) that can be deserialized from a JSON object. JsonObjectAttribute can also be added to the type to force it to deserialize from a JSON object.
+Path 'Attachment.ID', line 1, position 150.
+
+11/7/2025 2:07:46 PM	RequestController
+ReadByKPIID
+Cannot deserialize the current JSON array (e.g. [1,2,3]) into type 'SPlus.Model.Domain.Attachment' because the type requires a JSON object (e.g. {"name":"value"}) to deserialize correctly.
+To fix this error either change the JSON to a JSON object (e.g. {"name":"value"}) or change the deserialized type to an array or a type that implements a collection interface (e.g. ICollection, IList) like List<T> that can be deserialized from a JSON array. JsonArrayAttribute can also be added to the type to force it to deserialize from a JSON array.
+Path 'Attachment', line 1, position 140.
+
+11/7/2025 2:08:54 PM	RequestController
+ReadByKPIID
+Cannot deserialize the current JSON array (e.g. [1,2,3]) into type 'SPlus.Model.Domain.Attachment' because the type requires a JSON object (e.g. {"name":"value"}) to deserialize correctly.
+To fix this error either change the JSON to a JSON object (e.g. {"name":"value"}) or change the deserialized type to an array or a type that implements a collection interface (e.g. ICollection, IList) like List<T> that can be deserialized from a JSON array. JsonArrayAttribute can also be added to the type to force it to deserialize from a JSON array.
+Path 'Attachment', line 1, position 140.
+
+11/7/2025 2:14:55 PM	RequestController
+ReadByKPIID
+Object reference not set to an instance of an object.
+
+11/7/2025 2:20:28 PM	RequestController
+ReadByKPIID
+Object reference not set to an instance of an object.
+
+11/7/2025 2:21:57 PM	RequestController
+ReadByKPIID
+Object reference not set to an instance of an object.
+
+11/7/2025 2:23:08 PM	RequestController
+ReadByKPIID
+Object reference not set to an instance of an object.
+
+11/7/2025 2:31:44 PM	RequestController
+UpdateKPIValue
+Unauthorized user
+
+11/7/2025 2:46:15 PM	KPIController
+ReadByID
+Object reference not set to an instance of an object.
+

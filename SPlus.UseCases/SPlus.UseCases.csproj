@@ -1,0 +1,140 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{849CBED6-2CBB-426D-9AB7-4475221EC171}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SPlus.UseCases</RootNamespace>
+    <AssemblyName>SPlus.UseCases</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Antlr4.Runtime, Version=4.6.0.0, Culture=neutral, PublicKeyToken=09abb75b9ed49849, processorArchitecture=MSIL">
+      <HintPath>..\packages\Antlr4.Runtime.4.6.6\lib\net45\Antlr4.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="AutoMapper, Version=8.0.0.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.8.0.0\lib\net461\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="Dangl.Calculator, Version=1.5.0.0, Culture=neutral, PublicKeyToken=35bf74eac1c84f5d, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dangl.Calculator.1.5.0\lib\net45\Dangl.Calculator.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Scaffolding.EntityFramework.12.0, Version=16.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Data.Entity.Design.Extensibility, Version=16.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory, Version=5.2.8.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="StructureMap, Version=4.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\StructureMap.4.7.1\lib\net45\StructureMap.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Data.Entity.Design" />
+    <Reference Include="System.DirectoryServices.AccountManagement" />
+    <Reference Include="System.IdentityModel" />
+    <Reference Include="System.IdentityModel.Selectors" />
+    <Reference Include="System.IdentityModel.Services" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.Entity.Design" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AttachmentUseCases.cs" />
+    <Compile Include="BalanceScoreCardUseCases.cs" />
+    <Compile Include="DashboardUseCases.cs" />
+    <Compile Include="DataMapper\Divisional Objective\DivisionalObjectiveMapper.cs" />
+    <Compile Include="DataMapper\KPI\KPIMapper.cs" />
+    <Compile Include="DataMapper\OrgStructure\OrgStructureMapper.cs" />
+    <Compile Include="DataMapper\Perspective\PerspectiveMapper.cs" />
+    <Compile Include="DataMapper\Theme\ThemeMapper.cs" />
+    <Compile Include="DataMapper\Strategic Objective\StrategicObjectiveMapper.cs" />
+    <Compile Include="DataMapper\Strategy\StrategyMapper.cs" />
+    <Compile Include="Container\IOC.cs" />
+    <Compile Include="DataMapper\DataMapper.cs" />
+    <Compile Include="DataMapper\MappingProfile.cs" />
+    <Compile Include="DivisionalObjectiveUseCases.cs" />
+    <Compile Include="HttpContentExtensions.cs" />
+    <Compile Include="PerspectiveUseCases.cs" />
+    <Compile Include="SystemPerformanceThresholdUseCases.cs" />
+    <Compile Include="StrategyUseCases.cs" />
+    <Compile Include="ThemeUseCases.cs" />
+    <Compile Include="WeightUseCases.cs" />
+    <Compile Include="DelegationUseCases.cs" />
+    <Compile Include="HandshakeUseCases.cs" />
+    <Compile Include="KPIUseCases.cs" />
+    <Compile Include="KPITypeUseCases.cs" />
+    <Compile Include="LoggingUseCases.cs" />
+    <Compile Include="LoginUseCases.cs" />
+    <Compile Include="NotificationUseCases.cs" />
+    <Compile Include="NotificationConfigurationUseCases.cs" />
+    <Compile Include="OrgStructureUseCases.cs" />
+    <Compile Include="ParameterUseCases.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RequestUseCases.cs" />
+    <Compile Include="StrategicObjectiveUseCases.cs" />
+    <Compile Include="TaskCenterUseCases.cs" />
+    <Compile Include="UserUseCases.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SPlus.BLL\SPlus.BLL.csproj">
+      <Project>{82e6895f-fa6a-46d2-b223-65d5ca695934}</Project>
+      <Name>SPlus.BLL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SPlus.DTO\SPlus.DTO.csproj">
+      <Project>{244c0897-e388-45d5-a1d5-de6f7f2fc4aa}</Project>
+      <Name>SPlus.DTO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SPlus.Helper\SPlus.Helper.csproj">
+      <Project>{94EF3D97-3649-4DB4-8DA8-678E723E98FC}</Project>
+      <Name>SPlus.Helper</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SPlus.Model\SPlus.Model.csproj">
+      <Project>{bf7196d2-4d00-40bf-9abc-0bfb4becc592}</Project>
+      <Name>SPlus.Model</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

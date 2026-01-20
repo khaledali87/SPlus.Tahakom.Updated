@@ -1,0 +1,25 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SPlus.DTO
+{
+    public class ApprovalDTO : BaseDTO
+    {
+        public DateTime? DueDate { get; set; }
+        public DateTime? Created { get; set; }
+        public string Justification { get; set; }
+        public string Status { get; set; }
+        public int Type { get; set; }
+        public OrgStructureDTO OrgStructure { get; set; }
+        public UserListDTO OwnerModel { get; set; }
+        public List<AttachmentDTO> Attachments { get; set; }
+        public int BaseWorkflowID { get; set; }
+        public int RequestID { get; set; }
+        public int RequestType { get; set; }
+        public UserListDTO CreatedBy { get; set; }
+
+    }
+}

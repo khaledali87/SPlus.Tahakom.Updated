@@ -1,0 +1,22 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SPlus.Model
+{
+    public class StrategicObjectiveBenefit
+    {
+        public string BenefitID
+        {
+            set;
+            get;
+        }
+        public string StrategicObjectiveID
+        {
+            set;
+            get;
+        }
+    }
+}

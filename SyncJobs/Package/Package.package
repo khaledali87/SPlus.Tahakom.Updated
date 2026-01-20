@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" dslVersion="1.0.0.0" Id="7eb80580-3098-4e42-817a-72f72dfc22f7" solutionId="7eb80580-3098-4e42-817a-72f72dfc22f7" resetWebServer="false" sharePointProductVersion="16.0" name="SyncJobs" xmlns="http://schemas.microsoft.com/VisualStudio/2008/SharePointTools/PackageModel">
+  <assemblies>
+    <customAssembly location="Newtonsoft.Json.dll" deploymentTarget="GlobalAssemblyCache" sourcePath="..\packages\Newtonsoft.Json.12.0.3\lib\net20\Newtonsoft.Json.dll" />
+  </assemblies>
+  <features>
+    <featureReference itemId="c5db5f55-d1d4-4572-a15a-1b190d30ad5b" />
+    <featureReference itemId="59cbe258-1417-4ae0-9d53-b8bf026c701d" />
+    <featureReference itemId="c4da3d26-fb42-4416-99bf-75bc85216000" />
+  </features>
+</package>
