@@ -11,6 +11,7 @@ namespace SPlus.DataAccess
     {
         private readonly EntityModel Context;
         public IRepository<KPI> KPI { get; private set; }
+        public IRepository<Holiday> Holiday { get; private set; }
         public IRepository<KPIComment> KPIComment { get; private set; }
         public IRepository<StrategicObjective> StrategicObjective { get; private set; }
         public IRepository<DivisionalObjective> DivisionalObjective { get;  set; }
@@ -58,6 +59,7 @@ namespace SPlus.DataAccess
             Context = new EntityModel();
 
             KPI = new Repository<KPI>(Context);
+            Holiday = new Repository<Holiday>(Context);
             Perspective = new Repository<Perspective>(Context);
             StrategicObjective = new Repository<StrategicObjective>(Context);
             Theme = new Repository<Theme>(Context);

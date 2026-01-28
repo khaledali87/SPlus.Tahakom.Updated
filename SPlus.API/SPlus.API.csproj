@@ -315,6 +315,7 @@
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\DelegationController.cs" />
     <Compile Include="Controllers\DivisionalObjectiveController.cs" />
+    <Compile Include="Controllers\HolidaysController.cs" />
     <Compile Include="Controllers\StrategyController.cs" />
     <Compile Include="Controllers\PerspectiveController.cs" />
     <Compile Include="Controllers\WeightController.cs" />

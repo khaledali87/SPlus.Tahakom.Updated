@@ -12,10 +12,11 @@ using SPlus.DTO;
 using SPlus.UseCases;
 using StructureMap;
 using SPlus.Helper;
+using SPlus.Model.Domain;
 
 namespace SPlus.API.Controllers
 {
-   [EnableCors(origins: "*", headers: "*", methods: "*")]
+    [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class HandshakeController : ApiController
     {
 
@@ -26,7 +27,7 @@ namespace SPlus.API.Controllers
             HandshakeUseCases = _Container.GetInstance<HandshakeUseCases>();
         }
 
-         [OperationContract]  [DataFormatingInvoker]
+        [OperationContract]  [DataFormatingInvoker]
         //[BasicAuthenticationInvoker(CheckSecurityToken = false)]
         [HttpGet]
         public ResultWrapper<List<LookupDTO>> getHandshake()
@@ -38,7 +39,7 @@ namespace SPlus.API.Controllers
                 List<LookupDTO> lookups = AutoMapper.Mapper.Map<List<LookupDTO>>(res);
                 result.Data = lookups;
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
                 result.Data = null;
                 result.ErrorCode = "0000";

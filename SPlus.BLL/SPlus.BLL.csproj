@@ -139,6 +139,7 @@
   <ItemGroup>
     <Compile Include="BusinessLogic\AttachementBLL.cs" />
     <Compile Include="BusinessLogic\DivisionalObjectiveBLL.cs" />
+    <Compile Include="BusinessLogic\HolidayBLL.cs" />
     <Compile Include="BusinessLogic\KPIBLL.cs" />
     <Compile Include="BusinessLogic\LoggingBLL.cs" />
     <Compile Include="BusinessLogic\KPITypeBLL.cs" />

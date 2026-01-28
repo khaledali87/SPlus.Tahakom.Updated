@@ -33,7 +33,8 @@ namespace SPlus.API.Controllers
         #region Create
 
 
-         [OperationContract]  [DataFormatingInvoker]
+        [OperationContract]  
+        [DataFormatingInvoker]
         [BasicAuthenticationInvoker]
         [HttpPost]
         public ResultWrapper<KPITypeDTO> KPIType(KPITypeDTO kpiType)

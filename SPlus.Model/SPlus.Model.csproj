@@ -71,6 +71,7 @@
     <Compile Include="Domain\EmailTemplate.cs" />
     <Compile Include="Domain\Exception.cs" />
     <Compile Include="Domain\Group.cs" />
+    <Compile Include="Domain\Holiday.cs" />
     <Compile Include="Domain\KPI.cs" />
     <Compile Include="Domain\KPIAffect.cs" />
     <Compile Include="Domain\KPIComment.cs" />

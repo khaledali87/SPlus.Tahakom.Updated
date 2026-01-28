@@ -10,6 +10,7 @@ namespace SPlus.DataAccess
     public interface IUnitOfWork : IDisposable
     {
         IRepository<KPI> KPI { get; }
+        IRepository<Holiday> Holiday { get; }
         IRepository<StrategicObjective> StrategicObjective { get; }
 
         IRepository<DivisionalObjective> DivisionalObjective { get; }

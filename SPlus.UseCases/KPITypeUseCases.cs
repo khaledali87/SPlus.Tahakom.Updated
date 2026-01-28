@@ -79,4 +79,58 @@ namespace SPlus.UseCases
 
         #endregion
     }
+
+    public class HolidayUseCases : LoggingUseCases
+    {
+        Container _Container = IOC.InitializeContainer();
+        private readonly HolidayBLL HolidayBLL;
+        public HolidayUseCases()
+        {
+            HolidayBLL = _Container.GetInstance<HolidayBLL>();
+        }
+
+        #region Create
+        public Holiday Create(Holiday holiday)
+        {
+            return HolidayBLL.Create(holiday);
+        }
+
+        #endregion
+
+        #region Read
+        public List<Holiday> Read()
+        {
+            return HolidayBLL.Read();
+
+        }
+
+        public Holiday Read(int id)
+        {
+            return HolidayBLL.ReadById(id);
+        }
+
+        #endregion
+
+        #region Update
+
+        public Holiday Update(Holiday holiday)
+        {
+            return HolidayBLL.Update(holiday); ;
+        }
+
+        public bool UpdateStatus(int id , bool active)
+        {
+            return HolidayBLL.UpdateStatus(id, active); ;
+        }
+
+        #endregion
+
+        #region Delete
+        public bool Delete(int id)
+        {
+           return HolidayBLL.Delete(id);
+        }
+
+        #endregion
+    }
 }

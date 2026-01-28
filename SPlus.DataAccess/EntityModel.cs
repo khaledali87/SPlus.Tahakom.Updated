@@ -18,6 +18,7 @@ namespace SPlus.DataAccess
 
         #region DBSets
         public virtual DbSet<Attachment> Attachements { get; set; }
+        public virtual DbSet<Holiday> Holidays { get; set; }
         public virtual DbSet<AuditTrail> AuditTrails { get; set; }
         public virtual DbSet<Model.Domain.Configuration> Configurations { get; set; }
         public virtual DbSet<Delegation> Delegations { get; set; }

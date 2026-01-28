@@ -439,7 +439,7 @@ namespace SPlus.BLL
                      .IncludeOptimized(a => a.DivisionalObjective)
                     .IncludeOptimizedByPath("DivisionalObjective.OrgStructure");
                 List<KPI> finalKPIs = new List<KPI>();
-                MapKPIProperties(kpis.ToList(), false);
+                MapKPIProperties(kpis.ToList(), true);
 
                 foreach (KPI kpi in kpis)
                 {

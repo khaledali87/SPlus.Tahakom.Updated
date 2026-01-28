@@ -15,4 +15,5 @@ namespace SPlus.Model.Domain
         public DateTime Modified { get; set; }
         public DateTime Created { get; set; }
     }
+
 }
