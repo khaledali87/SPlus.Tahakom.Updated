@@ -2881,11 +2881,12 @@ namespace SPlus.BLL
 
                 //    kpi.KPIMeasures.Where(w => w.Status != "NA" && w.DueDate.Date<DateTime.Now.Date).OrderByDescending(a => a.DueDate).FirstOrDefault()
 
-                kpi.Target = kpi.KPIMeasures.Where(w => w.Status != "NA" && w.DueDate.Month < DateTime.Now.Month).OrderByDescending(a => a.DueDate).FirstOrDefault()?.Target ?? 0;
+                int kpiYear = kpi.StartDate.Year;
+                kpi.Target = kpi.KPIMeasures.Where(w => w.Status != "NA" && w.DueDate.Month < (kpiYear < DateTime.Now.Year ? new DateTime(kpiYear, 12, 31).Month : DateTime.Now.Month)).OrderByDescending(a => a.DueDate).FirstOrDefault()?.Target ?? 0;
                 //Changed Status to always take AccumulutiveStatus to effect all system without changing FE on all system, if you want the Periodic status you need to access it from the KPI Measures 
-                kpi.Status = kpi.KPIMeasures.Where(w => w.Status != "NA" && w.DueDate.Month < DateTime.Now.Month).OrderByDescending(a => a.DueDate).FirstOrDefault()?.AccumulutiveStatus ?? "NA";
-                kpi.AccumulutiveStatus = kpi.KPIMeasures.Where(w => w.Status != "NA" && w.DueDate.Month < DateTime.Now.Month).OrderByDescending(a => a.DueDate).FirstOrDefault()?.AccumulutiveStatus ?? "NA";
-                kpi.OutOfTarget = kpi.KPIMeasures.Where(w => w.Status != "NA" && w.DueDate.Month < DateTime.Now.Month).OrderByDescending(a => a.DueDate).FirstOrDefault()?.OutOfTarget ?? 0;
+                kpi.Status = kpi.KPIMeasures.Where(w => w.Status != "NA" && w.DueDate.Month < (kpiYear < DateTime.Now.Year ? new DateTime(kpiYear, 12, 31).Month : DateTime.Now.Month)).OrderByDescending(a => a.DueDate).FirstOrDefault()?.AccumulutiveStatus ?? "NA";
+                kpi.AccumulutiveStatus = kpi.KPIMeasures.Where(w => w.Status != "NA" && w.DueDate.Month < (kpiYear < DateTime.Now.Year ? new DateTime(kpiYear, 12, 31).Month : DateTime.Now.Month)).OrderByDescending(a => a.DueDate).FirstOrDefault()?.AccumulutiveStatus ?? "NA";
+                kpi.OutOfTarget = kpi.KPIMeasures.Where(w => w.Status != "NA" && w.DueDate.Month < (kpiYear < DateTime.Now.Year ? new DateTime(kpiYear, 12, 31).Month : DateTime.Now.Month)).OrderByDescending(a => a.DueDate).FirstOrDefault()?.OutOfTarget ?? 0;
                 if (kpi.OutOfTarget > 100)
                 {
                     kpi.OutOfTarget = 100;
@@ -2894,7 +2895,7 @@ namespace SPlus.BLL
                 {
                     kpi.OutOfTarget = 0;
                 }
-                kpi.AccumulutiveOutOfTarget = kpi.KPIMeasures.Where(w => w.Status != "NA" && w.DueDate.Month < DateTime.Now.Month).OrderByDescending(a => a.DueDate).FirstOrDefault()?.AccumulutiveOutOfTarget ?? 0;
+                kpi.AccumulutiveOutOfTarget = kpi.KPIMeasures.Where(w => w.Status != "NA" && w.DueDate.Month < (kpiYear < DateTime.Now.Year ? new DateTime(kpiYear, 12, 31).Month : DateTime.Now.Month)).OrderByDescending(a => a.DueDate).FirstOrDefault()?.AccumulutiveOutOfTarget ?? 0;
                 if (kpi.AccumulutiveOutOfTarget > 100)
                 {
                     kpi.AccumulutiveOutOfTarget = 100;
@@ -2903,10 +2904,47 @@ namespace SPlus.BLL
                 {
                     kpi.AccumulutiveOutOfTarget = 0;
                 }
-                kpi.Value = kpi.KPIMeasures.Where(w => w.Status != "NA" && w.DueDate.Month < DateTime.Now.Month).OrderByDescending(a => a.DueDate).FirstOrDefault()?.Value ?? 0;
+                kpi.Value = kpi.KPIMeasures.Where(w => w.Status != "NA" && w.DueDate.Month < (kpiYear < DateTime.Now.Year ? new DateTime(kpiYear, 12, 31).Month : DateTime.Now.Month)).OrderByDescending(a => a.DueDate).FirstOrDefault()?.Value ?? 0;
 
             }
         }
+
+        //private void MapKPIProperties_Prev(List<KPI> kpis)
+        //{
+        //    kpis = GetKPIsActiveMeasures(kpis).ToList();
+        //    foreach (var kpi in kpis)
+        //    {
+        //        if (kpi.Direction == null)
+        //            kpi.Direction = "Same";
+
+        //        //    kpi.KPIMeasures.Where(w => w.Status != "NA" && w.DueDate.Date<DateTime.Now.Date).OrderByDescending(a => a.DueDate).FirstOrDefault()
+
+        //        kpi.Target = kpi.KPIMeasures.Where(w => w.Status != "NA" && w.DueDate.Month < DateTime.Now.Month).OrderByDescending(a => a.DueDate).FirstOrDefault()?.Target ?? 0;
+        //        //Changed Status to always take AccumulutiveStatus to effect all system without changing FE on all system, if you want the Periodic status you need to access it from the KPI Measures 
+        //        kpi.Status = kpi.KPIMeasures.Where(w => w.Status != "NA" && w.DueDate.Month < DateTime.Now.Month).OrderByDescending(a => a.DueDate).FirstOrDefault()?.AccumulutiveStatus ?? "NA";
+        //        kpi.AccumulutiveStatus = kpi.KPIMeasures.Where(w => w.Status != "NA" && w.DueDate.Month < DateTime.Now.Month).OrderByDescending(a => a.DueDate).FirstOrDefault()?.AccumulutiveStatus ?? "NA";
+        //        kpi.OutOfTarget = kpi.KPIMeasures.Where(w => w.Status != "NA" && w.DueDate.Month < DateTime.Now.Month).OrderByDescending(a => a.DueDate).FirstOrDefault()?.OutOfTarget ?? 0;
+        //        if (kpi.OutOfTarget > 100)
+        //        {
+        //            kpi.OutOfTarget = 100;
+        //        }
+        //        else if (kpi.OutOfTarget < 0)
+        //        {
+        //            kpi.OutOfTarget = 0;
+        //        }
+        //        kpi.AccumulutiveOutOfTarget = kpi.KPIMeasures.Where(w => w.Status != "NA" && w.DueDate.Month < DateTime.Now.Month).OrderByDescending(a => a.DueDate).FirstOrDefault()?.AccumulutiveOutOfTarget ?? 0;
+        //        if (kpi.AccumulutiveOutOfTarget > 100)
+        //        {
+        //            kpi.AccumulutiveOutOfTarget = 100;
+        //        }
+        //        else if (kpi.AccumulutiveOutOfTarget < 0)
+        //        {
+        //            kpi.AccumulutiveOutOfTarget = 0;
+        //        }
+        //        kpi.Value = kpi.KPIMeasures.Where(w => w.Status != "NA" && w.DueDate.Month < DateTime.Now.Month).OrderByDescending(a => a.DueDate).FirstOrDefault()?.Value ?? 0;
+
+        //    }
+        //}
         public decimal? CalculateKPIPerformace(List<KPI> kpis)
         {
             decimal? performance;
@@ -2981,13 +3019,27 @@ namespace SPlus.BLL
         //        performance = null;
         //    return performance;
         //}
+        //public decimal? CalculateKPIPerformace_Prev(List<KPI> kpis)
+        //{
+        //    decimal? performance;
+        //    MapKPIProperties_Prev(kpis);
+        //    if (kpis.Count() > 0 && kpis.Where(w => w.KPIMeasures.Any(a => a.Status != "NA" &&a.DueDate.Month < DateTime.Now.Month)).Count() > 0 && kpis.Where(w => w.KPIMeasures.Any(a => a.Status != "NA" && a.DueDate.Month < DateTime.Now.Month)).Sum(s => s.Weight) > 0)
+        //        performance = Math.Round(kpis.Where(w => w.KPIMeasures.Any(a => a.Status != "NA" && a.DueDate.Month < DateTime.Now.Month)).Sum(s => (s.AccumulutiveOutOfTarget) * s.Weight) / kpis.Where(w => w.KPIMeasures.Any(a => a.Status != "NA" && a.DueDate.Month < DateTime.Now.Month)).Sum(s => s.Weight), 2);
+
+        //    else
+        //        performance = null;
+        //    return performance;
+        //}
+
+
         public decimal? CalculateKPIPerformace_Prev(List<KPI> kpis)
         {
             decimal? performance;
             MapKPIProperties_Prev(kpis);
-            if (kpis.Count() > 0 && kpis.Where(w => w.KPIMeasures.Any(a => a.Status != "NA" &&a.DueDate.Month < DateTime.Now.Month)).Count() > 0 && kpis.Where(w => w.KPIMeasures.Any(a => a.Status != "NA" && a.DueDate.Month < DateTime.Now.Month)).Sum(s => s.Weight) > 0)
-                performance = Math.Round(kpis.Where(w => w.KPIMeasures.Any(a => a.Status != "NA" && a.DueDate.Month < DateTime.Now.Month)).Sum(s => (s.AccumulutiveOutOfTarget) * s.Weight) / kpis.Where(w => w.KPIMeasures.Any(a => a.Status != "NA" && a.DueDate.Month < DateTime.Now.Month)).Sum(s => s.Weight), 2);
-
+            if (kpis.Count() > 0 && kpis.Where(w => w.KPIMeasures.Any(a => a.Status != "NA" && a.DueDate.Month < (w.StartDate.Year < DateTime.Now.Year ? new DateTime(w.StartDate.Year, 12, 31).Month : DateTime.Now.Month))).Count() > 0 && kpis.Where(w => w.KPIMeasures.Any(a => a.Status != "NA" && a.DueDate.Month < (w.StartDate.Year < DateTime.Now.Year ? new DateTime(w.StartDate.Year, 12, 31).Month : DateTime.Now.Month))).Sum(s => s.Weight) > 0)
+                performance = Math.Round(kpis.Where(w => w.KPIMeasures.Any(a => a.Status != "NA" && a.DueDate.Month < (w.StartDate.Year < DateTime.Now.Year ? new DateTime(w.StartDate.Year, 12, 31).Month : DateTime.Now.Month))).Sum(s => (s.AccumulutiveOutOfTarget) * s.Weight)
+  / kpis.Where(w => w.KPIMeasures.Any(a => a.Status != "NA" && a.DueDate.Month < (w.StartDate.Year < DateTime.Now.Year ? new DateTime(w.StartDate.Year, 12, 31).Month : DateTime.Now.Month))).Sum(s => s.Weight), 2);
+            // kpis.Sum(s => s.Weight), 2);
             else
                 performance = null;
             return performance;
@@ -2996,13 +3048,28 @@ namespace SPlus.BLL
         {
             decimal? performance;
             MapKPIProperties_Prev(kpis);
-            if (kpis.Count() > 0 && kpis.Where(w => w.KPIMeasures.Any(a => a.Status != "NA" && a.DueDate.Month < DateTime.Now.Month)).Count() > 0 && kpis.Where(w => w.KPIMeasures.Any(a => a.Status != "NA" && a.DueDate.Month < DateTime.Now.Month)).Sum(s => s.BusinessUnitWeight) > 0)
-                performance = Math.Round(kpis.Where(w => w.KPIMeasures.Any(a => a.Status != "NA" && a.DueDate.Month < DateTime.Now.Month)).Sum(s => (s.AccumulutiveOutOfTarget) * s.BusinessUnitWeight) / kpis.Where(w => w.KPIMeasures.Any(a => a.Status != "NA" && a.DueDate.Month < DateTime.Now.Month)).Sum(s => s.BusinessUnitWeight), 2);
+
+            if (kpis.Count() > 0 && kpis.Where(w => w.KPIMeasures.Any(a => a.Status != "NA" && a.DueDate.Month < (w.StartDate.Year < DateTime.Now.Year ? new DateTime(w.StartDate.Year, 12, 31).Month : DateTime.Now.Month))).Count() > 0 && kpis.Where(w => w.KPIMeasures.Any(a => a.Status != "NA" && a.DueDate.Month < (w.StartDate.Year < DateTime.Now.Year ? new DateTime(w.StartDate.Year, 12, 31).Month : DateTime.Now.Month))).Sum(s => s.BusinessUnitWeight) > 0)
+                performance = Math.Round(kpis.Where(w => w.KPIMeasures.Any(a => a.Status != "NA" && a.DueDate.Month < (w.StartDate.Year < DateTime.Now.Year ? new DateTime(w.StartDate.Year, 12, 31).Month : DateTime.Now.Month))).Sum(s => (s.AccumulutiveOutOfTarget) * s.BusinessUnitWeight)
+                / kpis.Where(w => w.KPIMeasures.Any(a => a.Status != "NA" && a.DueDate.Month < (w.StartDate.Year < DateTime.Now.Year ? new DateTime(w.StartDate.Year, 12, 31).Month : DateTime.Now.Month))).Sum(s => s.BusinessUnitWeight), 2);
+
+            //kpis.Sum(s => s.BusinessUnitWeight), 2);
 
             else
                 performance = null;
             return performance;
         }
+        //public decimal? CalculateDepartmentalKPIPerformace_Prev(List<KPI> kpis)
+        //{
+        //    decimal? performance;
+        //    MapKPIProperties_Prev(kpis);
+        //    if (kpis.Count() > 0 && kpis.Where(w => w.KPIMeasures.Any(a => a.Status != "NA" && a.DueDate.Month < DateTime.Now.Month)).Count() > 0 && kpis.Where(w => w.KPIMeasures.Any(a => a.Status != "NA" && a.DueDate.Month < DateTime.Now.Month)).Sum(s => s.BusinessUnitWeight) > 0)
+        //        performance = Math.Round(kpis.Where(w => w.KPIMeasures.Any(a => a.Status != "NA" && a.DueDate.Month < DateTime.Now.Month)).Sum(s => (s.AccumulutiveOutOfTarget) * s.BusinessUnitWeight) / kpis.Where(w => w.KPIMeasures.Any(a => a.Status != "NA" && a.DueDate.Month < DateTime.Now.Month)).Sum(s => s.BusinessUnitWeight), 2);
+
+        //    else
+        //        performance = null;
+        //    return performance;
+        //}
 
         public List<KPI> KPIUpdateReminder()
         {
