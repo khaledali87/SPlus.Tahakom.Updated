@@ -934,7 +934,6 @@ namespace SPlus.BLL
                         measure.Modified = DateTime.Now;
                         measure.KPIID = kpi.ID;
                         measure.CalculationMethod = kpi.CalculationMethod;
-
                         SummedTargets += measure.Target;
                         PeriodCount++;
                         AverageTargets = SummedTargets / PeriodCount;

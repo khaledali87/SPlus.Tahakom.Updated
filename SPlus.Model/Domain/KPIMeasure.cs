@@ -32,6 +32,8 @@ namespace SPlus.Model.Domain
         public decimal? AccumulutiveTarget { get; set; }
         public string AccumulutiveStatus { get; set; }
 
+        public bool HasNoTarget { get; set; } = false; 
+
         [NotMapped]
         public bool IsEditable { get; set; }
         public int CalculationMethod { get; set; }

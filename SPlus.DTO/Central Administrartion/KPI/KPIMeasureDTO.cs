@@ -24,6 +24,7 @@ namespace SPlus.DTO
         public decimal? AccumulutiveTarget { get; set; }
         public string AccumulutiveStatus { get; set; }
         public bool IsEditable { get; set; }
+        public bool? HasNoTarget { get; set; } 
         public int CalculationMethod { get; set; }
         
     }
