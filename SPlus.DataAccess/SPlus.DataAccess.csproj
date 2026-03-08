@@ -684,6 +684,10 @@
     <Compile Include="Migrations\202503061249505_Rollback-DecimalPrecision.Designer.cs">
       <DependentUpon>202503061249505_Rollback-DecimalPrecision.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202603030824162_HasNoTargetMeasure.cs" />
+    <Compile Include="Migrations\202603030824162_HasNoTargetMeasure.Designer.cs">
+      <DependentUpon>202603030824162_HasNoTargetMeasure.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="EntityModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -1166,6 +1170,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202503061249505_Rollback-DecimalPrecision.resx">
       <DependentUpon>202503061249505_Rollback-DecimalPrecision.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202603030824162_HasNoTargetMeasure.resx">
+      <DependentUpon>202603030824162_HasNoTargetMeasure.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

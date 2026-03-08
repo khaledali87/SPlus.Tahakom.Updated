@@ -55,6 +55,33 @@ namespace SPlus.API.Controllers
 
         [OperationContract]
         [DataFormatingInvoker]
+        //[BasicAuthenticationInvoker(CheckSecurityToken = false)]
+        [HttpGet]
+        [Route("Holidays/HolidayDays")]
+        public ResultWrapper<List<DateTime>> HolidayDays()
+        {
+            ResultWrapper<List<DateTime>> result = new ResultWrapper<List<DateTime>>();
+            try
+            {
+                result.Data = HolidayUseCases.HolidayDays();
+            }
+            catch (System.Exception ex)
+            {
+                result.Data = null;
+                result.ErrorCode = "0000";
+                result.StatusCode = "fail";
+                if (Constants._Error)
+                    result.StatusMessage = ex.Message;
+                else
+                    result.StatusCode = "An error has occured";
+            }
+
+            return result;
+        }
+
+
+        [OperationContract]
+        [DataFormatingInvoker]
         [BasicAuthenticationInvoker]
         [HttpPost]
         public ResultWrapper<Holiday> CreateHoliday(Holiday Holiday)

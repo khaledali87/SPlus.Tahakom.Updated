@@ -38,7 +38,7 @@ namespace SPlus.API.Controllers
         }
         #region Create
 
-         [OperationContract]  [DataFormatingInvoker]
+        [OperationContract]  [DataFormatingInvoker]
         [BasicAuthenticationInvoker]
         [HttpPost]
         [Route("UpdateKPIValue")]
@@ -76,7 +76,44 @@ namespace SPlus.API.Controllers
             return result;
         }
 
+        [OperationContract]
+        [DataFormatingInvoker]
+        [BasicAuthenticationInvoker]
+        [HttpPost]
+        [Route("ReUpdateKPIValue")]
+        public ResultWrapper<bool> ReUpdateKPIValue(List<SaveWFFormUpdateKPIDTO> WFFormUpdateKPIs)
+        {
+            ResultWrapper<bool> result = new ResultWrapper<bool>();
+            IEnumerable<string> Token;
+            if (Request.Headers.TryGetValues("Token", out Token))
+            {
+                var Credential = Encryption.GetCredentialsFromSecurityToken(Token.FirstOrDefault().ToString());
+                try
+                {
+                    result.Data = RequestUseCases.ReUpdateKPIValue(WFFormUpdateKPIs, Credential);
+                    Task.Run(async () => { await RequestUseCases.Log(Token, "Submit", AuditTrailActionENums.Workflow); });
 
+                }
+
+                catch (Exception ex)
+                {
+                    result.Data = false;
+                    result.ErrorCode = "0000";
+                    result.StatusCode = "fail";
+                    if (Constants._Error)
+                        result.StatusMessage = ex.Message;
+                    else
+                        result.StatusCode = "An error has occured";
+                    if (ex.InnerException == null)
+                        RequestUseCases.CreateException("Exception", GetType().Name, ex.Message, System.Reflection.MethodBase.GetCurrentMethod().Name);
+                    else if (ex.InnerException.InnerException == null)
+                        RequestUseCases.CreateException("Exception", GetType().Name, ex.InnerException.Message, System.Reflection.MethodBase.GetCurrentMethod().Name);
+                    else
+                        RequestUseCases.CreateException("Exception", GetType().Name, ex.InnerException.InnerException.Message, System.Reflection.MethodBase.GetCurrentMethod().Name);
+                }
+            }
+            return result;
+        }
 
         [OperationContract]
         [DataFormatingInvoker]

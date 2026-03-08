@@ -5,6 +5,7 @@ using StructureMap;
 
 using SPlus.DataAccess;
 using SPlus.Model.Domain;
+using System.Runtime.Remoting.Contexts;
 
 namespace SPlus.BLL
 {
@@ -31,6 +32,24 @@ namespace SPlus.BLL
                 return holidays.ToList();
             }
         }
+
+        public List<DateTime> HolidayDays()
+        {
+            using (var dataAccess = _factory.Create())
+            {
+                var holidayDays = dataAccess.Holiday.Query(h => h.IsActive == true)
+                   .AsEnumerable()
+                   .SelectMany(h => Enumerable.Range(0, (h.EndDate - h.StartDate).Days + 1)
+                       .Select(d => h.StartDate.AddDays(d).Date))
+                   .Distinct()
+                   .ToList();
+
+                return holidayDays.ToList();
+            }
+        }
+
+       
+
 
         public Holiday ReadById(int id)
         {

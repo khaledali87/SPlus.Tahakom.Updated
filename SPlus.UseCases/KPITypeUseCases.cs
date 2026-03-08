@@ -2,6 +2,7 @@
 using SPlus.DTO;
 using SPlus.Model.Domain;
 using StructureMap;
+using System;
 using System.Collections.Generic;
 
 namespace SPlus.UseCases
@@ -101,6 +102,12 @@ namespace SPlus.UseCases
         public List<Holiday> Read()
         {
             return HolidayBLL.Read();
+
+        }
+
+        public List<DateTime> HolidayDays()
+        {
+            return HolidayBLL.HolidayDays();
 
         }
 

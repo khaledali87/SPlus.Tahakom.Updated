@@ -705,6 +705,201 @@ namespace SPlus.UseCases
             return true;
         }
 
+        public bool ReUpdateKPIValue(List<SaveWFFormUpdateKPIDTO> forms, string[] Credential)
+        {
+
+            string UserName;
+            string DelegationUserName;
+            if (Credential.Count() != 4)
+            {
+                //UserName = Credential[0];
+                if (Credential[2] != "")
+                    UserName = Credential[2];
+                else
+                    UserName = Credential[0];
+                DelegationUserName = Credential[0];
+            }
+            else
+            {
+                if (Credential[2] != "")
+                    UserName = Credential[2];
+                else
+                    UserName = Credential[0];
+                DelegationUserName = Credential[0];
+            }
+
+            KPI kpi = KPIBLL.GetKPIByMeasureID(forms.FirstOrDefault().RelatedID, UserName);
+
+            List<KPIType> types = KPITypeBLL.Read();
+            int requestID = 0;
+            int currentRequestID = 0;
+            if (kpi.Champion.ToLower() == UserName.ToLower() || kpi.Champion.ToLower() == DelegationUserName.ToLower())
+            {
+                if (kpi != null)
+                {
+                    if (kpi.KPIType != null)
+                    {
+                        int workflowID = 103;
+                        List<Group> groups = UserBLL.ReadGroup();
+                        var form = forms.FirstOrDefault();
+                        
+                            string formula = kpi.Formula;
+
+
+                            #region Calculate Semi-Auto Value
+                            if (kpi.DataSource == "semi-auto" || kpi.DataSource == "auto")
+                            {
+                                //kpi.Parameters= kpi.Parameters.ToList().Sort((a, b) => b.ParameterName.Length.CompareTo(a.ParameterName.Length));
+                                if (kpi.Parameters != null && kpi.Parameters.Count() > 0 && form.Parameters != null && form.Parameters.Count() > 0)
+                                {
+                                    form.Parameters.Sort((a, b) => b.ParameterName.Length.CompareTo(a.ParameterName.Length));
+                                    foreach (var parameter in form.Parameters)
+                                    {
+                                        if (parameter.IsConstant)
+                                        {
+                                            formula = formula.Replace(parameter.ParameterName, kpi.Parameters.Where(a => a.ParameterName == parameter.ParameterName).FirstOrDefault()?.ConstantValue.ToString());
+                                        }
+                                        else
+                                            formula = formula.Replace(parameter.ParameterName, parameter.Value.ToString());
+                                    }
+                                }
+                                else
+                                {
+                                    throw new System.Exception("This KPI Does not have Parameters While it's Semi-Auto.");
+                                }
+                                form.Value = CalculateFormula(formula);
+                                //form.Value = KPIBLL.CalculatePeriodActual(kpi.KPIMeasures.FirstOrDefault(f => f.ID == form.RelatedID), kpi, true);
+                            }
+
+                            #endregion
+
+                            form.Type = (int)LevelTypeEnum.KPI;
+                            //form.BaseWorkflowID = (int)EnumWFBaseWorkflows.Update;
+
+                            form.Value = form.Value.TrimDecimal();
+                            string formPayload = JsonConvert.SerializeObject(form);
+
+                            List<Request> currentRequests = RequestBLL.GetRequestsByFormRelatedID(form.RelatedID, LevelTypeEnum.KPI, EnumWFBaseWorkflows.Update); //RequestBLL.GetRequestsByFormRelatedID(form.RelatedID, (int)LevelTypeEnum.KPI);
+                            if (currentRequests != null && currentRequests.Count() > 0)
+                            {
+                                currentRequestID = currentRequests.LastOrDefault().ID;
+                                KPIBLL.UpdateMeasureAllowUpdate(form.RelatedID, false);
+                                requestID = RequestBLL.Submit(formPayload, kpi, currentRequestID, groups, UserName, DelegationUserName, workflowID, (int)LevelTypeEnum.KPI, true);
+                                AttachmentBLL.DeleteOldRequestAttachment(requestID);
+                            }
+
+                            else
+                            {
+                                Request request = new Request();
+                                if (form.RelatedID == forms.FirstOrDefault().RelatedID)
+                                {
+                                    //First measure
+                                    KPIBLL.UpdateMeasureAllowUpdate(form.RelatedID, false);
+                                    var currentKPI = KPIBLL.GetKPIByMeasureID(form.RelatedID, UserName);
+                                    bool IsActive = true;
+                                    if (currentKPI != null)
+                                    {
+                                        var KPIRequests = RequestBLL.GetLevelPendingRequest(currentKPI.KPIMeasures.Select(s => s.ID).ToList(), LevelTypeEnum.KPI);
+                                        if (KPIRequests.Any())
+                                        {
+                                            IsActive = false;
+                                            requestID = RequestBLL.Submit(formPayload, kpi, currentRequestID, groups, UserName, DelegationUserName, workflowID, (int)LevelTypeEnum.KPI, IsActive, KPIRequests.LastOrDefault().ID);
+                                        }
+                                        else
+                                        {
+                                            requestID = RequestBLL.Submit(formPayload, kpi, currentRequestID, groups, UserName, DelegationUserName, workflowID, (int)LevelTypeEnum.KPI, IsActive);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        requestID = RequestBLL.Submit(formPayload, kpi, currentRequestID, groups, UserName, DelegationUserName, workflowID, (int)LevelTypeEnum.KPI, IsActive);
+                                    }
+                                }
+                                else
+                                {
+                                    currentRequestID = 0;
+                                    KPIBLL.UpdateMeasureAllowUpdate(form.RelatedID, false);
+                                    var currentKPI = KPIBLL.GetKPIByMeasureID(form.RelatedID, UserName);
+                                    bool IsActive = true;
+                                    if (currentKPI != null)
+                                    {
+                                        var KPIRequests = RequestBLL.GetLevelPendingRequest(currentKPI.KPIMeasures.Select(s => s.ID).ToList(), LevelTypeEnum.KPI);
+                                        if (KPIRequests.Any())
+                                        {
+                                            IsActive = false;
+                                            requestID = RequestBLL.Submit(formPayload, kpi, currentRequestID, groups, UserName, DelegationUserName, workflowID, (int)LevelTypeEnum.KPI, IsActive, KPIRequests.LastOrDefault().ID);
+                                        }
+                                        else
+                                        {
+                                            requestID = RequestBLL.Submit(formPayload, kpi, currentRequestID, groups, UserName, DelegationUserName, workflowID, (int)LevelTypeEnum.KPI, IsActive);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        requestID = RequestBLL.Submit(formPayload, kpi, currentRequestID, groups, UserName, DelegationUserName, workflowID, (int)LevelTypeEnum.KPI, false, requestID);
+                                    }
+                                }
+
+                            }
+
+
+
+
+
+
+                            // Request request = new Request();
+
+                            //form.Value = form.Value.TrimDecimal();
+
+                            //if (form.RelatedID == forms.FirstOrDefault().RelatedID)
+                            //{
+                            //    //First measure
+                            //    KPIBLL.UpdateMeasureAllowUpdate(form.RelatedID, false);
+                            //    requestID = RequestBLL.Submit(formPayload, kpi, currentRequestID, groups, UserName, DelegationUserName, workflowID, (int)LevelTypeEnum.KPI, true);
+                            //}
+                            //else
+                            //{
+                            //    KPIBLL.UpdateMeasureAllowUpdate(form.RelatedID, false);
+                            //    requestID = RequestBLL.Submit(formPayload, kpi, currentRequestID, groups, UserName, DelegationUserName, workflowID, (int)LevelTypeEnum.KPI, false, requestID);
+                            //}
+                            if (form.Attachments != null)
+                            {
+                                //Attachment attachment = AutoMapper.Mapper.Map<List<Attachment>>(form.Attachment);
+                                //AttachmentBLL.CreateRequestAttachment(attachment, requestID);
+                                List<Attachment> attachments = AutoMapper.Mapper.Map<List<Attachment>>(form.Attachments);
+                                AttachmentBLL.CreateRequestAttachment_List(attachments, requestID);
+                            }
+                       
+
+                        ValidateRequestSequance(kpi);
+                    }
+                    else
+                    {
+                        //Reflect to measure immediatly as no workflow available
+                        SaveWFFormUpdateKPIDTO form = forms.FirstOrDefault();
+                        
+                            form.Type = (int)LevelTypeEnum.KPI;
+
+                            // var Form = AutoMapper.Mapper.Map<UpdateKPIForm>(form);
+                            UpdateKPIForm updateKPIForm = new UpdateKPIForm();
+                            updateKPIForm.RelatedID = form.RelatedID;
+                            updateKPIForm.OldValue = form.OldValue;
+                            updateKPIForm.Target = form.Target;
+                            updateKPIForm.Value = form.Value;
+                            KPIBLL.UpdateKPIPeriod(updateKPIForm);
+                        
+                    }
+                    Task.Run(() => NotificationConfigurationBLL.SendNotificationWorkflow(kpi.ID, 0, requestID, enumNotificationEventType.Submit, LevelTypeEnum.KPI));
+                }
+            }
+            else
+            {
+                throw new System.Exception("Unauthorized user");
+            }
+
+            return true;
+        }
+
 
         public void ValidateRequestSequance(KPI kpi)
         {
