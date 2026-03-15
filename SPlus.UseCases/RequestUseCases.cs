@@ -98,7 +98,8 @@ namespace SPlus.UseCases
                             dtos.Add(dto);
 
                         }
-                        return dtos.OrderBy(a => ((UpdateKPIForm)a.Form).RelatedID).ToList();
+
+                        return dtos.GroupBy(x=> ((UpdateKPIForm)x.Form).RelatedID).Select(g=> g.OrderByDescending(x=> x.ID).FirstOrDefault()).OrderBy(a => ((UpdateKPIForm)a.Form).RelatedID).ToList();
                     }
                 }
             }
@@ -219,42 +220,57 @@ namespace SPlus.UseCases
 
         }
 
-        public RequestDetailsDTO GetRequestByIDUpdateKPIForm(int requestID, string userName)
+        public List<RequestDetailsDTO> GetRequestByIDUpdateKPIForm(int requestID, string userName)
         {
             var Request = RequestBLL.GetRequestByID(requestID, userName);
             var data = (JObject)JsonConvert.DeserializeObject(Request.Form);
             int Type = data.SelectToken("Type").Value<int>();
+            int RelatedID = data.SelectToken("RelatedID").Value<int>();
+
+
+            List <RequestDetailsDTO> list = new List <RequestDetailsDTO>();
             if (Type == (int)LevelTypeEnum.KPI)
             {
                 UpdateKPIForm form = JsonConvert.DeserializeObject<UpdateKPIForm>(Request.Form);
+                var Requests = RequestBLL.GetRequestsByFormRelatedIDCapital(RelatedID, Type);
+
+
                 KPI kpi = KPIBLL.GetKPIByMeasureID(form.RelatedID, userName);
-                if (kpi != null)
+
+                foreach (var req in Requests)
                 {
-                    //if (kpi.KPIMeasures.Where(a => a.Status != "NA").Count() > 0)
-                    //    form.OldValue = kpi.KPIMeasures.Where(a => a.Status != "NA").FirstOrDefault().Value.Value;
-                    //else
-                    //    form.OldValue = kpi.Baseline;
+                    if (kpi != null)
+                    {
+                        //if (kpi.KPIMeasures.Where(a => a.Status != "NA").Count() > 0)
+                        //    form.OldValue = kpi.KPIMeasures.Where(a => a.Status != "NA").FirstOrDefault().Value.Value;
+                        //else
+                        //    form.OldValue = kpi.Baseline;
 
-                    if (kpi.KPIMeasures.Min(x => x.ID) == form.RelatedID)
-                        form.OldValue = kpi.Baseline;
-                    else
-                        form.OldValue = kpi.KPIMeasures.Where(w => w.ID < form.RelatedID && w.Status != "NA").LastOrDefault()?.Value ?? default;
+                        if (kpi.KPIMeasures.Min(x => x.ID) == form.RelatedID)
+                            form.OldValue = kpi.Baseline;
+                        else
+                            form.OldValue = kpi.KPIMeasures.Where(w => w.ID < form.RelatedID && w.Status != "NA").LastOrDefault()?.Value ?? default;
 
-                    form.Target = kpi.KPIMeasures.Where(a => a.ID == form.RelatedID).FirstOrDefault().Target;
-                    form.Value = form.Value.FormatDecimal();//kpi.KPIMeasures.Where(a => a.ID == form.RelatedID).FirstOrDefault().Value.Value.FormatDecimal();
-                    form.DueDate = kpi.KPIMeasures.Where(a => a.ID == form.RelatedID).FirstOrDefault().DueDate;
-                    form.UnitOfMeasure = kpi.UnitOfMeasure;
-                    form.EnglishUnitDetails = kpi.EnglishUnitDetails;
-                    form.ArabicUnitDetails = kpi.ArabicUnitDetails;
+                        form.Target = kpi.KPIMeasures.Where(a => a.ID == form.RelatedID).FirstOrDefault().Target;
+                        form.Value = form.Value.FormatDecimal();//kpi.KPIMeasures.Where(a => a.ID == form.RelatedID).FirstOrDefault().Value.Value.FormatDecimal();
+                        form.DueDate = kpi.KPIMeasures.Where(a => a.ID == form.RelatedID).FirstOrDefault().DueDate;
+                        form.UnitOfMeasure = kpi.UnitOfMeasure;
+                        form.EnglishUnitDetails = kpi.EnglishUnitDetails;
+                        form.ArabicUnitDetails = kpi.ArabicUnitDetails;
+
+                    }
+                    RequestDetailsDTO requestDTO = AutoMapper.Mapper.Map<RequestDetailsDTO>(Request);
+                    requestDTO.Form = form;
+
+                    list.Add(requestDTO);
 
                 }
-                RequestDetailsDTO requestDTO = AutoMapper.Mapper.Map<RequestDetailsDTO>(Request);
-                requestDTO.Form = form;
-                return requestDTO;
+               
+                return list;
             }
             else
             {
-                return new RequestDetailsDTO();
+                return new List<RequestDetailsDTO>();
             }
         }
 
@@ -774,8 +790,8 @@ namespace SPlus.UseCases
                             #endregion
 
                             form.Type = (int)LevelTypeEnum.KPI;
-                            //form.BaseWorkflowID = (int)EnumWFBaseWorkflows.Update;
-
+                            form.BaseWorkflowID = (int)EnumWFBaseWorkflows.ReUpdate;
+                            form.IsReUpdate = true; 
                             form.Value = form.Value.TrimDecimal();
                             string formPayload = JsonConvert.SerializeObject(form);
 

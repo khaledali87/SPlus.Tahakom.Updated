@@ -215,7 +215,8 @@ namespace SPlus.API.Controllers
 
 
 
-         [OperationContract]  [DataFormatingInvoker]
+        [OperationContract]  
+        [DataFormatingInvoker]
         [BasicAuthenticationInvoker]
         [HttpPost]
         [Route("CreateKPI")]
@@ -453,9 +454,9 @@ namespace SPlus.API.Controllers
         [BasicAuthenticationInvoker]
         [HttpGet]
         [Route("UpdateRequest/{id}")]
-        public ResultWrapper<RequestDetailsDTO> ReadUpdateKPIRequestByID(int id)
+        public ResultWrapper<List<RequestDetailsDTO>> ReadUpdateKPIRequestByID(int id)
         {
-            ResultWrapper<RequestDetailsDTO> result = new ResultWrapper<RequestDetailsDTO>();
+            ResultWrapper<List<RequestDetailsDTO>> result = new ResultWrapper<List<RequestDetailsDTO>>();
             IEnumerable<string> Token;
             if (Request.Headers.TryGetValues("Token", out Token))
             {
@@ -467,7 +468,7 @@ namespace SPlus.API.Controllers
                 }
                 catch (Exception ex)
                 {
-                    result.Data = new RequestDetailsDTO();
+                    result.Data = new List<RequestDetailsDTO>();
                     result.ErrorCode = "0000";
                     result.StatusCode = "fail";
                     result.StatusMessage = ex.Message;
@@ -626,7 +627,7 @@ namespace SPlus.API.Controllers
         }
 
 
-         [OperationContract]  [DataFormatingInvoker]
+        [OperationContract]  [DataFormatingInvoker]
         [BasicAuthenticationInvoker]
         [HttpGet]
         [Route("TaskCenter/MyRequest/{type}")]

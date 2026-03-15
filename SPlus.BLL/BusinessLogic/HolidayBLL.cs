@@ -44,7 +44,7 @@ namespace SPlus.BLL
                    .Distinct()
                    .ToList();
 
-                return holidayDays.ToList();
+                return holidayDays.ToList() ?? new List<DateTime>();
             }
         }
 

@@ -17,6 +17,9 @@ namespace SPlus.DTO
         public decimal OldValue { get; set; }
         public DateTime DueDate { get; set; }
         public decimal Target { get; set; }
+
+        public bool IsReUpdate { get; set; } = false;   
+
         public List<AttachmentDTO> Attachments { get; set; }
         //public AttachmentDTO Attachment { get; set; }
         public WFRequestDTO WFRequest { get; set; }

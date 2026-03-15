@@ -2586,7 +2586,7 @@ namespace SPlus.BLL
             return kpis;
         }
 
-        public bool IsInGracePeriod(KPI kpi)
+        public bool IsInGracePeriod(KPI kpi, List<DateTime> holidays = default)
         {
             if (kpi.KPIType.GracePeriod == 0)
                 return true;
@@ -2595,7 +2595,7 @@ namespace SPlus.BLL
                 KPIMeasure currentMeasure = kpi.KPIMeasures.OrderBy(a => a.ID).Where(a => a.DueDate.Date <= DateTime.Now.Date).LastOrDefault();
                 if (currentMeasure != null)
                 {
-                    var GetEndDateWorkingDays = DateHelper.GetEndDateWorkingDays(currentMeasure.DueDate.Date, kpi.KPIType.GracePeriod);
+                    var GetEndDateWorkingDays = DateHelper.GetEndDateWorkingDays(currentMeasure.DueDate.Date, kpi.KPIType.GracePeriod, holidays);
                     if (DateTime.Now.Date >= currentMeasure.DueDate.Date && DateTime.Now.Date <= GetEndDateWorkingDays.Date)
                         return true;
                     else
@@ -2605,8 +2605,9 @@ namespace SPlus.BLL
             }
         }
 
-        public bool IsInGracePeriod_Rejected(DateTime rejectedDate, KPI kpi)
+        public bool IsInGracePeriod_Rejected(DateTime rejectedDate, KPI kpi , List<DateTime> holidays)
         {
+            
             if (kpi.KPIType.GracePeriod == 0)
                 return true;
             else
@@ -2614,7 +2615,7 @@ namespace SPlus.BLL
                 // KPIMeasure currentMeasure = kpi.KPIMeasures.OrderBy(a => a.ID).Where(a => a.DueDate.Date <= DateTime.Now.Date).LastOrDefault();
                 // if (currentMeasure != null)
                 {
-                    var GetEndDateWorkingDays = DateHelper.GetEndDateWorkingDays(rejectedDate.Date, 2);
+                    var GetEndDateWorkingDays = DateHelper.GetEndDateWorkingDays(rejectedDate.Date, 2 , holidays);
 
                     DateTime endOfDay = GetEndDateWorkingDays.Date.AddDays(1).AddTicks(-1);
 

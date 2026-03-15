@@ -22,6 +22,7 @@ namespace SPlus.UseCases
         private readonly NotificationConfigurationBLL NotificationConfigurationBLL;
         private readonly UserBLL UserBLL;
         private readonly OrgStructureBLL OrgStructureBLL;
+        private readonly HolidayBLL HolidayBLL;
         public KPIUseCases()
         {
             KPIBLL = _Container.GetInstance<KPIBLL>();
@@ -30,6 +31,7 @@ namespace SPlus.UseCases
             UserBLL = _Container.GetInstance<UserBLL>();
             KPITypeBLL = _Container.GetInstance<KPITypeBLL>();
             OrgStructureBLL = _Container.GetInstance<OrgStructureBLL>();
+            HolidayBLL = _Container.GetInstance<HolidayBLL>();
         }
 
         #region Create
@@ -186,6 +188,65 @@ namespace SPlus.UseCases
 
 
                 KPIDetailsDTO KPI = AutoMapper.Mapper.Map<KPIDetailsDTO>(kpi);
+                kpi.KPIMeasures = kpi.KPIMeasures.Where(m => m.HasNoTarget != true).ToList();
+
+                if (KPI.KPIMeasures.Any(e => e.OutOfTarget > 100))
+                {
+                    foreach (var item in KPI.KPIMeasures.Where(e => e.OutOfTarget > 100).ToList())
+                    {
+                        item.OutOfTarget = 100;
+                    }
+                }
+                else if (KPI.KPIMeasures.Any(e => e.OutOfTarget < 0))
+                {
+                    foreach (var item in KPI.KPIMeasures.Where(e => e.OutOfTarget < 100).ToList())
+                    {
+                        item.OutOfTarget = 0;
+                    }
+                }
+                var requests = RequestBLL.GetAllRequests();
+                var definition = new { ID = 0 };
+                if (username.ToLower() == kpi.ChampionModel.UserName.ToLower())
+                {
+
+                    // TO DO AS 
+                    var crRequest = requests.Where(w => JsonConvert.DeserializeAnonymousType(w.Form, definition).ID == id &&
+                               (w.WorkflowID == Convert.ToInt32(ConfigurationManager.AppSettings["KPIChangeRequestWorkflowID"])) &&
+                             (w.Status == (int)EnumWFStatuses.Pending || w.Status == (int)EnumWFStatuses.Return || w.Status == (int)EnumWFStatuses.New)).FirstOrDefault();
+
+                    KPI.CanCR = crRequest is null ? true : false;
+                }
+                else
+                    KPI.CanCR = false;
+
+                return KPI;
+            }
+            return null;
+        }
+
+        public KPIDetailsDTO ReadByIDAdmin(int id, string username)
+        {
+            var kpi = KPIBLL.ReadByID(id, username);
+            if (kpi != null)
+            {
+                var kpiTypes = KPITypeBLL.ReadByIDForKPIDetails(kpi.KPITypeID);
+                kpi.KPIType = kpiTypes;
+                var orgStructures = OrgStructureBLL.Read(username, null);
+
+                if (kpi.OrgStructure != null && kpi.OrgStructure.ParentID.HasValue)
+                {
+                    kpi.OrgStructure = OrgStructureBLL.BuildUpwardTree(kpi.OrgStructure, orgStructures);
+                }
+
+                if (kpi.DivisionalObjective != null && kpi.DivisionalObjective.OrgStructure != null && kpi.DivisionalObjective.OrgStructure.ParentID.HasValue)
+                {
+                    kpi.DivisionalObjective.OrgStructure = OrgStructureBLL.BuildUpwardTree(kpi.DivisionalObjective.OrgStructure, orgStructures);
+                }
+
+
+                KPIDetailsDTO KPI = AutoMapper.Mapper.Map<KPIDetailsDTO>(kpi);
+
+
 
                 if (KPI.KPIMeasures.Any(e => e.OutOfTarget > 100))
                 {
@@ -408,6 +469,9 @@ namespace SPlus.UseCases
             List<Request> requests = RequestBLL.GetRequests(LevelTypeEnum.KPI, EnumWFBaseWorkflows.Update).ToList();
             List<Request> PendingRequests = requests.Where(w => w.Status == (int)EnumWFStatuses.Pending).ToList();
             List<Request> rejectedRequests = requests.Where(w => w.Status == (int)EnumWFStatuses.Rejected).ToList();
+            List<DateTime> holidays = HolidayBLL.HolidayDays();
+
+
             foreach (KPI KPI in kpis)
             {
                 if(KPI.ID== 4296 || KPI.ID == 4297)
@@ -463,7 +527,7 @@ namespace SPlus.UseCases
                         }
                     }
 
-                    if (KPIBLL.IsInGracePeriod(KPI))
+                    if (KPIBLL.IsInGracePeriod(KPI, holidays))
                     {
                         KPI.ManualUnLock = false;
                         KPI.UnlockDate = null;
@@ -482,7 +546,7 @@ namespace SPlus.UseCases
                             else
                             {
                                 var rejectrequest = rejectedRequests.Where(a => KPI.KPIMeasures.Any(measure => measure.ID == a.UpdateKPIForm?.RelatedID)).FirstOrDefault();
-                                if (rejectrequest != null && KPIBLL.IsInGracePeriod_Rejected(rejectrequest.Modified.Date, KPI))
+                                if (rejectrequest != null && KPIBLL.IsInGracePeriod_Rejected(rejectrequest.Modified.Date, KPI , holidays))
                                 {
                                     KPI.IsLocked = false;
                                 }
@@ -505,7 +569,7 @@ namespace SPlus.UseCases
                             else
                             {
                                 var rejectrequest = rejectedRequests.Where(a => KPI.KPIMeasures.Any(measure => measure.ID == a.UpdateKPIForm?.RelatedID)).FirstOrDefault();
-                                if (rejectrequest != null && KPIBLL.IsInGracePeriod_Rejected(rejectrequest.Modified.Date, KPI))
+                                if (rejectrequest != null && KPIBLL.IsInGracePeriod_Rejected(rejectrequest.Modified.Date, KPI, holidays))
                                 {
                                     KPI.IsLocked = false;
                                 }
@@ -536,7 +600,7 @@ namespace SPlus.UseCases
                             else
                             {
                                 var rejectrequest = rejectedRequests.Where(a => KPI.KPIMeasures.Any(measure => measure.ID == a.UpdateKPIForm?.RelatedID)).FirstOrDefault();
-                                if (rejectrequest != null && KPIBLL.IsInGracePeriod_Rejected(rejectrequest.Modified.Date, KPI))
+                                if (rejectrequest != null && KPIBLL.IsInGracePeriod_Rejected(rejectrequest.Modified.Date, KPI, holidays))
                                 {
                                     KPI.IsLocked = false;
                                 }
@@ -559,7 +623,7 @@ namespace SPlus.UseCases
                             else
                             {
                                 var rejectrequest = rejectedRequests.Where(a => KPI.KPIMeasures.Any(measure => measure.ID == a.UpdateKPIForm?.RelatedID)).FirstOrDefault();
-                                if (rejectrequest != null && KPIBLL.IsInGracePeriod_Rejected(rejectrequest.Modified.Date, KPI))
+                                if (rejectrequest != null && KPIBLL.IsInGracePeriod_Rejected(rejectrequest.Modified.Date, KPI, holidays))
                                 {
                                     KPI.IsLocked = false;
                                 }
@@ -717,6 +781,7 @@ namespace SPlus.UseCases
         public void KPIUpdateReminder()
         {
             var kpis = KPIBLL.KPIUpdateReminder();
+            var holidays = HolidayBLL.HolidayDays();
             foreach (KPI kpi in kpis)
             {
                 if (kpi.ID == 62)
@@ -727,7 +792,7 @@ namespace SPlus.UseCases
                 KPIMeasure beforeMeasure = kpi.KPIMeasures.OrderBy(a => a.ID).Where(a => a.DueDate > DateTime.Now.Date).FirstOrDefault();
                 if (beforeMeasure != null)
                 {
-                    if (DateHelper.GetEndDateWorkingDays(DateTime.Now.Date, kpi.KPIType.ReminderConfiguration.BeforeReminder).Date == beforeMeasure.DueDate.Date)
+                    if (DateHelper.GetEndDateWorkingDays(DateTime.Now.Date, kpi.KPIType.ReminderConfiguration.BeforeReminder, holidays).Date == beforeMeasure.DueDate.Date )
                     {
                         //Send Before Reminder
                         Task.Run(() =>
@@ -740,7 +805,7 @@ namespace SPlus.UseCases
                 KPIMeasure currentMeasure = kpi.KPIMeasures.OrderBy(a => a.ID).Where(a => a.DueDate <= DateTime.Now.Date).LastOrDefault();
                 if (currentMeasure != null)
                 {
-                    if (DateHelper.GetEndDateWorkingDays(currentMeasure.DueDate.Date, kpi.KPIType.ReminderConfiguration.FirstReminder).Date == DateTime.Now.Date)
+                    if (DateHelper.GetEndDateWorkingDays(currentMeasure.DueDate.Date, kpi.KPIType.ReminderConfiguration.FirstReminder, holidays).Date == DateTime.Now.Date)
                     {
                         //Send First Reminder
                         Task.Run(() =>
@@ -748,7 +813,7 @@ namespace SPlus.UseCases
                             NotificationConfigurationBLL.SendNotificationWorkflow(kpi.ID, currentMeasure.ID, 0, enumNotificationEventType.UpdateFirstReminder, LevelTypeEnum.KPI, "Reminder");
                         });
                     }
-                    else if (DateHelper.GetEndDateWorkingDays(currentMeasure.DueDate.Date, kpi.KPIType.ReminderConfiguration.SecondReminder).Date == DateTime.Now.Date)
+                    else if (DateHelper.GetEndDateWorkingDays(currentMeasure.DueDate.Date, kpi.KPIType.ReminderConfiguration.SecondReminder, holidays).Date == DateTime.Now.Date)
                     {
                         //Send Second Reminder
                         Task.Run(() =>
@@ -756,7 +821,7 @@ namespace SPlus.UseCases
                             NotificationConfigurationBLL.SendNotificationWorkflow(kpi.ID, currentMeasure.ID, 0, enumNotificationEventType.UpdateSecondReminder, LevelTypeEnum.KPI, "Reminder");
                         });
                     }
-                    else if (DateHelper.GetEndDateWorkingDays(currentMeasure.DueDate.Date, kpi.KPIType.GracePeriod).Date == DateTime.Now.Date)
+                    else if (DateHelper.GetEndDateWorkingDays(currentMeasure.DueDate.Date, kpi.KPIType.GracePeriod, holidays).Date == DateTime.Now.Date)
                     {
                         //Send Second Reminder
                         Task.Run(() =>

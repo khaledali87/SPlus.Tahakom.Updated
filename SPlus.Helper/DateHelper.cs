@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Org.BouncyCastle.Asn1.X509;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,6 +16,18 @@ namespace SPlus.Helper
             {
                 finishDate = finishDate.AddDays(1);
                 if (finishDate.DayOfWeek == DayOfWeek.Friday || finishDate.DayOfWeek == DayOfWeek.Saturday)
+                    Duration = Duration + 1;
+            }
+            return finishDate;
+        }
+
+        static public DateTime GetEndDateWorkingDays(DateTime startDate, int Duration, List<DateTime> holidays = default)
+        {
+            DateTime finishDate = startDate;
+            for (int i = 1; i <= Duration; i++)
+            {
+                finishDate = finishDate.AddDays(1);
+                if (finishDate.DayOfWeek == DayOfWeek.Friday || finishDate.DayOfWeek == DayOfWeek.Saturday || holidays.Any(h => h.Date == finishDate.Date))
                     Duration = Duration + 1;
             }
             return finishDate;

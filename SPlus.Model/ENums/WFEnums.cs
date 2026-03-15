@@ -43,7 +43,7 @@ namespace SPlus.Model
         CreateKPI=7,
         StrategicKPI = 8,
         DepartmentalKPI = 9,
-
+        ReUpdate = 10,
     }
     public enum EnumRequestAction
     {
@@ -85,7 +85,8 @@ namespace SPlus.Model
         KPI,
         All,
         WorkProcedure,
-        MitigationActions
+        MitigationActions,
+        ReUpdate = 8
     }
 
 }

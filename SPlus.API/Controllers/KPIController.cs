@@ -477,7 +477,44 @@ namespace SPlus.API.Controllers
             return result;
         }
 
+        [OperationContract]
+        [BasicAuthenticationInvoker]
+        [DataFormatingInvoker]
+        [HttpGet]
+        [Route("KPI/Admin/{id}")]
+        public ResultWrapper<KPIDetailsDTO> ReadByAdminID(int id)
+        {
+            ResultWrapper<KPIDetailsDTO> result = new ResultWrapper<KPIDetailsDTO>();
+            IEnumerable<string> Token;
+            if (Request.Headers.TryGetValues("Token", out Token))
+            {
+                string userName = Encryption.GetCurrentUser(Token.FirstOrDefault().ToString());
+                try
+                {
+                    var res = KPIUseCases.ReadByID(id, userName);
+                    result.Data = res;
 
+                }
+                catch (Exception ex)
+                {
+                    result.Data = null;
+                    result.ErrorCode = "0000";
+                    result.StatusCode = "fail";
+                    if (Constants._Error)
+                        result.StatusMessage = ex.Message;
+                    else
+                        result.StatusCode = "An error has occured";
+
+                    if (ex.InnerException == null)
+                        KPIUseCases.CreateException("Exception", GetType().Name, ex.Message, System.Reflection.MethodBase.GetCurrentMethod().Name);
+                    else if (ex.InnerException.InnerException == null)
+                        KPIUseCases.CreateException("Exception", GetType().Name, ex.InnerException.Message, System.Reflection.MethodBase.GetCurrentMethod().Name);
+                    else
+                        KPIUseCases.CreateException("Exception", GetType().Name, ex.InnerException.InnerException.Message, System.Reflection.MethodBase.GetCurrentMethod().Name);
+                }
+            }
+            return result;
+        }
 
 
         [OperationContract]

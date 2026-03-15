@@ -364,6 +364,23 @@ namespace SPlus.BLL
             }
         }
 
+        public List<Request> GetRequestsByFormRelatedIDCapital(int relatedID, int type)
+        {
+            using (var dataAccess = _factory.Create())
+            {
+                var definition = new { RelatedID = 0, Type = 0 };
+                List<Request> requests = dataAccess.Request.Query()
+                    .AsNoTracking()
+                    .Include(a => a.RequestSteps)
+                    .ToList();
+
+
+
+                   requests = requests.Where(a => JsonConvert.DeserializeObject<UpdateKPIForm>(a.Form).RelatedID == relatedID && JsonConvert.DeserializeObject<UpdateKPIForm>(a.Form).Type == type).ToList();
+                return requests.OrderBy(a => a.ID).ToList();
+            }
+        }
+
         public List<Request> GetRequestsByFormRelatedID(int relatedID, LevelTypeEnum Level, EnumWFBaseWorkflows enumWFBaseWorkflows)
         {
             using (var dataAccess = _factory.Create())
