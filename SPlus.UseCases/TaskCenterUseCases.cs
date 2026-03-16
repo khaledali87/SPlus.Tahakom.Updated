@@ -99,6 +99,7 @@ namespace SPlus.UseCases
 
             List<MyRequestDTO> ApprovalList_Mitigationtmp = new List<MyRequestDTO>();
             List<MyRequestDTO> ApprovalList_WorkProctmp = new List<MyRequestDTO>();
+            List<MyRequestDTO> ApprovalList_ReUpdatetmp = new List<MyRequestDTO>();
 
             foreach (var step in RequestSteps)
             {
@@ -125,6 +126,7 @@ namespace SPlus.UseCases
                 switch (baseWF)
                 {
                     case (int)EnumWFBaseWorkflows.Update:
+                    case (int)EnumWFBaseWorkflows.ReUpdate:
                     case 0:
                         if (type == (int)LevelTypeEnum.KPI)
                             updateKPIForm = JsonConvert.DeserializeObject<UpdateKPIForm>(step.Request.Form);
@@ -144,6 +146,37 @@ namespace SPlus.UseCases
                 }
 
 
+                if (type == (int)LevelTypeEnum.KPI &&
+                  (baseWF == (int)EnumWFBaseWorkflows.ReUpdate))
+                {
+                    int itemID = updateKPIForm.RelatedID;
+
+                    var kpi = kpis.FirstOrDefault(x => x.KPIMeasures.Any(m => m.ID == itemID));
+                    var measure = kpi.KPIMeasures.FirstOrDefault(x => x.ID == itemID);  
+                    //if (!kpiIndex.TryGetValue(itemID, out var row))
+                    //    continue;
+
+                    myRequest.ID = kpi.ID;
+                    myRequest.EnglishName = kpi.EnglishName;
+                    myRequest.ArabicName = kpi.ArabicName;
+                    myRequest.Type = (int)LevelTypeEnum.KPI;
+                    myRequest.Created = step.Request.Created;
+
+
+                    myRequest.AccumulutiveTarget = measure.AccumulutiveTarget;
+                    myRequest.AccumulutiveValue = measure.AccumulutiveValue;
+
+                    myRequest.OldActualValue = updateKPIForm.OldValue;
+                    myRequest.ActualValue = updateKPIForm.Value;
+
+                    myRequest.CreatedBy = Mapper.Map<UserListDTO>(users.Where(w => w.UserName.ToLower() == kpiChangeRequestFormDTO.CreatedBy.ToLower()).FirstOrDefault());
+                    myRequest.Status = step.Request.Status;
+
+                    ApprovalList_ReUpdatetmp.Add(myRequest);
+
+                    if (taskcentertype == TaskCentreWFTypeEnum.KPI || taskcentertype == TaskCentreWFTypeEnum.All)
+                        MyRequestList.Add(myRequest);
+                }
                 //
                 // ******** Work Procedure (KPI Change Request / Create KPI) ********
                 //
@@ -227,7 +260,7 @@ namespace SPlus.UseCases
 
 
             taskCenter.WorkProcedureCount = ApprovalList_WorkProctmp.Count;
-
+            taskCenter.ReUpdateCount = ApprovalList_ReUpdatetmp.Count;
 
             taskCenter.MitigationActionsCount = ApprovalList_Mitigationtmp.Count;
             taskCenter.Data = MyRequestList.OrderByDescending(o => o.Created).ToList();
@@ -419,6 +452,7 @@ namespace SPlus.UseCases
             List<ApprovalDTO> ApprovalList_Kpitmp = new List<ApprovalDTO>();
             List<ApprovalDTO> ApprovalList_Mitigationtmp = new List<ApprovalDTO>();
             List<ApprovalDTO> ApprovalList_WorkProctmp = new List<ApprovalDTO>();
+            List<ApprovalDTO> ApprovalList_ReUpdatetmp = new List<ApprovalDTO>();
             // ApprovalDTO approval = null;
             AttachmentBLL attachement = new AttachmentBLL();
             TaskCentreWFTypeEnum taskcentertype = (TaskCentreWFTypeEnum)Enum.Parse(typeof(TaskCentreWFTypeEnum), baseworkflow, true);
@@ -456,6 +490,7 @@ namespace SPlus.UseCases
                 switch (baseWF)
                 {
                     case (int)EnumWFBaseWorkflows.Update:
+                    case (int)EnumWFBaseWorkflows.ReUpdate:
                     case 0:
                         if (type == (int)LevelTypeEnum.KPI)
                             updateKPIForm = JsonConvert.DeserializeObject<UpdateKPIForm>(step.Request.Form);
@@ -493,6 +528,37 @@ namespace SPlus.UseCases
                     ApprovalList_Kpitmp.Add(approval);
 
                     if (taskcentertype == TaskCentreWFTypeEnum.KPI || taskcentertype == TaskCentreWFTypeEnum.All)
+                        ApprovalList.Add(approval);
+                }
+
+                if (type == (int)LevelTypeEnum.KPI &&
+                   (baseWF == (int)EnumWFBaseWorkflows.ReUpdate))
+                {
+                    int itemID = updateKPIForm.RelatedID;
+
+                    var kpi = kpis.FirstOrDefault(x => x.KPIMeasures.Any(m => m.ID == itemID));
+                    var measure = kpi.KPIMeasures.FirstOrDefault(x => x.ID == itemID);
+
+                    approval.ID = kpi.ID;
+                    approval.EnglishName = kpi.EnglishName;
+                    approval.ArabicName = kpi.ArabicName;
+                    approval.DueDate = measure?.DueDate;
+                    approval.AccumulutiveTarget = measure.AccumulutiveTarget;
+                    approval.AccumulutiveValue = measure.AccumulutiveValue;
+
+                    approval.OldActualValue = updateKPIForm.OldValue;
+                    approval.ActualValue = updateKPIForm.Value;
+
+                    //approval.CreatedBy = Mapper.Map<UserListDTO>(users.Where(w => w.UserName.ToLower() == kpiChangeRequestFormDTO.CreatedBy.ToLower()).FirstOrDefault());
+
+
+
+                    approval.Status = measure?.AccumulutiveStatus ?? "NA";
+
+                    ApprovalList_ReUpdatetmp.Add(approval);
+
+                    if (taskcentertype == TaskCentreWFTypeEnum.ReUpdate || 
+                        taskcentertype == TaskCentreWFTypeEnum.All)
                         ApprovalList.Add(approval);
                 }
 
@@ -555,6 +621,9 @@ namespace SPlus.UseCases
                     if (taskcentertype == TaskCentreWFTypeEnum.MitigationActions || taskcentertype == TaskCentreWFTypeEnum.All)
                         ApprovalList.Add(approval);
                 }
+
+
+                
             }
 
 
@@ -567,7 +636,8 @@ namespace SPlus.UseCases
             taskCenter.KPICount = ApprovalList_Kpitmp.Count;
             taskCenter.WorkProcedureCount = ApprovalList_WorkProctmp.Count;
             taskCenter.MitigationActionsCount = ApprovalList_Mitigationtmp.Count;
-            taskCenter.AllCount = ApprovalList_Kpitmp.Count + ApprovalList_WorkProctmp.Count + ApprovalList_Mitigationtmp.Count;
+            taskCenter.ReUpdateCount = ApprovalList_ReUpdatetmp.Count;
+            taskCenter.AllCount = ApprovalList_Kpitmp.Count + ApprovalList_WorkProctmp.Count + ApprovalList_ReUpdatetmp.Count + ApprovalList_Mitigationtmp.Count;
 
             //
             // ******** sort & return ********

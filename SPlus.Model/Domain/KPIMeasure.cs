@@ -33,6 +33,7 @@ namespace SPlus.Model.Domain
         public string AccumulutiveStatus { get; set; }
 
         public bool HasNoTarget { get; set; } = false; 
+        public bool IsSkipped { get; set; } = false; 
 
         [NotMapped]
         public bool IsEditable { get; set; }

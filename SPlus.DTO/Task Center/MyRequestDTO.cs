@@ -16,6 +16,13 @@ namespace SPlus.DTO
         public UserListDTO CreatedBy { get; set; }
         public DateTime Created { get; set; }
 
+        public decimal? AccumulutiveTarget { get; set; } = 0;
+        public decimal? AccumulutiveValue { get; set; } = 0;
+
+        public decimal? OldActualValue { get; set; } = 0;
+        public decimal? ActualValue { get; set; } = 0;
+
+
         public UserListDTO OwnerModel { get; set; }
         public AttachmentDTO Attachment { get; set; }
         public OrgStructureDTO OrgStructure { get; set; }

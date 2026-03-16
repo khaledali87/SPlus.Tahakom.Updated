@@ -16,7 +16,9 @@
         public string EnglishUnitDetails { get; set; }
         public string ArabicUnitDetails { get; set; }
         public DateTime DueDate { get; set; }
-        
+        public bool IsReUpdate { get; set; } = false;
+        public bool IsSkipped { get; set; } = false;
+
         public Attachment Attachment { get; set; }
         public List<Attachment> Attachments { get; set; }
         [NotMapped]

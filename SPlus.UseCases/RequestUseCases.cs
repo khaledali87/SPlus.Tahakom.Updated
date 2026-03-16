@@ -393,6 +393,10 @@ namespace SPlus.UseCases
                                     if (form.Parameters != null && form.Parameters.Count() > 0)
                                         ParameterBLL.UpdateParameterValues(form.RelatedID, form.Parameters);
                                     KPIBLL.UpdateKPIPeriod(updateKPIForm);
+                                    if (form.IsSkipped)
+                                    {
+                                        KPIBLL.SetMeasureIsSkipped(form.RelatedID, form.IsSkipped);
+                                    }
                                     kpi = KPIBLL.GetKPIByMeasureID(form.RelatedID, UserName);
                                     var updatedMeasure = kpi.KPIMeasures.Where(w => w.ID == form.RelatedID).FirstOrDefault();
                                     Task.Run(() => NotificationConfigurationBLL.SendNotificationWorkflow(kpi.ID, form.RelatedID, request.ID, enumNotificationEventType.Completed, LevelTypeEnum.KPI));
@@ -564,6 +568,8 @@ namespace SPlus.UseCases
                         forms = forms.OrderBy(o => o.RelatedID).ToList();
                         foreach (SaveWFFormUpdateKPIDTO form in forms)
                         {
+                            
+
                             string formula = kpi.Formula;
 
 
@@ -588,6 +594,7 @@ namespace SPlus.UseCases
                                 {
                                     throw new System.Exception("This KPI Does not have Parameters While it's Semi-Auto.");
                                 }
+                                
                                 form.Value = CalculateFormula(formula);
                                 //form.Value = KPIBLL.CalculatePeriodActual(kpi.KPIMeasures.FirstOrDefault(f => f.ID == form.RelatedID), kpi, true);
                             }

@@ -19,6 +19,12 @@ namespace SPlus.DTO
         public int BaseWorkflowID { get; set; }
         public int RequestID { get; set; }
         public int RequestType { get; set; }
+
+        public decimal? AccumulutiveTarget { get; set; } = 0;
+        public decimal? AccumulutiveValue { get; set; } = 0;
+        public decimal? OldActualValue { get; set; } = 0;
+        public decimal? ActualValue { get; set; } = 0;
+
         public UserListDTO CreatedBy { get; set; }
 
     }

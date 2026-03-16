@@ -272,6 +272,11 @@ namespace SPlus.BLL
                     .SecureListObj(dataAccess, username).Cast<KPI>().ToList();
 
                 MapKPIProperties(kpis.ToList(), false);
+
+                foreach (var item in kpis)
+                {
+                    item.KPIMeasures = item.KPIMeasures.Where(x=> x.HasNoTarget != true).ToList();
+                }
                 return kpis.ToList();
             }
         }
@@ -2292,6 +2297,19 @@ namespace SPlus.BLL
                 dataAccess.Complete();
             }
         }
+
+        public void SetMeasureIsSkipped(int measureID, bool IsSkipped)
+        {
+            using (var dataAccess = _factory.Create())
+            {
+                KPI kpi = dataAccess.KPI.Query().Include(a => a.KPIMeasures).Where(a => a.KPIMeasures.Any(m => m.ID == measureID)).FirstOrDefault();
+                KPIMeasure measure = kpi.KPIMeasures.Where(a => a.ID == measureID).FirstOrDefault();
+                measure.IsSkipped = IsSkipped;
+                dataAccess.KPI.Save(kpi);
+                dataAccess.Complete();
+            }
+        }
+        
 
 
         private bool CalculateKPIOperation(decimal OutOfTarget, decimal Comparer, bool isMax, string Operator)

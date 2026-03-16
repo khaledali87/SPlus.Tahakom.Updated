@@ -19,6 +19,7 @@ namespace SPlus.DTO
         public decimal Target { get; set; }
 
         public bool IsReUpdate { get; set; } = false;   
+        public bool IsSkipped { get; set; } = false;   
 
         public List<AttachmentDTO> Attachments { get; set; }
         //public AttachmentDTO Attachment { get; set; }

@@ -15,6 +15,7 @@ namespace SPlus.DTO
         public int KPICount { get; set; }
         public int WorkProcedureCount { get; set; }
         public int MitigationActionsCount { get; set; }
+        public int ReUpdateCount { get; set; }
         public T Data { get; set; }
     }
 }
