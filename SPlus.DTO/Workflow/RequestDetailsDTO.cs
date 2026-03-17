@@ -22,5 +22,8 @@ namespace SPlus.DTO
         public virtual List<RequestStepDTO> Steps { get; set; }
 
         public virtual List<WFHistoryDTO> WFHistory { get; set; }
+
+
+        public virtual List<RequestDetailsDTO> Related { get; set; }
     }
 }

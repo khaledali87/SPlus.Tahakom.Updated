@@ -16,6 +16,7 @@ namespace SPlus.UseCases
         Container _Container = IOC.InitializeContainer();
         private readonly StrategicObjectiveBLL StrategicObjectiveBLL;
         private readonly KPIBLL KPIBLL;
+        private readonly HolidayBLL HolidayBLL;
         private readonly KPITypeBLL KPITypeBLL;
         private readonly ThemeBLL ThemeBLL;
         private readonly SystemPerformanceThresholdBLL SystemPerformanceThresholdBLL;
@@ -23,6 +24,7 @@ namespace SPlus.UseCases
         {
             StrategicObjectiveBLL = _Container.GetInstance<StrategicObjectiveBLL>();
             KPIBLL = _Container.GetInstance<KPIBLL>();
+            HolidayBLL = _Container.GetInstance<HolidayBLL>();
             ThemeBLL = _Container.GetInstance<ThemeBLL>();
             SystemPerformanceThresholdBLL = _Container.GetInstance<SystemPerformanceThresholdBLL>();
             KPITypeBLL = _Container.GetInstance<KPITypeBLL>();
@@ -169,7 +171,7 @@ namespace SPlus.UseCases
         {
             var res = StrategicObjectiveBLL.ReadByThemeID(id);
             var kpis = KPIBLL.Read(username,Year).Where(a => !a.DivisionalObjectiveID.HasValue && a.StrategicObjectiveID.HasValue && a.StrategicObjectiveID > 0);
-
+            var holidays = HolidayBLL.HolidayDays();
             if (Year.HasValue)
             {
                 kpis = kpis.Where(w => w.StartDate.Year == Year.Value).ToList();
@@ -179,7 +181,7 @@ namespace SPlus.UseCases
                 strategicObjective.KPIs = kpis.Where(a => a.StrategicObjectiveID == strategicObjective.ID).ToList();
                 foreach (var item in strategicObjective.KPIs)
                 {
-                    if (KPIBLL.IsInGracePeriod(item))
+                    if (KPIBLL.IsInGracePeriod(item, holidays))
                         item.AllowLock = false;
                     else
                         item.AllowLock = true;

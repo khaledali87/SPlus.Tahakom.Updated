@@ -15,6 +15,7 @@ namespace SPlus.DTO
         public string Justification { get; set; }
         public UserListDTO CreatedBy { get; set; }
         public DateTime Created { get; set; }
+        public DateTime DueDate { get; set; }
 
         public decimal? AccumulutiveTarget { get; set; } = 0;
         public decimal? AccumulutiveValue { get; set; } = 0;

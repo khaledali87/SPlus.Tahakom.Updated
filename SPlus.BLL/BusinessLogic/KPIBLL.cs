@@ -2606,6 +2606,7 @@ namespace SPlus.BLL
 
         public bool IsInGracePeriod(KPI kpi, List<DateTime> holidays = default)
         {
+            holidays = holidays ?? new List<DateTime>();
             if (kpi.KPIType.GracePeriod == 0)
                 return true;
             else

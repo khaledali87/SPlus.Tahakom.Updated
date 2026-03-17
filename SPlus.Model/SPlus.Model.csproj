@@ -130,6 +130,10 @@
     <Compile Include="ENums\WFEnums.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SPlus.DTO\SPlus.DTO.csproj">
+      <Project>{244C0897-E388-45D5-A1D5-DE6F7F2FC4AA}</Project>
+      <Name>SPlus.DTO</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SPlus.Helper\SPlus.Helper.csproj">
       <Project>{94ef3d97-3649-4db4-8da8-678e723e98fc}</Project>
       <Name>SPlus.Helper</Name>

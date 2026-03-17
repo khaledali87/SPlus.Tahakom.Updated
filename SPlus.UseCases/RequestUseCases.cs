@@ -63,7 +63,7 @@ namespace SPlus.UseCases
                     int workflowID = kpi.KPIType.Workflows.Where(a => a.BaseWorkflowID == (int)EnumWFBaseWorkflows.Update).FirstOrDefault().WorkflowID;
                     if (kpi != null)
                     {
-                        List<Request> requests = RequestBLL.GetRequests(userName).Where(a => a.WorkflowID == workflowID).ToList();
+                        List<Request> requests = RequestBLL.GetRequests(userName).Where(a => a.WorkflowID == workflowID || a.WorkflowID == 103).ToList();
                         foreach (Request request in requests)
                         {
                             var data = (JObject)JsonConvert.DeserializeObject(request.Form);
@@ -99,7 +99,10 @@ namespace SPlus.UseCases
 
                         }
 
-                        return dtos.GroupBy(x=> ((UpdateKPIForm)x.Form).RelatedID).Select(g=> g.OrderByDescending(x=> x.ID).FirstOrDefault()).OrderBy(a => ((UpdateKPIForm)a.Form).RelatedID).ToList();
+                        return dtos.GroupBy(x=> ((UpdateKPIForm)x.Form).RelatedID)
+                                   .Select(g=> g.OrderByDescending(x=> x.ID).FirstOrDefault())
+                                   .OrderBy(a => ((UpdateKPIForm)a.Form).RelatedID)
+                                   .ToList();
                     }
                 }
             }
@@ -220,25 +223,60 @@ namespace SPlus.UseCases
 
         }
 
-        public List<RequestDetailsDTO> GetRequestByIDUpdateKPIForm(int requestID, string userName)
+        public RequestDetailsDTO GetRequestByIDUpdateKPIForm(int requestID, string userName)
         {
             var Request = RequestBLL.GetRequestByID(requestID, userName);
             var data = (JObject)JsonConvert.DeserializeObject(Request.Form);
             int Type = data.SelectToken("Type").Value<int>();
             int RelatedID = data.SelectToken("RelatedID").Value<int>();
+            int BaseWorkflowID = data.SelectToken("BaseWorkflowID").Value<int>();
 
-
-            List <RequestDetailsDTO> list = new List <RequestDetailsDTO>();
+            List<WFHistoryDTO> list = new List<WFHistoryDTO>();
             if (Type == (int)LevelTypeEnum.KPI)
             {
-                UpdateKPIForm form = JsonConvert.DeserializeObject<UpdateKPIForm>(Request.Form);
+               
                 var Requests = RequestBLL.GetRequestsByFormRelatedIDCapital(RelatedID, Type);
 
+                var mainRequest = Requests.Where(r => r.WorkflowID != 103).Count() > 0  ? Requests.FirstOrDefault(r => r.WorkflowID != 103) : Request;
+
+                UpdateKPIForm form = JsonConvert.DeserializeObject<UpdateKPIForm>(mainRequest.Form);
 
                 KPI kpi = KPIBLL.GetKPIByMeasureID(form.RelatedID, userName);
+                KPIMeasure measure = kpi.KPIMeasures.FirstOrDefault(m => m.ID == form.RelatedID);
+                RequestDetailsDTO requestDTO = AutoMapper.Mapper.Map<RequestDetailsDTO>(mainRequest);
 
-                foreach (var req in Requests)
+                if (kpi != null)
                 {
+                    //if (kpi.KPIMeasures.Where(a => a.Status != "NA").Count() > 0)
+                    //    form.OldValue = kpi.KPIMeasures.Where(a => a.Status != "NA").FirstOrDefault().Value.Value;
+                    //else
+                    //    form.OldValue = kpi.Baseline;
+
+                    if (kpi.KPIMeasures.Min(x => x.ID) == form.RelatedID)
+                        form.OldValue = kpi.Baseline;
+                    else
+                        form.OldValue = kpi.KPIMeasures.Where(w => w.ID < form.RelatedID && w.Status != "NA").LastOrDefault()?.Value ?? default;
+
+                    form.Target = measure.Target;
+                    form.Value = form.Value.FormatDecimal();//kpi.KPIMeasures.Where(a => a.ID == form.RelatedID).FirstOrDefault().Value.Value.FormatDecimal();
+                    form.DueDate = measure.DueDate;
+                    form.UnitOfMeasure = kpi.UnitOfMeasure;
+                    form.EnglishUnitDetails = kpi.EnglishUnitDetails;
+                    form.ArabicUnitDetails = kpi.ArabicUnitDetails;
+
+                }
+
+
+
+                requestDTO.Form = form;
+                requestDTO.Related = new List<RequestDetailsDTO>();
+
+                foreach (var req in Requests.Where(r=> r.ID != mainRequest.ID))
+                {
+                    RequestDetailsDTO related = AutoMapper.Mapper.Map<RequestDetailsDTO>(req);
+
+                    UpdateKPIForm relatedForm = JsonConvert.DeserializeObject<UpdateKPIForm>(req.Form);
+
                     if (kpi != null)
                     {
                         //if (kpi.KPIMeasures.Where(a => a.Status != "NA").Count() > 0)
@@ -246,31 +284,38 @@ namespace SPlus.UseCases
                         //else
                         //    form.OldValue = kpi.Baseline;
 
+                        var step = related.Steps.OrderBy(x => x.ID).FirstOrDefault(x=> x.Status == (int)EnumWFStatuses.Pending);
+
                         if (kpi.KPIMeasures.Min(x => x.ID) == form.RelatedID)
-                            form.OldValue = kpi.Baseline;
+                            relatedForm.OldValue = kpi.Baseline;
                         else
-                            form.OldValue = kpi.KPIMeasures.Where(w => w.ID < form.RelatedID && w.Status != "NA").LastOrDefault()?.Value ?? default;
+                            relatedForm.OldValue = kpi.KPIMeasures.Where(w => w.ID < form.RelatedID && w.Status != "NA").LastOrDefault()?.Value ?? default;
 
-                        form.Target = kpi.KPIMeasures.Where(a => a.ID == form.RelatedID).FirstOrDefault().Target;
-                        form.Value = form.Value.FormatDecimal();//kpi.KPIMeasures.Where(a => a.ID == form.RelatedID).FirstOrDefault().Value.Value.FormatDecimal();
-                        form.DueDate = kpi.KPIMeasures.Where(a => a.ID == form.RelatedID).FirstOrDefault().DueDate;
-                        form.UnitOfMeasure = kpi.UnitOfMeasure;
-                        form.EnglishUnitDetails = kpi.EnglishUnitDetails;
-                        form.ArabicUnitDetails = kpi.ArabicUnitDetails;
-
+                        relatedForm.Target = measure.Target;
+                        relatedForm.Value = relatedForm.Value.FormatDecimal();//kpi.KPIMeasures.Where(a => a.ID == form.RelatedID).FirstOrDefault().Value.Value.FormatDecimal();
+                        relatedForm.DueDate = measure.DueDate;
+                        relatedForm.UnitOfMeasure = kpi.UnitOfMeasure;
+                        relatedForm.EnglishUnitDetails = kpi.EnglishUnitDetails;
+                        relatedForm.ArabicUnitDetails = kpi.ArabicUnitDetails;
+                        relatedForm.AccumulutiveTarget = measure.AccumulutiveTarget;
+                        relatedForm.AccumulutiveValue = measure.AccumulutiveValue;
+                        relatedForm.ActionByModel = step?.ActionByModel;
+                        relatedForm.ActionDate = step?.Modified;
+                        related.Steps = new List<RequestStepDTO>();
                     }
-                    RequestDetailsDTO requestDTO = AutoMapper.Mapper.Map<RequestDetailsDTO>(Request);
-                    requestDTO.Form = form;
 
-                    list.Add(requestDTO);
-
+                    related.Form = relatedForm;
+                    
+                    requestDTO.Related.Add(related);
                 }
+
                
-                return list;
+
+                return requestDTO;
             }
             else
             {
-                return new List<RequestDetailsDTO>();
+                return new RequestDetailsDTO();
             }
         }
 
@@ -385,18 +430,24 @@ namespace SPlus.UseCases
                         switch (workflow.BaseWorkflowID)
                         {
                             case (int)EnumWFBaseWorkflows.Update:
+                            case (int)EnumWFBaseWorkflows.ReUpdate:
                                 {
                                     UpdateKPIForm form = JsonConvert.DeserializeObject<UpdateKPIForm>(request.Form);
                                     UpdateKPIForm updateKPIForm = form;
                                     KPI kpi = KPIBLL.GetKPIByMeasureID(form.RelatedID, UserName);
-                                    //Update KPI Parameters And Parameters Value Tables
-                                    if (form.Parameters != null && form.Parameters.Count() > 0)
-                                        ParameterBLL.UpdateParameterValues(form.RelatedID, form.Parameters);
-                                    KPIBLL.UpdateKPIPeriod(updateKPIForm);
+
                                     if (form.IsSkipped)
                                     {
                                         KPIBLL.SetMeasureIsSkipped(form.RelatedID, form.IsSkipped);
                                     }
+                                    else
+                                    {
+                                        //Update KPI Parameters And Parameters Value Tables
+                                        if (form.Parameters != null && form.Parameters.Count() > 0)
+                                            ParameterBLL.UpdateParameterValues(form.RelatedID, form.Parameters);
+                                        KPIBLL.UpdateKPIPeriod(updateKPIForm);
+                                    }
+                                  
                                     kpi = KPIBLL.GetKPIByMeasureID(form.RelatedID, UserName);
                                     var updatedMeasure = kpi.KPIMeasures.Where(w => w.ID == form.RelatedID).FirstOrDefault();
                                     Task.Run(() => NotificationConfigurationBLL.SendNotificationWorkflow(kpi.ID, form.RelatedID, request.ID, enumNotificationEventType.Completed, LevelTypeEnum.KPI));
@@ -756,8 +807,7 @@ namespace SPlus.UseCases
             List<KPIType> types = KPITypeBLL.Read();
             int requestID = 0;
             int currentRequestID = 0;
-            if (kpi.Champion.ToLower() == UserName.ToLower() || kpi.Champion.ToLower() == DelegationUserName.ToLower())
-            {
+            
                 if (kpi != null)
                 {
                     if (kpi.KPIType != null)
@@ -802,17 +852,7 @@ namespace SPlus.UseCases
                             form.Value = form.Value.TrimDecimal();
                             string formPayload = JsonConvert.SerializeObject(form);
 
-                            List<Request> currentRequests = RequestBLL.GetRequestsByFormRelatedID(form.RelatedID, LevelTypeEnum.KPI, EnumWFBaseWorkflows.Update); //RequestBLL.GetRequestsByFormRelatedID(form.RelatedID, (int)LevelTypeEnum.KPI);
-                            if (currentRequests != null && currentRequests.Count() > 0)
-                            {
-                                currentRequestID = currentRequests.LastOrDefault().ID;
-                                KPIBLL.UpdateMeasureAllowUpdate(form.RelatedID, false);
-                                requestID = RequestBLL.Submit(formPayload, kpi, currentRequestID, groups, UserName, DelegationUserName, workflowID, (int)LevelTypeEnum.KPI, true);
-                                AttachmentBLL.DeleteOldRequestAttachment(requestID);
-                            }
-
-                            else
-                            {
+                            
                                 Request request = new Request();
                                 if (form.RelatedID == forms.FirstOrDefault().RelatedID)
                                 {
@@ -863,7 +903,6 @@ namespace SPlus.UseCases
                                     }
                                 }
 
-                            }
 
 
 
@@ -914,11 +953,7 @@ namespace SPlus.UseCases
                     }
                     Task.Run(() => NotificationConfigurationBLL.SendNotificationWorkflow(kpi.ID, 0, requestID, enumNotificationEventType.Submit, LevelTypeEnum.KPI));
                 }
-            }
-            else
-            {
-                throw new System.Exception("Unauthorized user");
-            }
+            
 
             return true;
         }

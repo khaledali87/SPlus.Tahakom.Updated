@@ -67,8 +67,13 @@ namespace SPlus.BLL
         public List<RequestStep> GetMyRequests(string userName)
         {
             var definition = new { IsDraft = false, CreatedBy = string.Empty, BaseWorkflow = 0 };
-            var requests = GetRequests(userName,false).Where(a => JsonConvert.DeserializeAnonymousType(a.Form, definition).CreatedBy?.ToLower() == userName.ToLower()).ToList();
-            var steps = requests.SelectMany(r => r.RequestSteps).Where(r => !r.IsCancelled).isAllowedToDoActionList(userName.MapUserWithGroups()).Where(a => a.CanApprove).ToList();
+            var requests = GetRequests(userName,false)
+                          .Where(a => a.CreatedBy.ToLower() == userName.ToLower() ||  JsonConvert.DeserializeAnonymousType(a.Form, definition).CreatedBy?.ToLower() == userName.ToLower()).ToList();
+            var steps = requests.SelectMany(r => r.RequestSteps)
+                                .Where(r => !r.IsCancelled)
+                                .isAllowedToDoActionList(userName.MapUserWithGroups())
+                                .Where(a => a.CanApprove)
+                                .ToList();
 
 
             var DraftRequest = requests.Where(a => JsonConvert.DeserializeAnonymousType(a.Form, definition).IsDraft || a.Status == (int)EnumWFStatuses.Return || a.Status == (int)EnumWFStatuses.Rejected || a.Status == (int)EnumWFStatuses.Completed || a.Status == (int)EnumWFStatuses.Pending).ToList();
@@ -85,6 +90,9 @@ namespace SPlus.BLL
 
             return steps;
         }
+
+
+
         public List<Request> GetLevelPendingRequest(List<int> RelatedIDs, LevelTypeEnum Level)
         {
             using (var dataAccess = _factory.Create())

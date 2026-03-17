@@ -32,7 +32,8 @@ namespace SPlus.UseCases
             #endregion
 
 
-            CreateMap<Request, RequestDTO>();
+            CreateMap<Request, RequestDTO>()
+                .ForPath(a => a.RequestedBy, s => { s.MapFrom(dt => dt.CreatedBy); }); ;
 
             CreateMap<RequestStep, RequestStepDTO>()
                 .ForPath(a => a.ActionByModel, s => { s.MapFrom(dt => dt.ActionByModel); });

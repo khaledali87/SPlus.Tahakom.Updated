@@ -454,9 +454,9 @@ namespace SPlus.API.Controllers
         [BasicAuthenticationInvoker]
         [HttpGet]
         [Route("UpdateRequest/{id}")]
-        public ResultWrapper<List<RequestDetailsDTO>> ReadUpdateKPIRequestByID(int id)
+        public ResultWrapper<RequestDetailsDTO> ReadUpdateKPIRequestByID(int id)
         {
-            ResultWrapper<List<RequestDetailsDTO>> result = new ResultWrapper<List<RequestDetailsDTO>>();
+            ResultWrapper<RequestDetailsDTO> result = new ResultWrapper<RequestDetailsDTO>();
             IEnumerable<string> Token;
             if (Request.Headers.TryGetValues("Token", out Token))
             {
@@ -468,7 +468,7 @@ namespace SPlus.API.Controllers
                 }
                 catch (Exception ex)
                 {
-                    result.Data = new List<RequestDetailsDTO>();
+                    result.Data = new RequestDetailsDTO();
                     result.ErrorCode = "0000";
                     result.StatusCode = "fail";
                     result.StatusMessage = ex.Message;

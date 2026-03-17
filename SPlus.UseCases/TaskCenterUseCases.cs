@@ -87,7 +87,7 @@ namespace SPlus.UseCases
 
             TaskCentreWFTypeEnum taskcentertype = (TaskCentreWFTypeEnum)Enum.Parse(typeof(TaskCentreWFTypeEnum), baseworkflow, true);
 
-            var definition = new { BaseWorkflow = 0, Type = 0, ID = 0 };
+            var definition = new { BaseWorkflow = 0, Type = 0, ID = 0 , BaseWorkflowID = 0 };
 
             var kpiIndex = kpis
                 .SelectMany(k => k.KPIMeasures.Select(m => new { m.ID, KPI = k, Measure = m }))
@@ -103,12 +103,10 @@ namespace SPlus.UseCases
 
             foreach (var step in RequestSteps)
             {
-
-
-
                 var parsed = JsonConvert.DeserializeAnonymousType(step.Request.Form, definition);
                 int type = parsed.Type;
                 int baseWF = parsed.BaseWorkflow;
+                int baseWFID = parsed.BaseWorkflowID;
                 MyRequestDTO myRequest = new MyRequestDTO
                 {
                     RequestID = step.RequestID,
@@ -147,11 +145,13 @@ namespace SPlus.UseCases
 
 
                 if (type == (int)LevelTypeEnum.KPI &&
-                  (baseWF == (int)EnumWFBaseWorkflows.ReUpdate))
+                  (baseWF == (int)EnumWFBaseWorkflows.ReUpdate || baseWFID == (int)EnumWFBaseWorkflows.ReUpdate))
                 {
                     int itemID = updateKPIForm.RelatedID;
 
-                    var kpi = kpis.FirstOrDefault(x => x.KPIMeasures.Any(m => m.ID == itemID));
+                    
+
+                    var kpi = KPIBLL.GetKPIByMeasureID_All(itemID);
                     var measure = kpi.KPIMeasures.FirstOrDefault(x => x.ID == itemID);  
                     //if (!kpiIndex.TryGetValue(itemID, out var row))
                     //    continue;
@@ -162,19 +162,21 @@ namespace SPlus.UseCases
                     myRequest.Type = (int)LevelTypeEnum.KPI;
                     myRequest.Created = step.Request.Created;
 
-
                     myRequest.AccumulutiveTarget = measure.AccumulutiveTarget;
                     myRequest.AccumulutiveValue = measure.AccumulutiveValue;
+                    myRequest.DueDate = measure.DueDate;
+
+                    myRequest.BaseWorkflowID = baseWFID;
 
                     myRequest.OldActualValue = updateKPIForm.OldValue;
                     myRequest.ActualValue = updateKPIForm.Value;
 
-                    myRequest.CreatedBy = Mapper.Map<UserListDTO>(users.Where(w => w.UserName.ToLower() == kpiChangeRequestFormDTO.CreatedBy.ToLower()).FirstOrDefault());
+                    myRequest.CreatedBy = Mapper.Map<UserListDTO>(users.Where(w => w.UserName.ToLower() == step.Request.CreatedBy.ToLower()).FirstOrDefault());
                     myRequest.Status = step.Request.Status;
 
                     ApprovalList_ReUpdatetmp.Add(myRequest);
 
-                    if (taskcentertype == TaskCentreWFTypeEnum.KPI || taskcentertype == TaskCentreWFTypeEnum.All)
+                    if (taskcentertype == TaskCentreWFTypeEnum.ReUpdate || taskcentertype == TaskCentreWFTypeEnum.All)
                         MyRequestList.Add(myRequest);
                 }
                 //
@@ -457,7 +459,7 @@ namespace SPlus.UseCases
             AttachmentBLL attachement = new AttachmentBLL();
             TaskCentreWFTypeEnum taskcentertype = (TaskCentreWFTypeEnum)Enum.Parse(typeof(TaskCentreWFTypeEnum), baseworkflow, true);
            
-            var definition = new { BaseWorkflow = 0, Type = 0, ID = 0 };
+            var definition = new { BaseWorkflow = 0, Type = 0, ID = 0 , BaseWorkflowID = 0 };
 
             var kpiIndex = kpis
                 .SelectMany(k => k.KPIMeasures.Select(m => new { m.ID, KPI = k, Measure = m }))
@@ -472,6 +474,7 @@ namespace SPlus.UseCases
                 var parsed = JsonConvert.DeserializeAnonymousType(step.Request.Form, definition);
                 int type = parsed.Type;
                 int baseWF = parsed.BaseWorkflow;
+                int baseWFID = parsed.BaseWorkflowID;
                 ApprovalDTO approval = new ApprovalDTO
                 {
                     RequestID = step.RequestID,
@@ -532,7 +535,7 @@ namespace SPlus.UseCases
                 }
 
                 if (type == (int)LevelTypeEnum.KPI &&
-                   (baseWF == (int)EnumWFBaseWorkflows.ReUpdate))
+                   (baseWF == (int)EnumWFBaseWorkflows.ReUpdate || baseWFID == (int)EnumWFBaseWorkflows.ReUpdate))
                 {
                     int itemID = updateKPIForm.RelatedID;
 
@@ -543,6 +546,11 @@ namespace SPlus.UseCases
                     approval.EnglishName = kpi.EnglishName;
                     approval.ArabicName = kpi.ArabicName;
                     approval.DueDate = measure?.DueDate;
+                    approval.Created = step?.Request.Created;
+
+                    approval.DueDate = measure.DueDate;
+                    approval.BaseWorkflowID = baseWFID;
+
                     approval.AccumulutiveTarget = measure.AccumulutiveTarget;
                     approval.AccumulutiveValue = measure.AccumulutiveValue;
 

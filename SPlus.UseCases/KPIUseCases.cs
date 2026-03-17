@@ -137,6 +137,7 @@ namespace SPlus.UseCases
         public List<CAKPIListingDTO> ReadByType(string username, string Type, int? Year)
         {
             var kpis = KPIBLL.Read(username, Year);
+            var holidays = HolidayBLL.HolidayDays();
             if (Year.HasValue)
             {
                 kpis = kpis.Where(w => w.StartDate.Year == Year.Value).ToList();
@@ -158,7 +159,7 @@ namespace SPlus.UseCases
                 //item.IsDeletable = false;
                 //item.IsEditable = false;
 
-                if (KPIBLL.IsInGracePeriod(item))
+                if (KPIBLL.IsInGracePeriod(item, holidays))
                     item.AllowLock = false;
                 else
                     item.AllowLock = true;
