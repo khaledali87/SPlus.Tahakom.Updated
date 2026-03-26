@@ -52,6 +52,33 @@ namespace SPlus.API.Controllers
             return result;
         }
 
+        [OperationContract]
+        [DataFormatingInvoker]
+        //[BasicAuthenticationInvoker(CheckSecurityToken = false)]
+        [HttpGet]
+        [Route("Holidays/{id}")]
+
+        public ResultWrapper<Holiday> GetHolidays(int id)
+        {
+            ResultWrapper<Holiday> result = new ResultWrapper<Holiday>();
+            try
+            {
+                result.Data = HolidayUseCases.Read(id);
+            }
+            catch (System.Exception ex)
+            {
+                result.Data = null;
+                result.ErrorCode = "0000";
+                result.StatusCode = "fail";
+                if (Constants._Error)
+                    result.StatusMessage = ex.Message;
+                else
+                    result.StatusCode = "An error has occured";
+            }
+
+            return result;
+        }
+
 
         [OperationContract]
         [DataFormatingInvoker]

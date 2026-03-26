@@ -475,7 +475,7 @@ namespace SPlus.UseCases
 
             foreach (KPI KPI in kpis)
             {
-                if(KPI.ID== 4296 || KPI.ID == 4297)
+                if(KPI.ID== 4303 || KPI.ID == 4297)
                 {
 
                 }
@@ -785,7 +785,7 @@ namespace SPlus.UseCases
             var holidays = HolidayBLL.HolidayDays();
             foreach (KPI kpi in kpis)
             {
-                if (kpi.ID == 62)
+                if (kpi.ID == 4303)
                 {
 
                 }

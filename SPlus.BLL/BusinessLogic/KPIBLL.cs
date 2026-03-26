@@ -2305,6 +2305,7 @@ namespace SPlus.BLL
                 KPI kpi = dataAccess.KPI.Query().Include(a => a.KPIMeasures).Where(a => a.KPIMeasures.Any(m => m.ID == measureID)).FirstOrDefault();
                 KPIMeasure measure = kpi.KPIMeasures.Where(a => a.ID == measureID).FirstOrDefault();
                 measure.IsSkipped = IsSkipped;
+                measure.Status = "NAU";
                 dataAccess.KPI.Save(kpi);
                 dataAccess.Complete();
             }

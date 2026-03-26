@@ -237,7 +237,10 @@ namespace SPlus.UseCases
                
                 var Requests = RequestBLL.GetRequestsByFormRelatedIDCapital(RelatedID, Type);
 
-                var mainRequest = Requests.Where(r => r.WorkflowID != 103).Count() > 0  ? Requests.FirstOrDefault(r => r.WorkflowID != 103) : Request;
+                var mainRequest = Requests.Any(x => x.Status == (int)EnumWFStatuses.Pending) ? 
+                                           Requests.Where(x=> x.Status == (int)EnumWFStatuses.Pending)
+                                          .OrderByDescending(x=> x.ID)
+                                          .FirstOrDefault() : Request;
 
                 UpdateKPIForm form = JsonConvert.DeserializeObject<UpdateKPIForm>(mainRequest.Form);
 
