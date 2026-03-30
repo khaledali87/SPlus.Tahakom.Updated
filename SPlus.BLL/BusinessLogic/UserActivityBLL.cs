@@ -19,30 +19,64 @@ namespace SPlus.BLL
         }
 
         #region Public
+        //public UserActivity CreateUserSession(string userName, Guid sessionid)
+        //{
+        //    int result;
+        //    using (var dataAccess = _factory.Create())
+        //    {
+        //        var current = ReadByUserName(userName);
+        //        UserActivity userActivity = new UserActivity();
+        //        if (current is null)
+        //        {
+        //            userActivity.Created = DateTime.Now;
+        //            userActivity.Modified = DateTime.Now;
+        //            userActivity.LastActivity = DateTime.Now;
+        //            userActivity.UserName = userName.ToLower();
+        //            userActivity.SessionID = sessionid;
+        //        }
+        //        else
+        //        {
+        //            userActivity.Created = DateTime.Now;
+        //            userActivity.Modified = DateTime.Now;
+        //            userActivity.LastActivity = DateTime.Now;
+        //            userActivity.UserName = userName.ToLower();
+        //            userActivity.Id = current.Id;
+        //            userActivity.SessionID = sessionid;
+        //        }
+        //        dataAccess.UserActivity.Save(userActivity);
+        //        result = dataAccess.Complete();
+
+        //        dataAccess.Dispose();
+
+        //        var res = ReadByUserName(userActivity.UserName, sessionid);
+        //        return res;
+        //    }
+        //}
+
         public UserActivity CreateUserSession(string userName, Guid sessionid)
         {
             int result;
             using (var dataAccess = _factory.Create())
             {
-                var current = ReadByUserName(userName);
+                //var current = ReadByUserName(userName);
                 UserActivity userActivity = new UserActivity();
-                if (current is null)
-                {
+                //if (current is null)
+                //{
                     userActivity.Created = DateTime.Now;
                     userActivity.Modified = DateTime.Now;
                     userActivity.LastActivity = DateTime.Now;
                     userActivity.UserName = userName.ToLower();
                     userActivity.SessionID = sessionid;
-                }
-                else
-                {
-                    userActivity.Created = DateTime.Now;
-                    userActivity.Modified = DateTime.Now;
-                    userActivity.LastActivity = DateTime.Now;
-                    userActivity.UserName = userName.ToLower();
-                    userActivity.Id = current.Id;
-                    userActivity.SessionID = sessionid;
-                }
+                //}
+                //else
+                //{
+                //    userActivity.Created = DateTime.Now;
+                //    userActivity.Modified = DateTime.Now;
+                //    userActivity.LastActivity = DateTime.Now;
+                //    userActivity.UserName = userName.ToLower();
+                //    userActivity.Id = current.Id;
+                //    userActivity.SessionID = sessionid;
+                //}
                 dataAccess.UserActivity.Save(userActivity);
                 result = dataAccess.Complete();
 
@@ -52,6 +86,8 @@ namespace SPlus.BLL
                 return res;
             }
         }
+
+
         public bool CheckUserSession(string userName, Guid sessionID)
         {
             UserActivity userActivity = ReadByUserName(userName, sessionID);

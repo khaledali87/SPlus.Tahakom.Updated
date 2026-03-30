@@ -11,6 +11,7 @@ using StructureMap;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data.Metadata.Edm;
 using System.Linq;
 using System.Threading.Tasks;
 namespace SPlus.UseCases
@@ -99,8 +100,15 @@ namespace SPlus.UseCases
 
                         }
 
-                        return dtos.GroupBy(x=> ((UpdateKPIForm)x.Form).RelatedID)
-                                   .Select(g=> g.OrderByDescending(x=> x.ID).FirstOrDefault())
+                        return dtos.GroupBy(x => ((UpdateKPIForm)x.Form).RelatedID)
+                                   .Select(g => 
+                                   {
+                                       var item = g.OrderByDescending(x => x.ID).FirstOrDefault();
+                                       var canApprove  = g.FirstOrDefault(x=> x.CanApprove);
+                                       item.CanApprove = g.Any(x => x.CanApprove);  
+                                       item.ID = canApprove == null ? item.ID : canApprove.ID;  
+                                       return item;
+                                   })
                                    .OrderBy(a => ((UpdateKPIForm)a.Form).RelatedID)
                                    .ToList();
                     }
@@ -226,6 +234,7 @@ namespace SPlus.UseCases
         public RequestDetailsDTO GetRequestByIDUpdateKPIForm(int requestID, string userName)
         {
             var Request = RequestBLL.GetRequestByID(requestID, userName);
+            var users = UserBLL.Read();
             var data = (JObject)JsonConvert.DeserializeObject(Request.Form);
             int Type = data.SelectToken("Type").Value<int>();
             int RelatedID = data.SelectToken("RelatedID").Value<int>();
@@ -234,13 +243,9 @@ namespace SPlus.UseCases
             List<WFHistoryDTO> list = new List<WFHistoryDTO>();
             if (Type == (int)LevelTypeEnum.KPI)
             {
-               
                 var Requests = RequestBLL.GetRequestsByFormRelatedIDCapital(RelatedID, Type);
 
-                var mainRequest = Requests.Any(x => x.Status == (int)EnumWFStatuses.Pending) ? 
-                                           Requests.Where(x=> x.Status == (int)EnumWFStatuses.Pending)
-                                          .OrderByDescending(x=> x.ID)
-                                          .FirstOrDefault() : Request;
+                var mainRequest = Requests.OrderBy(x => x.ID).FirstOrDefault();
 
                 UpdateKPIForm form = JsonConvert.DeserializeObject<UpdateKPIForm>(mainRequest.Form);
 
@@ -266,17 +271,38 @@ namespace SPlus.UseCases
                     form.UnitOfMeasure = kpi.UnitOfMeasure;
                     form.EnglishUnitDetails = kpi.EnglishUnitDetails;
                     form.ArabicUnitDetails = kpi.ArabicUnitDetails;
-
+                    
                 }
 
+                foreach (var step in requestDTO.Steps)
+                {
+                    var actionBy = step.ActionBy == null ? null : Mapper.Map<UserListDTO>(users.FirstOrDefault(w => w.UserName.ToLower() == step.ActionBy.ToString().ToLower()));
+                    step.ActionBy = actionBy;
+                    step.ActionByModel = step.ActionBy == null ? null : new UserDTO
+                    {
+                        DisplayName = actionBy?.DisplayName,
+                    };
 
-
+                }
+                //requestDTO.CanApprove = req
                 requestDTO.Form = form;
                 requestDTO.Related = new List<RequestDetailsDTO>();
-
+                if(Requests.Count() > 1)
                 foreach (var req in Requests.Where(r=> r.ID != mainRequest.ID))
                 {
-                    RequestDetailsDTO related = AutoMapper.Mapper.Map<RequestDetailsDTO>(req);
+                    var step = req.RequestSteps.FirstOrDefault(x => x.Status == (int)EnumWFStatuses.Pending);
+                    var previous = step != null ? req.RequestSteps
+                          .Where(x => x.RequestID == step.RequestID
+                                   && x.Order < step.Order
+                                   && x.IsCancelled != true)
+                          .OrderByDescending(x => x.Order)
+                          .FirstOrDefault() : req.RequestSteps
+                          .Where(x => x.RequestID == step.RequestID
+                                   && x.IsCancelled != true)
+                          .OrderByDescending(x => x.Order)
+                          .FirstOrDefault();
+
+                        RequestDetailsDTO related = AutoMapper.Mapper.Map<RequestDetailsDTO>(req);
 
                     UpdateKPIForm relatedForm = JsonConvert.DeserializeObject<UpdateKPIForm>(req.Form);
 
@@ -287,7 +313,7 @@ namespace SPlus.UseCases
                         //else
                         //    form.OldValue = kpi.Baseline;
 
-                        var step = related.Steps.OrderBy(x => x.ID).FirstOrDefault(x=> x.Status == (int)EnumWFStatuses.Pending);
+                        
 
                         if (kpi.KPIMeasures.Min(x => x.ID) == form.RelatedID)
                             relatedForm.OldValue = kpi.Baseline;
@@ -302,9 +328,21 @@ namespace SPlus.UseCases
                         relatedForm.ArabicUnitDetails = kpi.ArabicUnitDetails;
                         relatedForm.AccumulutiveTarget = measure.AccumulutiveTarget;
                         relatedForm.AccumulutiveValue = measure.AccumulutiveValue;
-                        relatedForm.ActionByModel = step?.ActionByModel;
-                        relatedForm.ActionDate = step?.Modified;
-                        related.Steps = new List<RequestStepDTO>();
+
+                        relatedForm.ReviewedBy = Mapper.Map<UserListDTO>(users.FirstOrDefault(w => w.UserName.ToLower() == previous?.ActionBy.ToLower()));
+                        relatedForm.ActionBy = Mapper.Map<UserListDTO>(users.FirstOrDefault(w => w.UserName.ToLower() == step?.Request?.CreatedBy.ToLower()));
+                        relatedForm.ActionDate = previous?.Modified;
+                        //related.Steps = new List<RequestStepDTO>();
+                    }
+
+                    foreach (var stepp in related.Steps)
+                    {
+                        var actionBy = stepp.ActionBy == null ? null : Mapper.Map<UserListDTO>(users.FirstOrDefault(w => w.UserName.ToLower() == stepp.ActionBy.ToString().ToLower()));
+                        stepp.ActionBy = actionBy;
+                        stepp.ActionByModel = stepp.ActionBy == null ? null : new UserDTO
+                        {
+                            DisplayName = actionBy?.DisplayName,
+                        };
                     }
 
                     related.Form = relatedForm;
@@ -784,26 +822,35 @@ namespace SPlus.UseCases
 
         public bool ReUpdateKPIValue(List<SaveWFFormUpdateKPIDTO> forms, string[] Credential)
         {
+            (string Username, string DelegationName) GetCredintials()
+                {
+                string Username;
+                string DelegationName;
+                if (Credential.Count() != 4)
+                {
+                    //UserName = Credential[0];
+                    if (Credential[2] != "")
+                        Username = Credential[2];
+                    else
+                        Username = Credential[0];
+                    DelegationName = Credential[0];
+                }
+                else
+                {
+                    if (Credential[2] != "")
+                        Username = Credential[2];
+                    else
+                        Username = Credential[0];
+                    DelegationName = Credential[0];
+                }
 
-            string UserName;
-            string DelegationUserName;
-            if (Credential.Count() != 4)
-            {
-                //UserName = Credential[0];
-                if (Credential[2] != "")
-                    UserName = Credential[2];
-                else
-                    UserName = Credential[0];
-                DelegationUserName = Credential[0];
+                return (Username, DelegationName);
             }
-            else
-            {
-                if (Credential[2] != "")
-                    UserName = Credential[2];
-                else
-                    UserName = Credential[0];
-                DelegationUserName = Credential[0];
-            }
+
+
+            string UserName = GetCredintials().Username;
+            string DelegationUserName = GetCredintials().DelegationName;
+           
 
             KPI kpi = KPIBLL.GetKPIByMeasureID(forms.FirstOrDefault().RelatedID, UserName);
 
@@ -849,9 +896,11 @@ namespace SPlus.UseCases
 
                             #endregion
 
+
                             form.Type = (int)LevelTypeEnum.KPI;
                             form.BaseWorkflowID = (int)EnumWFBaseWorkflows.ReUpdate;
                             form.IsReUpdate = true; 
+                            form.OldValue = kpi.KPIMeasures.FirstOrDefault(m=> m.ID == form.RelatedID)?.Value ?? 0;
                             form.Value = form.Value.TrimDecimal();
                             string formPayload = JsonConvert.SerializeObject(form);
 

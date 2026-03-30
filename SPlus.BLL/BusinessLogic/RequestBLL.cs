@@ -194,18 +194,21 @@ namespace SPlus.BLL
                 {
                     // Only consider steps that are not cancelled
                     var steps = request.RequestSteps.Where(s => !s.IsCancelled);
+                        // If this request is related to another request
+                        if (request.RelatedRequestID != 0 && request.WorkflowID != 103 &&
+                            requestDict.TryGetValue(request.RelatedRequestID, out var relatedRequest) &&
+                            relatedRequest.Status == (int)EnumWFStatuses.Completed)
+                        {
+                            steps = steps.isAllowedToDoActionList(user);
+                        }
+                        else if (request.RelatedRequestID == 0)
+                        {
+                            steps = steps.isAllowedToDoActionList(user);
+                        }
+                    
+                   
 
-                    // If this request is related to another request
-                    if (request.RelatedRequestID != 0 &&
-                        requestDict.TryGetValue(request.RelatedRequestID, out var relatedRequest) &&
-                        relatedRequest.Status == (int)EnumWFStatuses.Completed)
-                    {
-                        steps = steps.isAllowedToDoActionList(user);
-                    }
-                    else if (request.RelatedRequestID == 0)
-                    {
-                        steps = steps.isAllowedToDoActionList(user);
-                    }
+                    
 
                     // Mark request as approvable if any of its steps can be approved
                     request.CanApprove = steps.Any(s => s.CanApprove);
@@ -268,7 +271,8 @@ namespace SPlus.BLL
             return requests
                 .Where(r => r.IsActive)
                 .SelectMany(r => r.RequestSteps)
-                .Where(s => !s.IsCancelled && s.CanApprove)
+                //.Where(s => !s.IsCancelled && s.CanApprove)
+                .Where(s => !s.IsCancelled)
                 .ToList();
         }}
 
@@ -550,7 +554,7 @@ namespace SPlus.BLL
             using (var dataAccess = _factory.Create())
             {
                 List<Request> requests = dataAccess.Request.Query().Include(a => a.RequestSteps).ToList();
-                Request request = requests.SingleOrDefault(s => s.ID == requestID);
+                Request request = requests.FirstOrDefault(s => s.ID == requestID);
 
                 var workflow = dataAccess.Workflow.Query().Where(a => a.WorkflowID == request.WorkflowID).FirstOrDefault();
                 RequestStep step = request.RequestSteps.Where(a => !a.IsCancelled && a.RequestID == requestID && a.Status == (int)EnumWFStatuses.Pending).FirstOrDefault();
@@ -584,9 +588,13 @@ namespace SPlus.BLL
                                 request.Status = (int)EnumWFStatuses.Completed;
                                 ActionID = (int)EnumWFStatuses.Completed;
                                 request.IsActive = false;
-                                nextRequest = requests.SingleOrDefault(s => s.RelatedRequestID == requestID);
-                                if (nextRequest != null)
-                                    nextRequest.IsActive = true;
+                                if(request.WorkflowID != 103)
+                                {
+                                    nextRequest = requests.SingleOrDefault(s => s.RelatedRequestID == requestID);
+                                    if (nextRequest != null)
+                                        nextRequest.IsActive = true;
+                                }
+                               
                             }
                             else
                             {

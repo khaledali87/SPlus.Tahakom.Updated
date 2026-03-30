@@ -101,16 +101,18 @@ namespace SPlus.UseCases
             List<MyRequestDTO> ApprovalList_WorkProctmp = new List<MyRequestDTO>();
             List<MyRequestDTO> ApprovalList_ReUpdatetmp = new List<MyRequestDTO>();
 
+            var steps = RequestSteps.Where(x => x.CanApprove).ToList();
+
             foreach (var step in RequestSteps)
             {
                 var parsed = JsonConvert.DeserializeAnonymousType(step.Request.Form, definition);
                 int type = parsed.Type;
-                int baseWF = parsed.BaseWorkflow;
+                int? baseWF = parsed.BaseWorkflow;
                 int baseWFID = parsed.BaseWorkflowID;
                 MyRequestDTO myRequest = new MyRequestDTO
                 {
                     RequestID = step.RequestID,
-                    BaseWorkflowID = baseWF,
+                    BaseWorkflowID = baseWF ?? baseWFID,
                     Attachment = Mapper.Map<AttachmentDTO>(step?.Request?.Attachment)
                 };
 
@@ -147,6 +149,15 @@ namespace SPlus.UseCases
                 if (type == (int)LevelTypeEnum.KPI &&
                   (baseWF == (int)EnumWFBaseWorkflows.ReUpdate || baseWFID == (int)EnumWFBaseWorkflows.ReUpdate))
                 {
+
+                    var previousStep = RequestSteps
+                  .Where(x => x.RequestID == step.RequestID
+                           && x.Order < step.Order
+                           && x.IsCancelled != true)
+                  .OrderByDescending(x => x.Order)
+                  .FirstOrDefault();
+
+
                     int itemID = updateKPIForm.RelatedID;
 
                     
@@ -171,6 +182,7 @@ namespace SPlus.UseCases
                     myRequest.OldActualValue = updateKPIForm.OldValue;
                     myRequest.ActualValue = updateKPIForm.Value;
 
+                    myRequest.ReviewedBy = Mapper.Map<UserListDTO>(users.Where(w => w.UserName.ToLower() == previousStep?.ActionBy.ToLower()).FirstOrDefault());
                     myRequest.CreatedBy = Mapper.Map<UserListDTO>(users.Where(w => w.UserName.ToLower() == step.Request.CreatedBy.ToLower()).FirstOrDefault());
                     myRequest.Status = step.Request.Status;
 
@@ -440,14 +452,17 @@ namespace SPlus.UseCases
         public TaskCenterListDTO<List<ApprovalDTO>> GetApprovalList(string UserName, string type)
         {
             TaskCenterListDTO<List<ApprovalDTO>> taskCenter = new TaskCenterListDTO<List<ApprovalDTO>>();
-          // var myTasks1 = RequestBLL.GetMyTasks(UserName, false);
-           var myTasks= RequestBLL.GetActiveRequests(UserName, false);
+            // var myTasks1 = RequestBLL.GetMyTasks(UserName, false);
+            List<User> users = UserBLL.Read();
+
+
+            var myTasks = RequestBLL.GetActiveRequests(UserName, false);
             List<KPI> kpis = KPIBLL.TaskCenterKPIs(UserName);
-            taskCenter = GetApprovalList(myTasks, kpis, type);
+            taskCenter = GetApprovalList(myTasks, kpis, type, users);
             return taskCenter;
 
         }
-        private TaskCenterListDTO<List<ApprovalDTO>> GetApprovalList(List<RequestStep> RequestSteps, List<KPI> kpis, string baseworkflow)
+        private TaskCenterListDTO<List<ApprovalDTO>> GetApprovalList(List<RequestStep> RequestSteps, List<KPI> kpis, string baseworkflow,List<User> users)
         {
             TaskCenterListDTO<List<ApprovalDTO>> taskCenter = new TaskCenterListDTO<List<ApprovalDTO>>();
             List<ApprovalDTO> ApprovalList = new List<ApprovalDTO>();
@@ -466,9 +481,9 @@ namespace SPlus.UseCases
                 .ToDictionary(x => x.ID, x => x);
 
 
+            var steps = RequestSteps.Where(x => x.CanApprove).ToList();
 
-
-            foreach (var step in RequestSteps)
+            foreach (var step in steps)
             {
                 //approval = new ApprovalDTO();
                 var parsed = JsonConvert.DeserializeAnonymousType(step.Request.Form, definition);
@@ -484,6 +499,9 @@ namespace SPlus.UseCases
                 };
 
                 // dynamic form = null;
+
+              
+
 
                 UpdateKPIForm updateKPIForm = null;
                 KPIChangeRequestFormDTO kpiChangeRequestFormDTO = null;
@@ -537,6 +555,14 @@ namespace SPlus.UseCases
                 if (type == (int)LevelTypeEnum.KPI &&
                    (baseWF == (int)EnumWFBaseWorkflows.ReUpdate || baseWFID == (int)EnumWFBaseWorkflows.ReUpdate))
                 {
+
+                    var previousStep = RequestSteps
+                  .Where(x => x.RequestID == step.RequestID
+                           && x.Order < step.Order
+                           && x.IsCancelled != true)
+                  .OrderByDescending(x => x.Order)
+                  .FirstOrDefault();
+
                     int itemID = updateKPIForm.RelatedID;
 
                     var kpi = kpis.FirstOrDefault(x => x.KPIMeasures.Any(m => m.ID == itemID));
@@ -556,8 +582,8 @@ namespace SPlus.UseCases
 
                     approval.OldActualValue = updateKPIForm.OldValue;
                     approval.ActualValue = updateKPIForm.Value;
-
-                    //approval.CreatedBy = Mapper.Map<UserListDTO>(users.Where(w => w.UserName.ToLower() == kpiChangeRequestFormDTO.CreatedBy.ToLower()).FirstOrDefault());
+                    approval.ReviewedBy = Mapper.Map<UserListDTO>(users.FirstOrDefault(w => w.UserName.ToLower() == previousStep.ActionBy.ToLower()));
+                    approval.CreatedBy = Mapper.Map<UserListDTO>(users.FirstOrDefault(w => w.UserName.ToLower() == step?.Request?.CreatedBy.ToLower()));
 
 
 

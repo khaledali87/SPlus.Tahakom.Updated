@@ -25,7 +25,9 @@
         public decimal? AccumulutiveTarget { get; set; } = 0;
         public decimal? AccumulutiveValue { get; set; } = 0;
 
-        public UserDTO ActionByModel { get; set; }
+        public UserListDTO ActionBy { get; set; }
+        public UserListDTO ReviewedBy { get; set; }
+        //public UserListDTO CreatedBy { get; set; }
 
 
         public Attachment Attachment { get; set; }

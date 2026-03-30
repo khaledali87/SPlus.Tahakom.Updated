@@ -152,18 +152,19 @@ namespace SPlus.BLL
                     .Include(a => a.KPIs)
                     .Where(s => s.KPITypeID == id).SingleOrDefault();
 
-                Status na = dataAccess.Status.Query().ToList().Where(a => a.Code == "NA").FirstOrDefault();
-                //Status fin = dataAccess.Status.Query().ToList().Where(a => a.Code == "FIN").FirstOrDefault();
+                var statusList = dataAccess.Status.Query().ToList();
 
-                KPIThreshold th = new KPIThreshold();
-                th.Status = na;
+                Status na = statusList.Where(a => a.Code == "NA").FirstOrDefault();
+                Status fin = statusList.Where(a => a.Code == "NAU").FirstOrDefault();
+                Status nas = statusList.Where(a => a.Code == "NAS").FirstOrDefault();
 
-                kpiType.KPIThresholds.Add(th);  
+                KPIThreshold th = new KPIThreshold() { Status = na };
+                KPIThreshold fiTh = new KPIThreshold() { Status = fin };
+                KPIThreshold nasTh = new KPIThreshold() { Status = nas };
                 
-                //KPIThreshold fi = new KPIThreshold();
-                //fi.Status = fin;
-
-                //kpiType.KPIThresholds.Add(fi);
+                kpiType.KPIThresholds.Add(th);
+                kpiType.KPIThresholds.Add(fiTh);
+                kpiType.KPIThresholds.Add(nasTh);
 
                 if (kpiType.KPIs.Count() > 0)
                 {

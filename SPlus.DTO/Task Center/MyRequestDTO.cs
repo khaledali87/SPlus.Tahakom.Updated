@@ -25,6 +25,7 @@ namespace SPlus.DTO
 
 
         public UserListDTO OwnerModel { get; set; }
+        public UserListDTO ReviewedBy { get; set; }
         public AttachmentDTO Attachment { get; set; }
         public OrgStructureDTO OrgStructure { get; set; }
     }

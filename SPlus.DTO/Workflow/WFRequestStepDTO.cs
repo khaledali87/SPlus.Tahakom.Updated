@@ -11,6 +11,7 @@ namespace SPlus.DTO
         public int RequestID { get; set; }
         public int Order { get; set; }
         public string Approver { get; set; }
+        public object ActionBy { get; set; }
         public int WorkflowStepID { get; set; }
         public UserDTO ActionByModel { get; set; }
         public string Comments { get; set; }

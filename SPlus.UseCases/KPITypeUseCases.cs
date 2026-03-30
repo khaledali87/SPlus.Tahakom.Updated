@@ -2,8 +2,10 @@
 using SPlus.DTO;
 using SPlus.Model.Domain;
 using StructureMap;
+using StructureMap.Query;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SPlus.UseCases
 {
@@ -93,6 +95,19 @@ namespace SPlus.UseCases
         #region Create
         public Holiday Create(Holiday holiday)
         {
+            DateTime newStart = holiday.StartDate.Date;
+            DateTime newEnd = holiday.EndDate.Date.AddDays(1).AddTicks(-1); // end of day
+
+            bool isOverlapping = HolidayBLL.Read().Any(x =>
+                            newStart <= x.EndDate &&
+                            newEnd >= x.StartDate
+                        );
+
+            if (isOverlapping)
+            {
+                throw new System.Exception($"The date range ({newStart:yyyy-MM-dd} to {newEnd:yyyy-MM-dd}) overlaps with an existing holidays.");
+            }
+
             return HolidayBLL.Create(holiday);
         }
 
@@ -122,6 +137,19 @@ namespace SPlus.UseCases
 
         public Holiday Update(Holiday holiday)
         {
+            DateTime newStart = holiday.StartDate.Date;
+            DateTime newEnd = holiday.EndDate.Date.AddDays(1).AddTicks(-1); // end of day
+            bool isOverlapping = HolidayBLL.Read().Where(x=> x.ID != holiday.ID).Any(x =>
+                            newStart <= x.EndDate &&
+                            newEnd >= x.StartDate
+                        );
+
+            if (isOverlapping)
+            {
+                throw new System.Exception($"The date range ({newStart:yyyy-MM-dd} to {newEnd:yyyy-MM-dd}) overlaps with an existing holidays.");
+            }
+
+
             return HolidayBLL.Update(holiday); ;
         }
 

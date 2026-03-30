@@ -121,6 +121,10 @@ namespace SPlus.API.Controllers
 
                 try
                 {
+
+
+
+
                     var res = HolidayUseCases.Create(Holiday);
                     result.Data = res;
                     Task.Run(async () => { await HolidayUseCases.Log(Token, res, AuditTrailActionENums.Create); });
@@ -300,7 +304,8 @@ namespace SPlus.API.Controllers
         [DataFormatingInvoker]
         [BasicAuthenticationInvoker]
         [HttpDelete]
-        public ResultWrapper<bool> DeleteHoliday(int ID)
+        [Route("Holidays/{id}")]
+        public ResultWrapper<bool> DeleteHoliday(int id)
         {
             ResultWrapper<bool> result = new ResultWrapper<bool>();
             IEnumerable<string> Token;
@@ -308,7 +313,7 @@ namespace SPlus.API.Controllers
             {
                 try
                 {
-                    result.Data = HolidayUseCases.Delete(ID);
+                    result.Data = HolidayUseCases.Delete(id);
                     Task.Run(async () => { await HolidayUseCases.Log(Token, "Holiday", AuditTrailActionENums.Delete); });
 
                 }

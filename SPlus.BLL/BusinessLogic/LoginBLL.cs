@@ -202,17 +202,17 @@ namespace SPlus.BLL
 
         public void ClearSuccessLogins(string username)
         {
-            using (var dataAccess = _factory.Create())
-            {
-                var list = dataAccess.TwoFactorAuth.Query().Where(l => l.UserName == username).ToList();
-                if (list != null && list.Count > 0)
-                {
-                    foreach (var logged in list)
-                        dataAccess.TwoFactorAuth.Delete(logged);
-                }
-                dataAccess.Complete();
-                dataAccess.Dispose();
-            }
+            //using (var dataAccess = _factory.Create())
+            //{
+            //    var list = dataAccess.TwoFactorAuth.Query().Where(l => l.UserName == username).ToList();
+            //    if (list != null && list.Count > 0)
+            //    {
+            //        foreach (var logged in list)
+            //            dataAccess.TwoFactorAuth.Delete(logged);
+            //    }
+            //    dataAccess.Complete();
+            //    dataAccess.Dispose();
+            //}
         }
         public void IncrementLoginCounter(string username)
         {

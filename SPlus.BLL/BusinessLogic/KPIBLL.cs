@@ -271,12 +271,14 @@ namespace SPlus.BLL
 
                     .SecureListObj(dataAccess, username).Cast<KPI>().ToList();
 
-                MapKPIProperties(kpis.ToList(), false);
-
                 foreach (var item in kpis)
                 {
-                    item.KPIMeasures = item.KPIMeasures.Where(x=> x.HasNoTarget != true).ToList();
+                    item.KPIMeasures = item.KPIMeasures.Where(x => x.HasNoTarget != true).ToList();
                 }
+
+                MapKPIProperties(kpis.ToList(), false);
+
+                
                 return kpis.ToList();
             }
         }
@@ -373,6 +375,11 @@ namespace SPlus.BLL
                 if (kpis != null)
                     kpis = kpis.SecureListObj(dataAccess, username).Cast<KPI>().ToList();
 
+                foreach (var item in kpis)
+                {
+                    item.KPIMeasures = item.KPIMeasures.Where(x => x.HasNoTarget != true).ToList();
+                }
+
                 MapKPIProperties(kpis.ToList());
 
                 return kpis.ToList();
@@ -411,6 +418,11 @@ namespace SPlus.BLL
                 if (kpis != null)
                     kpis = kpis.SecureListObj(dataAccess, username).Cast<KPI>().ToList();
 
+                foreach (var item in kpis)
+                {
+                    item.KPIMeasures = item.KPIMeasures.Where(x => x.HasNoTarget != true).ToList();
+                }
+
                 MapKPIProperties(kpis.ToList(), false);
                 return kpis.ToList();
             }
@@ -423,6 +435,11 @@ namespace SPlus.BLL
                 IEnumerable<KPI> kpis = dataAccess.KPI.Query()
                     .IncludeOptimized(a => a.KPIMeasures)
                     .SecureListObj(dataAccess, username).Cast<KPI>().ToList();
+
+                foreach (var item in kpis)
+                {
+                    item.KPIMeasures = item.KPIMeasures.Where(x => x.HasNoTarget != true).ToList();
+                }
 
                 MapKPIProperties(kpis.ToList(), false);
                 return kpis.ToList();
@@ -444,6 +461,12 @@ namespace SPlus.BLL
                      .IncludeOptimized(a => a.DivisionalObjective)
                     .IncludeOptimizedByPath("DivisionalObjective.OrgStructure");
                 List<KPI> finalKPIs = new List<KPI>();
+
+                foreach (var item in kpis)
+                {
+                    item.KPIMeasures = item.KPIMeasures.Where(x => x.HasNoTarget != true).ToList();
+                }
+
                 MapKPIProperties(kpis.ToList(), true);
 
                 foreach (KPI kpi in kpis)
@@ -475,7 +498,10 @@ namespace SPlus.BLL
                     .IncludeOptimizedByPath("StrategicObjective.Theme")
                        .IncludeOptimized(a => a.DivisionalObjective)
                     .IncludeOptimizedByPath("DivisionalObjective.OrgStructure");
-                ;
+                foreach (var item in kpis)
+                {
+                    item.KPIMeasures = item.KPIMeasures.Where(x => x.HasNoTarget != true).ToList();
+                }
                 MapKPIProperties(kpis.ToList(), false);
                 return kpis.ToList();
             }
@@ -490,8 +516,14 @@ namespace SPlus.BLL
                     .IncludeOptimized(a => a.KPIMeasures)
                     .IncludeOptimized(a => a.StrategicObjective)
                     .IncludeOptimized(a => a.DivisionalObjective)
-                    .IncludeOptimizedByPath("DivisionalObjective.StrategicObjective");
+                    .IncludeOptimizedByPath("DivisionalObjective.StrategicObjective").ToList();
                 // .Where(a => a.DivisionalObjectiveID != null);
+
+                foreach (var item in kpi)
+                {
+                    item.KPIMeasures = item.KPIMeasures.Where(x => x.HasNoTarget != true).ToList();
+                }
+
                 return kpi.ToList();
             }
         }
@@ -520,6 +552,9 @@ namespace SPlus.BLL
 
                 foreach (KPI kpi in kpis)
                 {
+                    kpi.KPIMeasures = kpi.KPIMeasures.Where(x => x.HasNoTarget != true).ToList();
+
+
                     if (months != null && months.Count > 0)
                     {
                         var kpiMeasures = kpi.KPIMeasures.Where(w => Year.HasValue ? w.DueDate.Year == Year.Value : w.DueDate.Year == DateTime.Now.Year && months.Contains(w.DueDate.Month));
@@ -610,6 +645,9 @@ namespace SPlus.BLL
                     .IncludeOptimized(a => a.OrgStructure)
                     .Where(s => s.ID == id).FirstOrDefault();
 
+                kpi.KPIMeasures = kpi.KPIMeasures.Where(x => x.HasNoTarget != true).ToList();
+
+
                 if (kpi != null)
                     kpi = (KPI)kpi.SecureObj(dataAccess, username);
 
@@ -665,6 +703,9 @@ namespace SPlus.BLL
                     .IncludeOptimizedByPath("DivisionalObjective.OrgStructure")
                     .IncludeOptimized(a => a.OrgStructure)
                     .Where(s => s.ID == id).FirstOrDefault();
+
+                kpi.KPIMeasures = kpi.KPIMeasures.Where(x => x.HasNoTarget != true).ToList();
+
 
                 if (kpi != null)
                     kpi = (KPI)kpi.SecureObj(dataAccess, username);
@@ -2303,15 +2344,44 @@ namespace SPlus.BLL
             using (var dataAccess = _factory.Create())
             {
                 KPI kpi = dataAccess.KPI.Query().Include(a => a.KPIMeasures).Where(a => a.KPIMeasures.Any(m => m.ID == measureID)).FirstOrDefault();
-                KPIMeasure measure = kpi.KPIMeasures.Where(a => a.ID == measureID).FirstOrDefault();
+                var measure = kpi.KPIMeasures.Where(a => a.ID == measureID).FirstOrDefault();
+               
+                var previous = kpi.KPIMeasures
+                    .Where(x => x.DueDate < measure.DueDate)
+                    .OrderByDescending(x => x.DueDate)
+                    .FirstOrDefault(); 
+                
                 measure.IsSkipped = IsSkipped;
                 measure.Status = "NAU";
+                measure.Value = 0;
+                measure.AccumulutiveValue = previous.AccumulutiveValue;
                 dataAccess.KPI.Save(kpi);
                 dataAccess.Complete();
             }
         }
-        
 
+        public void SetKPIMeasuresNoAchievementSubmitted(int kpiId)
+        {
+            using (var dataAccess = _factory.Create())
+            {
+                KPI kpi = dataAccess.KPI.Query().Include(a => a.KPIMeasures).Where(a => a.ID == kpiId).FirstOrDefault();
+
+                foreach (var measure in kpi.KPIMeasures.Where(s=> s.AllowUpdate == true && s.Status == "NA"))
+                {
+                    var previous = kpi.KPIMeasures
+                    .Where(x => x.DueDate < measure.DueDate)
+                    .OrderByDescending(x => x.DueDate)
+                    .FirstOrDefault();
+
+                    measure.Status = "NAS";
+                    measure.Value = 0;
+                    measure.AccumulutiveValue = previous?.AccumulutiveValue ?? 0;
+                }
+              
+                dataAccess.KPI.Save(kpi);
+                dataAccess.Complete();
+            }
+        }
 
         private bool CalculateKPIOperation(decimal OutOfTarget, decimal Comparer, bool isMax, string Operator)
         {
@@ -2500,6 +2570,12 @@ namespace SPlus.BLL
                     .IncludeOptimized(a => a.KPIType)
                     .IncludeOptimized(a => a.StrategicObjective)
                     .ToList();
+
+                foreach (var item in kpi)
+                {
+                    item.KPIMeasures = item.KPIMeasures.Where(x => x.HasNoTarget != true).ToList() ?? new List<KPIMeasure>();
+                }
+
                 return kpi.ToList();
             }
         }
@@ -2512,6 +2588,9 @@ namespace SPlus.BLL
                     .IncludeOptimized(a => a.KPIType)
                     .IncludeOptimized(a => a.StrategicObjective)
                     .Where(s => s.ID == id).FirstOrDefault();
+
+                kpi.KPIMeasures = kpi.KPIMeasures.Where(x => x.HasNoTarget != true).ToList() ?? new List<KPIMeasure>();
+
 
 
                 return kpi;
@@ -2612,7 +2691,7 @@ namespace SPlus.BLL
                 return true;
             else
             {
-                KPIMeasure currentMeasure = kpi.KPIMeasures.OrderBy(a => a.ID).Where(a => a.DueDate.Date <= DateTime.Now.Date).LastOrDefault();
+                KPIMeasure currentMeasure = kpi.KPIMeasures.Where(m=> m.HasNoTarget != true).OrderBy(a => a.ID).Where(a => a.DueDate.Date <= DateTime.Now.Date).LastOrDefault();
                 if (currentMeasure != null)
                 {
                     var GetEndDateWorkingDays = DateHelper.GetEndDateWorkingDays(currentMeasure.DueDate.Date, kpi.KPIType.GracePeriod, holidays);
@@ -2655,7 +2734,7 @@ namespace SPlus.BLL
 
         private void MapKPIProperties(KPI kpi, List<KPI> kpis, List<OrgStructure> orgStructures, List<DivisionalObjective> divisionalObjectives, bool calculateCode = true)
         {
-            kpi.KPIMeasures = SetActiveMeasure(kpi.KPIMeasures.ToList());
+            kpi.KPIMeasures = SetActiveMeasure(kpi.KPIMeasures.Where(m=> m.HasNoTarget != true).ToList());
             if (kpi.Direction == null)
                 kpi.Direction = "Same";
             kpi.Target = kpi.KPIMeasures.Where(a => a.IsActive).LastOrDefault()?.Target ?? 0;
@@ -2848,6 +2927,7 @@ namespace SPlus.BLL
 
             foreach (var kpi in kpis)
             {
+                kpi.KPIMeasures= kpi.KPIMeasures.Where(x=> x.HasNoTarget != true).ToList(); 
                 MapKPIProperties(kpi, AllKPIs, AllOrgStructures, DivisionalObjectives);
             }
 

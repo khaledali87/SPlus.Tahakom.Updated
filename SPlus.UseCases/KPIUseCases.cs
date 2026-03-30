@@ -189,7 +189,7 @@ namespace SPlus.UseCases
 
 
                 KPIDetailsDTO KPI = AutoMapper.Mapper.Map<KPIDetailsDTO>(kpi);
-                kpi.KPIMeasures = kpi.KPIMeasures.Where(m => m.HasNoTarget != true).ToList();
+                KPI.KPIMeasures = KPI.KPIMeasures.Where(m => m.HasNoTarget != true).ToList();
 
                 if (KPI.KPIMeasures.Any(e => e.OutOfTarget > 100))
                 {
@@ -528,6 +528,8 @@ namespace SPlus.UseCases
                         }
                     }
 
+                    //var measureTog = KPI.KPIMeasures.Where(a => a.ID == measure.ID).FirstOrDefault()
+
                     if (KPIBLL.IsInGracePeriod(KPI, holidays))
                     {
                         KPI.ManualUnLock = false;
@@ -540,8 +542,9 @@ namespace SPlus.UseCases
                         {
                             if (!rejectedRequests.Any(a => KPI.KPIMeasures.Any(measure => measure.ID == a.UpdateKPIForm?.RelatedID)))
                             {
-                              
+                                
                                 KPI.IsLocked = true;
+                                KPIBLL.SetKPIMeasuresNoAchievementSubmitted(KPI.ID);
                                 //Task.Run(() => { NotificationConfigurationBLL.SendNotificationWorkflow(KPI.ID, 0, 0, enumNotificationEventType.KPILock, LevelTypeEnum.KPI); });
                             }
                             else
@@ -554,6 +557,8 @@ namespace SPlus.UseCases
                                 else
                                 {
                                     KPI.IsLocked = true;
+                                    KPIBLL.SetKPIMeasuresNoAchievementSubmitted(KPI.ID);
+
                                     //Task.Run(() => { NotificationConfigurationBLL.SendNotificationWorkflow(KPI.ID, 0, 0, enumNotificationEventType.KPILock, LevelTypeEnum.KPI); });
                                 }
 
@@ -596,6 +601,8 @@ namespace SPlus.UseCases
                             {
 
                                 KPI.IsLocked = true;
+                                KPIBLL.SetKPIMeasuresNoAchievementSubmitted(KPI.ID);
+
                                 //Task.Run(() => { NotificationConfigurationBLL.SendNotificationWorkflow(KPI.ID, 0, 0, enumNotificationEventType.KPILock, LevelTypeEnum.KPI); });
                             }
                             else
@@ -608,6 +615,8 @@ namespace SPlus.UseCases
                                 else
                                 {
                                     KPI.IsLocked = true;
+                                    KPIBLL.SetKPIMeasuresNoAchievementSubmitted(KPI.ID);
+
                                     //Task.Run(() => { NotificationConfigurationBLL.SendNotificationWorkflow(KPI.ID, 0, 0, enumNotificationEventType.KPILock, LevelTypeEnum.KPI); });
                                 }
 
@@ -631,6 +640,8 @@ namespace SPlus.UseCases
                                 else
                                 {
                                     KPI.IsLocked = true;
+                                    KPIBLL.SetKPIMeasuresNoAchievementSubmitted(KPI.ID);
+
                                     //Task.Run(() => { NotificationConfigurationBLL.SendNotificationWorkflow(KPI.ID, 0, 0, enumNotificationEventType.KPILock, LevelTypeEnum.KPI); });
                                 }
 

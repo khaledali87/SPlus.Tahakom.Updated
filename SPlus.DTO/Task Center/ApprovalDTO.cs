@@ -26,6 +26,7 @@ namespace SPlus.DTO
         public decimal? ActualValue { get; set; } = 0;
 
         public UserListDTO CreatedBy { get; set; }
+        public UserListDTO ReviewedBy { get; set; }
 
     }
 }
