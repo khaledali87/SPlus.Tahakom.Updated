@@ -102,12 +102,15 @@ namespace SPlus.UseCases
             List<MyRequestDTO> ApprovalList_ReUpdatetmp = new List<MyRequestDTO>();
 
             var steps = RequestSteps.Where(x => x.Request.Status == (int)EnumWFStatuses.Pending).ToList();
+
             foreach (var step in steps.GroupBy(s=> s.RequestID).Select(s=> s.LastOrDefault()))
             {
                 try
                 {
+                    if(step.RequestID == 4971)
+                    {
 
-
+                    }
                     var parsed = JsonConvert.DeserializeAnonymousType(step.Request.Form, definition);
                     int type = parsed.Type;
                     int? baseWF = parsed.BaseWorkflow;
@@ -129,12 +132,15 @@ namespace SPlus.UseCases
                     switch (baseWF)
                     {
                         case (int)EnumWFBaseWorkflows.Update:
-                        case (int)EnumWFBaseWorkflows.ReUpdate:
                         case 0:
                             if (type == (int)LevelTypeEnum.KPI)
                                 updateKPIForm = JsonConvert.DeserializeObject<UpdateKPIForm>(step.Request.Form);
                             break;
+                        case (int)EnumWFBaseWorkflows.ReUpdate:
+                            if (type == (int)LevelTypeEnum.KPI)
+                                updateKPIForm = JsonConvert.DeserializeObject<UpdateKPIForm>(step.Request.Form);
 
+                            break;
                         case (int)EnumWFBaseWorkflows.KPIChangeRequest:
                             kpiChangeRequestFormDTO = JsonConvert.DeserializeObject<KPIChangeRequestFormDTO>(step.Request.Form);
                             break;
@@ -152,8 +158,18 @@ namespace SPlus.UseCases
                     if (type == (int)LevelTypeEnum.KPI &&
                       (baseWF == (int)EnumWFBaseWorkflows.ReUpdate || baseWFID == (int)EnumWFBaseWorkflows.ReUpdate))
                     {
-
-                        var previousStep = RequestSteps
+                        var pendingStep = RequestSteps
+                      .Where(x => x.RequestID == step.RequestID
+                               && x.Status == (int)EnumWFStatuses.Pending
+                               && x.IsCancelled != true)
+                                           .OrderByDescending(x => x.Order)
+                                              .FirstOrDefault();
+                        var previousStep = pendingStep != null ? RequestSteps
+                      .Where(x => x.RequestID == pendingStep.RequestID
+                               && x.Order < pendingStep.Order
+                               && x.IsCancelled != true)
+                      .OrderByDescending(x => x.Order)
+                      .FirstOrDefault(): RequestSteps
                       .Where(x => x.RequestID == step.RequestID
                                && x.Order < step.Order
                                && x.IsCancelled != true)
@@ -176,16 +192,16 @@ namespace SPlus.UseCases
                         myRequest.Type = (int)LevelTypeEnum.KPI;
                         myRequest.Created = step.Request.Created;
 
-                        myRequest.AccumulutiveTarget = measure.AccumulutiveTarget;
-                        myRequest.AccumulutiveValue = measure.AccumulutiveValue;
-                        myRequest.DueDate = measure.DueDate;
+                        myRequest.AccumulutiveTarget = measure?.AccumulutiveTarget;
+                        myRequest.AccumulutiveValue = measure?.AccumulutiveValue;
+                        myRequest.DueDate = measure?.DueDate;
 
                         myRequest.BaseWorkflowID = baseWFID;
 
                         myRequest.OldActualValue = updateKPIForm.OldValue;
                         myRequest.ActualValue = updateKPIForm.Value;
 
-                        myRequest.ReviewedBy = Mapper.Map<UserListDTO>(users.Where(w => w.UserName.ToLower() == previousStep?.ActionBy.ToLower()).FirstOrDefault());
+                        myRequest.ReviewedBy = previousStep.ActionBy != null ? Mapper.Map<UserListDTO>(users.Where(w => w.UserName.ToLower() == previousStep?.ActionBy.ToLower()).FirstOrDefault()) : null;
                         myRequest.CreatedBy = Mapper.Map<UserListDTO>(users.Where(w => w.UserName.ToLower() == step.Request.CreatedBy.ToLower()).FirstOrDefault());
                         myRequest.Status = step.Request.Status;
 
@@ -275,6 +291,7 @@ namespace SPlus.UseCases
 
                 catch
                 {
+                    var rId = step.RequestID;
                     continue;
                 }
 
