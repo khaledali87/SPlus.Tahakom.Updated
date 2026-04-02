@@ -69,14 +69,19 @@ namespace SPlus.BLL
             var definition = new { IsDraft = false, CreatedBy = string.Empty, BaseWorkflow = 0 };
             var requests = GetRequests(userName,false)
                           .Where(a => a.CreatedBy.ToLower() == userName.ToLower() ||  JsonConvert.DeserializeAnonymousType(a.Form, definition).CreatedBy?.ToLower() == userName.ToLower()).ToList();
+           
             var steps = requests.SelectMany(r => r.RequestSteps)
                                 .Where(r => !r.IsCancelled)
                                 .isAllowedToDoActionList(userName.MapUserWithGroups())
-                                .Where(a => a.CanApprove)
+                                //.Where(a => a.CanApprove)
                                 .ToList();
 
 
-            var DraftRequest = requests.Where(a => JsonConvert.DeserializeAnonymousType(a.Form, definition).IsDraft || a.Status == (int)EnumWFStatuses.Return || a.Status == (int)EnumWFStatuses.Rejected || a.Status == (int)EnumWFStatuses.Completed || a.Status == (int)EnumWFStatuses.Pending).ToList();
+            var DraftRequest = requests.Where(a => JsonConvert.DeserializeAnonymousType(a.Form, definition).IsDraft && ( 
+                                        a.Status == (int)EnumWFStatuses.Return || 
+                                        a.Status == (int)EnumWFStatuses.Rejected || 
+                                        a.Status == (int)EnumWFStatuses.Completed || 
+                                        a.Status == (int)EnumWFStatuses.Pending)).ToList();
             RequestStep requestStep;
             foreach (var request in DraftRequest)
             {
@@ -195,9 +200,14 @@ namespace SPlus.BLL
                     // Only consider steps that are not cancelled
                     var steps = request.RequestSteps.Where(s => !s.IsCancelled);
                         // If this request is related to another request
-                        if (request.RelatedRequestID != 0 && request.WorkflowID != 103 &&
+
+                        if(request.WorkflowID == 103)
+                        {
+                             steps = steps.isAllowedToDoActionList(user);
+                        }
+                        else if (request.RelatedRequestID != 0 && 
                             requestDict.TryGetValue(request.RelatedRequestID, out var relatedRequest) &&
-                            relatedRequest.Status == (int)EnumWFStatuses.Completed)
+                            (relatedRequest.Status == (int)EnumWFStatuses.Completed || relatedRequest.Status == (int)EnumWFStatuses.Rejected))
                         {
                             steps = steps.isAllowedToDoActionList(user);
                         }
@@ -251,8 +261,17 @@ namespace SPlus.BLL
                     // Only consider steps that are not cancelled
                     var steps = request.RequestSteps.Where(s => !s.IsCancelled);
 
+                    if(request.ID == 5007)
+                    {
+
+                    }
+
+                    if(request.WorkflowID == 103)
+                    {
+                        steps = steps.isAllowedToDoActionList(user);
+                    }
                     // If this request is related to another request
-                    if (request.RelatedRequestID != 0 &&
+                    else if (request.RelatedRequestID != 0 &&
                         requestDict.TryGetValue(request.RelatedRequestID, out var relatedRequest) &&
                         relatedRequest.Status == (int)EnumWFStatuses.Completed)
                     {
@@ -262,6 +281,7 @@ namespace SPlus.BLL
                     {
                         steps = steps.isAllowedToDoActionList(user);
                     }
+                  
 
                     // Mark request as approvable if any of its steps can be approved
                     request.CanApprove = steps.Any(s => s.CanApprove);
@@ -269,7 +289,7 @@ namespace SPlus.BLL
             
             // 5️⃣ Only return steps from requests that are active
             return requests
-                .Where(r => r.IsActive)
+                .Where(r => r.IsActive || r.WorkflowID == 103)
                 .SelectMany(r => r.RequestSteps)
                 //.Where(s => !s.IsCancelled && s.CanApprove)
                 .Where(s => !s.IsCancelled)

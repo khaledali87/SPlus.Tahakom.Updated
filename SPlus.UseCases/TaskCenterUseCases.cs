@@ -89,9 +89,9 @@ namespace SPlus.UseCases
 
             var definition = new { BaseWorkflow = 0, Type = 0, ID = 0 , BaseWorkflowID = 0 };
 
-            var kpiIndex = kpis
-                .SelectMany(k => k.KPIMeasures.Select(m => new { m.ID, KPI = k, Measure = m }))
-                .ToDictionary(x => x.ID, x => x);
+            //var kpiIndex = kpis
+            //    .SelectMany(k => k.KPIMeasures.Select(m => new { m.ID, KPI = k, Measure = m }))
+            //    .ToDictionary(x => x.ID, x => x);
 
 
 
@@ -101,174 +101,182 @@ namespace SPlus.UseCases
             List<MyRequestDTO> ApprovalList_WorkProctmp = new List<MyRequestDTO>();
             List<MyRequestDTO> ApprovalList_ReUpdatetmp = new List<MyRequestDTO>();
 
-            var steps = RequestSteps.Where(x => x.CanApprove).ToList();
-
-            foreach (var step in RequestSteps)
+            var steps = RequestSteps.Where(x => x.Request.Status == (int)EnumWFStatuses.Pending).ToList();
+            foreach (var step in steps.GroupBy(s=> s.RequestID).Select(s=> s.LastOrDefault()))
             {
-                var parsed = JsonConvert.DeserializeAnonymousType(step.Request.Form, definition);
-                int type = parsed.Type;
-                int? baseWF = parsed.BaseWorkflow;
-                int baseWFID = parsed.BaseWorkflowID;
-                MyRequestDTO myRequest = new MyRequestDTO
-                {
-                    RequestID = step.RequestID,
-                    BaseWorkflowID = baseWF ?? baseWFID,
-                    Attachment = Mapper.Map<AttachmentDTO>(step?.Request?.Attachment)
-                };
-
-                // dynamic form = null;
-
-                UpdateKPIForm updateKPIForm = null;
-                KPIChangeRequestFormDTO kpiChangeRequestFormDTO = null;
-                CreateKPIFormDTO createKPIFormDTO = null;
-                MitigationActionRequestFormDTO mitigationActionRequestFormDTO = null;
-                // Deserialize ONCE based on workflow
-                switch (baseWF)
-                {
-                    case (int)EnumWFBaseWorkflows.Update:
-                    case (int)EnumWFBaseWorkflows.ReUpdate:
-                    case 0:
-                        if (type == (int)LevelTypeEnum.KPI)
-                            updateKPIForm = JsonConvert.DeserializeObject<UpdateKPIForm>(step.Request.Form);
-                        break;
-
-                    case (int)EnumWFBaseWorkflows.KPIChangeRequest:
-                        kpiChangeRequestFormDTO = JsonConvert.DeserializeObject<KPIChangeRequestFormDTO>(step.Request.Form);
-                        break;
-
-                    case (int)EnumWFBaseWorkflows.CreateKPI:
-                        createKPIFormDTO = JsonConvert.DeserializeObject<CreateKPIFormDTO>(step.Request.Form);
-                        break;
-
-                    case (int)EnumWFBaseWorkflows.MitigationAction:
-                        mitigationActionRequestFormDTO = JsonConvert.DeserializeObject<MitigationActionRequestFormDTO>(step.Request.Form);
-                        break;
-                }
-
-
-                if (type == (int)LevelTypeEnum.KPI &&
-                  (baseWF == (int)EnumWFBaseWorkflows.ReUpdate || baseWFID == (int)EnumWFBaseWorkflows.ReUpdate))
+                try
                 {
 
-                    var previousStep = RequestSteps
-                  .Where(x => x.RequestID == step.RequestID
-                           && x.Order < step.Order
-                           && x.IsCancelled != true)
-                  .OrderByDescending(x => x.Order)
-                  .FirstOrDefault();
 
-
-                    int itemID = updateKPIForm.RelatedID;
-
-                    
-
-                    var kpi = KPIBLL.GetKPIByMeasureID_All(itemID);
-                    var measure = kpi.KPIMeasures.FirstOrDefault(x => x.ID == itemID);  
-                    //if (!kpiIndex.TryGetValue(itemID, out var row))
-                    //    continue;
-
-                    myRequest.ID = kpi.ID;
-                    myRequest.EnglishName = kpi.EnglishName;
-                    myRequest.ArabicName = kpi.ArabicName;
-                    myRequest.Type = (int)LevelTypeEnum.KPI;
-                    myRequest.Created = step.Request.Created;
-
-                    myRequest.AccumulutiveTarget = measure.AccumulutiveTarget;
-                    myRequest.AccumulutiveValue = measure.AccumulutiveValue;
-                    myRequest.DueDate = measure.DueDate;
-
-                    myRequest.BaseWorkflowID = baseWFID;
-
-                    myRequest.OldActualValue = updateKPIForm.OldValue;
-                    myRequest.ActualValue = updateKPIForm.Value;
-
-                    myRequest.ReviewedBy = Mapper.Map<UserListDTO>(users.Where(w => w.UserName.ToLower() == previousStep?.ActionBy.ToLower()).FirstOrDefault());
-                    myRequest.CreatedBy = Mapper.Map<UserListDTO>(users.Where(w => w.UserName.ToLower() == step.Request.CreatedBy.ToLower()).FirstOrDefault());
-                    myRequest.Status = step.Request.Status;
-
-                    ApprovalList_ReUpdatetmp.Add(myRequest);
-
-                    if (taskcentertype == TaskCentreWFTypeEnum.ReUpdate || taskcentertype == TaskCentreWFTypeEnum.All)
-                        MyRequestList.Add(myRequest);
-                }
-                //
-                // ******** Work Procedure (KPI Change Request / Create KPI) ********
-                //
-                if (type == (int)LevelTypeEnum.KPI && baseWF == (int)EnumWFBaseWorkflows.KPIChangeRequest)
-                {
-
-                    KPI kpi = new KPI();
-                 
-                    kpi = kpis.Where(w => w.ID == kpiChangeRequestFormDTO.ID).FirstOrDefault();
-                    if (kpi is null)
-                        continue;
-
-                    myRequest.Created = kpiChangeRequestFormDTO.Created;
-                    myRequest.CreatedBy = Mapper.Map<UserListDTO>(users.Where(w => w.UserName.ToLower() == kpiChangeRequestFormDTO.CreatedBy.ToLower()).FirstOrDefault());
-                    myRequest.EnglishName = kpi.EnglishName;
-                    myRequest.ArabicName = kpi.ArabicName;
-                    myRequest.Type = (int)LevelTypeEnum.KPI;
-                    myRequest.Status = step.Request.Status;
-                    ApprovalList_WorkProctmp.Add(myRequest);
-
-                    if (taskcentertype == TaskCentreWFTypeEnum.WorkProcedure || taskcentertype == TaskCentreWFTypeEnum.All)
-                        MyRequestList.Add(myRequest);
-
-                }
-
-                if (type == (int)LevelTypeEnum.CreateKPI && baseWF == (int)EnumWFBaseWorkflows.CreateKPI)
-                {
-
-                   
-
-                    myRequest.Created = createKPIFormDTO.Created;
-                    myRequest.CreatedBy = Mapper.Map<UserListDTO>(users.Where(w => w.UserName.ToLower() == createKPIFormDTO.CreatedBy.ToLower()).FirstOrDefault());
-                    myRequest.EnglishName = createKPIFormDTO.EnglishName;
-                    myRequest.ArabicName = createKPIFormDTO.ArabicName;
-                    myRequest.Type = (int)LevelTypeEnum.KPI;
-                    myRequest.Status = step.Request.Status;
-                    if (createKPIFormDTO.DivisionalObjective != null)
+                    var parsed = JsonConvert.DeserializeAnonymousType(step.Request.Form, definition);
+                    int type = parsed.Type;
+                    int? baseWF = parsed.BaseWorkflow;
+                    int baseWFID = parsed.BaseWorkflowID;
+                    MyRequestDTO myRequest = new MyRequestDTO
                     {
-                        myRequest.BaseWorkflowID = (int)EnumWFBaseWorkflows.DepartmentalKPI;
-                    }
-                    else
+                        RequestID = step.RequestID,
+                        BaseWorkflowID = baseWF ?? baseWFID,
+                        Attachment = Mapper.Map<AttachmentDTO>(step?.Request?.Attachment)
+                    };
+
+                    // dynamic form = null;
+
+                    UpdateKPIForm updateKPIForm = null;
+                    KPIChangeRequestFormDTO kpiChangeRequestFormDTO = null;
+                    CreateKPIFormDTO createKPIFormDTO = null;
+                    MitigationActionRequestFormDTO mitigationActionRequestFormDTO = null;
+                    // Deserialize ONCE based on workflow
+                    switch (baseWF)
                     {
-                        myRequest.BaseWorkflowID = (int)EnumWFBaseWorkflows.StrategicKPI;
+                        case (int)EnumWFBaseWorkflows.Update:
+                        case (int)EnumWFBaseWorkflows.ReUpdate:
+                        case 0:
+                            if (type == (int)LevelTypeEnum.KPI)
+                                updateKPIForm = JsonConvert.DeserializeObject<UpdateKPIForm>(step.Request.Form);
+                            break;
+
+                        case (int)EnumWFBaseWorkflows.KPIChangeRequest:
+                            kpiChangeRequestFormDTO = JsonConvert.DeserializeObject<KPIChangeRequestFormDTO>(step.Request.Form);
+                            break;
+
+                        case (int)EnumWFBaseWorkflows.CreateKPI:
+                            createKPIFormDTO = JsonConvert.DeserializeObject<CreateKPIFormDTO>(step.Request.Form);
+                            break;
+
+                        case (int)EnumWFBaseWorkflows.MitigationAction:
+                            mitigationActionRequestFormDTO = JsonConvert.DeserializeObject<MitigationActionRequestFormDTO>(step.Request.Form);
+                            break;
                     }
 
-                
-                    ApprovalList_WorkProctmp.Add(myRequest);
 
-                    if (taskcentertype == TaskCentreWFTypeEnum.WorkProcedure || taskcentertype == TaskCentreWFTypeEnum.All)
-                        MyRequestList.Add(myRequest);
+                    if (type == (int)LevelTypeEnum.KPI &&
+                      (baseWF == (int)EnumWFBaseWorkflows.ReUpdate || baseWFID == (int)EnumWFBaseWorkflows.ReUpdate))
+                    {
+
+                        var previousStep = RequestSteps
+                      .Where(x => x.RequestID == step.RequestID
+                               && x.Order < step.Order
+                               && x.IsCancelled != true)
+                      .OrderByDescending(x => x.Order)
+                      .FirstOrDefault();
+
+
+                        int itemID = updateKPIForm.RelatedID;
+
+
+
+                        var kpi = KPIBLL.GetKPIByMeasureID_All(itemID);
+                        var measure = kpi.KPIMeasures.FirstOrDefault(x => x.ID == itemID);
+                        //if (!kpiIndex.TryGetValue(itemID, out var row))
+                        //    continue;
+
+                        myRequest.ID = kpi.ID;
+                        myRequest.EnglishName = kpi.EnglishName;
+                        myRequest.ArabicName = kpi.ArabicName;
+                        myRequest.Type = (int)LevelTypeEnum.KPI;
+                        myRequest.Created = step.Request.Created;
+
+                        myRequest.AccumulutiveTarget = measure.AccumulutiveTarget;
+                        myRequest.AccumulutiveValue = measure.AccumulutiveValue;
+                        myRequest.DueDate = measure.DueDate;
+
+                        myRequest.BaseWorkflowID = baseWFID;
+
+                        myRequest.OldActualValue = updateKPIForm.OldValue;
+                        myRequest.ActualValue = updateKPIForm.Value;
+
+                        myRequest.ReviewedBy = Mapper.Map<UserListDTO>(users.Where(w => w.UserName.ToLower() == previousStep?.ActionBy.ToLower()).FirstOrDefault());
+                        myRequest.CreatedBy = Mapper.Map<UserListDTO>(users.Where(w => w.UserName.ToLower() == step.Request.CreatedBy.ToLower()).FirstOrDefault());
+                        myRequest.Status = step.Request.Status;
+
+                        ApprovalList_ReUpdatetmp.Add(myRequest);
+
+                        if (taskcentertype == TaskCentreWFTypeEnum.ReUpdate || taskcentertype == TaskCentreWFTypeEnum.All)
+                            MyRequestList.Add(myRequest);
+                    }
+                    //
+                    // ******** Work Procedure (KPI Change Request / Create KPI) ********
+                    //
+                    if (type == (int)LevelTypeEnum.KPI && baseWF == (int)EnumWFBaseWorkflows.KPIChangeRequest)
+                    {
+
+                        KPI kpi = new KPI();
+
+                        kpi = kpis.Where(w => w.ID == kpiChangeRequestFormDTO.ID).FirstOrDefault();
+                        if (kpi is null)
+                            continue;
+
+                        myRequest.Created = kpiChangeRequestFormDTO.Created;
+                        myRequest.CreatedBy = Mapper.Map<UserListDTO>(users.Where(w => w.UserName.ToLower() == kpiChangeRequestFormDTO.CreatedBy.ToLower()).FirstOrDefault());
+                        myRequest.EnglishName = kpi.EnglishName;
+                        myRequest.ArabicName = kpi.ArabicName;
+                        myRequest.Type = (int)LevelTypeEnum.KPI;
+                        myRequest.Status = step.Request.Status;
+                        ApprovalList_WorkProctmp.Add(myRequest);
+
+                        if (taskcentertype == TaskCentreWFTypeEnum.WorkProcedure || taskcentertype == TaskCentreWFTypeEnum.All)
+                            MyRequestList.Add(myRequest);
+
+                    }
+
+                    if (type == (int)LevelTypeEnum.CreateKPI && baseWF == (int)EnumWFBaseWorkflows.CreateKPI)
+                    {
+
+
+
+                        myRequest.Created = createKPIFormDTO.Created;
+                        myRequest.CreatedBy = Mapper.Map<UserListDTO>(users.Where(w => w.UserName.ToLower() == createKPIFormDTO.CreatedBy.ToLower()).FirstOrDefault());
+                        myRequest.EnglishName = createKPIFormDTO.EnglishName;
+                        myRequest.ArabicName = createKPIFormDTO.ArabicName;
+                        myRequest.Type = (int)LevelTypeEnum.KPI;
+                        myRequest.Status = step.Request.Status;
+                        if (createKPIFormDTO.DivisionalObjective != null)
+                        {
+                            myRequest.BaseWorkflowID = (int)EnumWFBaseWorkflows.DepartmentalKPI;
+                        }
+                        else
+                        {
+                            myRequest.BaseWorkflowID = (int)EnumWFBaseWorkflows.StrategicKPI;
+                        }
+
+
+                        ApprovalList_WorkProctmp.Add(myRequest);
+
+                        if (taskcentertype == TaskCentreWFTypeEnum.WorkProcedure || taskcentertype == TaskCentreWFTypeEnum.All)
+                            MyRequestList.Add(myRequest);
+                    }
+
+                    //
+                    // ******** Mitigation ********
+                    //
+                    if (type == (int)LevelTypeEnum.MitigationAction &&
+                        baseWF == (int)EnumWFBaseWorkflows.MitigationAction)
+                    {
+
+
+
+
+                        myRequest.Created = mitigationActionRequestFormDTO.Created;
+                        myRequest.CreatedBy = Mapper.Map<UserListDTO>(users.Where(w => w.UserName.ToLower() == mitigationActionRequestFormDTO.CreatedBy.ToLower()).FirstOrDefault());
+                        myRequest.EnglishName = mitigationActionRequestFormDTO.KPI.EnglishName;
+                        myRequest.ArabicName = mitigationActionRequestFormDTO.KPI.ArabicName;
+                        myRequest.Type = (int)LevelTypeEnum.MitigationAction;
+                        myRequest.Status = step.Request.Status;
+                        myRequest.OrgStructure = mitigationActionRequestFormDTO.OrgStructure;
+                        myRequest.OwnerModel = mitigationActionRequestFormDTO.KPI.OwnerModel;
+
+
+                        ApprovalList_Mitigationtmp.Add(myRequest);
+
+                        if (taskcentertype == TaskCentreWFTypeEnum.MitigationActions || taskcentertype == TaskCentreWFTypeEnum.All)
+                            MyRequestList.Add(myRequest);
+                    }
                 }
 
-                //
-                // ******** Mitigation ********
-                //
-                if (type == (int)LevelTypeEnum.MitigationAction &&
-                    baseWF == (int)EnumWFBaseWorkflows.MitigationAction)
+                catch
                 {
-
-                  
-
-
-                    myRequest.Created = mitigationActionRequestFormDTO.Created;
-                    myRequest.CreatedBy = Mapper.Map<UserListDTO>(users.Where(w => w.UserName.ToLower() == mitigationActionRequestFormDTO.CreatedBy.ToLower()).FirstOrDefault());
-                    myRequest.EnglishName = mitigationActionRequestFormDTO.KPI.EnglishName;
-                    myRequest.ArabicName = mitigationActionRequestFormDTO.KPI.ArabicName;
-                    myRequest.Type = (int)LevelTypeEnum.MitigationAction;
-                    myRequest.Status = step.Request.Status;
-                    myRequest.OrgStructure = mitigationActionRequestFormDTO.OrgStructure;
-                    myRequest.OwnerModel = mitigationActionRequestFormDTO.KPI.OwnerModel;
-                  
-
-                    ApprovalList_Mitigationtmp.Add(myRequest);
-
-                    if (taskcentertype == TaskCentreWFTypeEnum.MitigationActions || taskcentertype == TaskCentreWFTypeEnum.All)
-                        MyRequestList.Add(myRequest);
+                    continue;
                 }
-
 
             }
 

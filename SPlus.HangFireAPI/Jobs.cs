@@ -25,7 +25,7 @@ namespace Tahakum.SPlus.HangFireAPI
         {
             #region Minutely
             RecurringJob.AddOrUpdate(() => OpenKPIForUpdate(), Cron.Minutely);
-            //RecurringJob.AddOrUpdate(() => LockUnlockKPIs(), Cron.Minutely);
+            //RecurringJob.AddOrUpdate(() => AutoApproveRejectedRequests(), Cron.Minutely);
 
 
             RecurringJob.AddOrUpdate(() => UpdateUsersFromActiveDirectory(), "*/05 * * * *");
@@ -52,6 +52,11 @@ namespace Tahakum.SPlus.HangFireAPI
         {
             kpiUseCases.OpenKPIsForUpdate();
         }
+
+        //public void AutoApproveRejectedRequests()
+        //{
+        //    kpiUseCases.AutoApproveRejectedRequests();
+        //}
         //public void LockUnlockKPIs()
         //{
         //    kpiUseCases.LockUnlockKPIs();

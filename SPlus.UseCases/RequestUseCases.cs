@@ -8,6 +8,7 @@ using SPlus.Helper;
 using SPlus.Model;
 using SPlus.Model.Domain;
 using StructureMap;
+using StructureMap.Query;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -297,23 +298,23 @@ namespace SPlus.UseCases
                                    && x.IsCancelled != true)
                           .OrderByDescending(x => x.Order)
                           .FirstOrDefault() : req.RequestSteps
-                          .Where(x => x.RequestID == step.RequestID
-                                   && x.IsCancelled != true)
+                          .Where(x => x.IsCancelled != true)
                           .OrderByDescending(x => x.Order)
                           .FirstOrDefault();
 
-                        RequestDetailsDTO related = AutoMapper.Mapper.Map<RequestDetailsDTO>(req);
+                    RequestDetailsDTO related = AutoMapper.Mapper.Map<RequestDetailsDTO>(req);
+
+                   related.Status = previous?.Status ?? related.Status;
 
                     UpdateKPIForm relatedForm = JsonConvert.DeserializeObject<UpdateKPIForm>(req.Form);
-
+                    JObject formm = new JObject();
                     if (kpi != null)
                     {
-                        //if (kpi.KPIMeasures.Where(a => a.Status != "NA").Count() > 0)
-                        //    form.OldValue = kpi.KPIMeasures.Where(a => a.Status != "NA").FirstOrDefault().Value.Value;
-                        //else
-                        //    form.OldValue = kpi.Baseline;
+                            //if (kpi.KPIMeasures.Where(a => a.Status != "NA").Count() > 0)
+                            //    form.OldValue = kpi.KPIMeasures.Where(a => a.Status != "NA").FirstOrDefault().Value.Value;
+                            //else
+                            //    form.OldValue = kpi.Baseline;
 
-                        
 
                         if (kpi.KPIMeasures.Min(x => x.ID) == form.RelatedID)
                             relatedForm.OldValue = kpi.Baseline;
@@ -331,9 +332,16 @@ namespace SPlus.UseCases
 
                         relatedForm.ReviewedBy = Mapper.Map<UserListDTO>(users.FirstOrDefault(w => w.UserName.ToLower() == previous?.ActionBy.ToLower()));
                         relatedForm.ActionBy = Mapper.Map<UserListDTO>(users.FirstOrDefault(w => w.UserName.ToLower() == step?.Request?.CreatedBy.ToLower()));
+                        //relatedForm.CreatedBy = 
                         relatedForm.ActionDate = previous?.Modified;
-                        //related.Steps = new List<RequestStepDTO>();
-                    }
+
+
+                        formm = JObject.FromObject(relatedForm);
+
+                        formm["CreatedBy"] = JObject.FromObject(Mapper.Map<UserListDTO>(users.FirstOrDefault(w => w.UserName.ToLower() == req.CreatedBy.ToLower())));
+
+                            //related.Steps = new List<RequestStepDTO>();
+                        }
 
                     foreach (var stepp in related.Steps)
                     {
@@ -345,7 +353,7 @@ namespace SPlus.UseCases
                         };
                     }
 
-                    related.Form = relatedForm;
+                    related.Form = formm.ToObject<object>();
                     
                     requestDTO.Related.Add(related);
                 }

@@ -27,7 +27,8 @@
 
         public UserListDTO ActionBy { get; set; }
         public UserListDTO ReviewedBy { get; set; }
-        //public UserListDTO CreatedBy { get; set; }
+
+        //public object CreatedBy { get; set; }
 
 
         public Attachment Attachment { get; set; }

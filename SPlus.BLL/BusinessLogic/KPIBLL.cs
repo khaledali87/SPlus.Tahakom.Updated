@@ -2353,35 +2353,99 @@ namespace SPlus.BLL
                 
                 measure.IsSkipped = IsSkipped;
                 measure.Status = "NAU";
-                measure.Value = 0;
+                measure.Value = previous.Value;
                 measure.AccumulutiveValue = previous.AccumulutiveValue;
+                measure.AccumulutiveStatus = "NAU"; 
+                measure.AccumulutiveTarget = previous.AccumulutiveTarget; 
+                measure.AccumulutiveOutOfTarget = previous.AccumulutiveOutOfTarget; 
                 dataAccess.KPI.Save(kpi);
                 dataAccess.Complete();
             }
         }
 
-        public void SetKPIMeasuresNoAchievementSubmitted(int kpiId)
-        {
-            using (var dataAccess = _factory.Create())
-            {
-                KPI kpi = dataAccess.KPI.Query().Include(a => a.KPIMeasures).Where(a => a.ID == kpiId).FirstOrDefault();
+        //public void SetKPIMeasuresNoAchievementSubmitted(int kpiId)
+        //{
+        //    using (var dataAccess = _factory.Create())
+        //    {
+        //        KPI kpi = dataAccess.KPI.Query().Include(a => a.KPIMeasures).Where(a => a.ID == kpiId).FirstOrDefault();
 
-                foreach (var measure in kpi.KPIMeasures.Where(s=> s.AllowUpdate == true && s.Status == "NA"))
-                {
-                    var previous = kpi.KPIMeasures
-                    .Where(x => x.DueDate < measure.DueDate)
+        //        var current = kpi.KPIMeasures.FirstOrDefault(s => s.AllowUpdate == true && s.Status == "NA");
+                
+        //        var previous = kpi.KPIMeasures
+        //            .Where(x => x.DueDate < current?.DueDate)
+        //            .OrderByDescending(x => x.DueDate)
+        //            .FirstOrDefault();
+
+        //        var next = kpi.KPIMeasures
+        //            .Where(x => x.DueDate > current?.DueDate)
+        //            .OrderBy(x => x.DueDate)
+        //            .FirstOrDefault();
+
+
+        //        foreach (var measure in kpi.KPIMeasures)
+        //        {
+                   
+        //            if(measure.ID == current?.ID)
+        //            {
+        //                measure.Status = "NAS";
+        //                measure.Value = 0;
+        //                measure.OutOfTarget = CalculateTarget(measure, kpi, kpi.KPIMeasures.ToList());
+        //                measure.AllowUpdate = false;    
+        //                measure.AccumulutiveStatus = "NAS";
+        //                measure.AccumulutiveValue = previous?.AccumulutiveValue ?? 0;
+        //                measure.AccumulutiveOutOfTarget = previous?.AccumulutiveOutOfTarget ?? 0;
+        //                measure.AccumulutiveTarget = previous?.AccumulutiveTarget ?? 0;
+        //            }
+
+        //            if (measure.ID == next?.ID)
+        //            {
+        //                measure.AllowUpdate = true;
+        //            }
+        //        }
+              
+        //        dataAccess.KPI.Save(kpi);
+        //        dataAccess.Complete();
+        //    }
+        //}
+
+        public void SetKPIMeasuresNoAchievementSubmitted(KPI kpi)
+        {
+                var current = kpi.KPIMeasures.FirstOrDefault(s => s.AllowUpdate == true && s.Status == "NA");
+
+                var previous = kpi.KPIMeasures
+                    .Where(x => x.DueDate < current?.DueDate)
                     .OrderByDescending(x => x.DueDate)
                     .FirstOrDefault();
 
-                    measure.Status = "NAS";
-                    measure.Value = 0;
-                    measure.AccumulutiveValue = previous?.AccumulutiveValue ?? 0;
+                var next = kpi.KPIMeasures
+                    .Where(x => x.DueDate > current?.DueDate)
+                    .OrderBy(x => x.DueDate)
+                    .FirstOrDefault();
+
+
+                foreach (var measure in kpi.KPIMeasures)
+                {
+
+                    if (measure.ID == current?.ID)
+                    {
+                        measure.Status = "NAS";
+                        measure.Value = 0;
+                        measure.OutOfTarget = CalculateTarget(measure, kpi, kpi.KPIMeasures.ToList());
+                        measure.AllowUpdate = false;
+                        measure.AccumulutiveStatus = "NAS";
+                        measure.AccumulutiveValue = previous?.AccumulutiveValue ?? 0;
+                        measure.AccumulutiveOutOfTarget = previous?.AccumulutiveOutOfTarget ?? 0;
+                        measure.AccumulutiveTarget = previous?.AccumulutiveTarget ?? 0;
+                    }
+
+                    if (measure.ID == next?.ID)
+                    {
+                        measure.AllowUpdate = true;
+                    }
                 }
-              
-                dataAccess.KPI.Save(kpi);
-                dataAccess.Complete();
-            }
+
         }
+        
 
         private bool CalculateKPIOperation(decimal OutOfTarget, decimal Comparer, bool isMax, string Operator)
         {
@@ -2608,6 +2672,7 @@ namespace SPlus.BLL
                         continue;
                     }
                     dataAccess.KPI.Save(kpi);
+                    
                     foreach (KPIMeasure item in kpi.KPIMeasures)
                     {
                         dataAccess.KPIMeasure.Save(item);
@@ -2704,6 +2769,27 @@ namespace SPlus.BLL
             }
         }
 
+        public bool IsInGracePeriodUpdated(KPI kpi, List<DateTime> holidays = default)
+        {
+            holidays = holidays ?? new List<DateTime>();
+            if (kpi.KPIType.GracePeriod == 0)
+                return true;
+            else
+            {
+                KPIMeasure currentMeasure = kpi.KPIMeasures.OrderBy(a => a.ID)
+                    .Where(a => a.HasNoTarget != true && a.AllowUpdate == true && a.DueDate.Date <= DateTime.Now.Date).FirstOrDefault();
+                if (currentMeasure != null)
+                {
+                    var GetEndDateWorkingDays = DateHelper.GetEndDateWorkingDays(currentMeasure.DueDate.Date, kpi.KPIType.GracePeriod, holidays);
+                    if (DateTime.Now.Date >= currentMeasure.DueDate.Date && DateTime.Now.Date <= GetEndDateWorkingDays.Date)
+                        return true;
+                    else
+                        return false;
+                }
+                return false;
+            }
+        }
+
         public bool IsInGracePeriod_Rejected(DateTime rejectedDate, KPI kpi , List<DateTime> holidays)
         {
             
@@ -2746,10 +2832,13 @@ namespace SPlus.BLL
             {
                 kpi.KPIMeasures.ToList().ForEach(f =>
                 {
-                    f.AccumulutiveOutOfTarget = f.OutOfTarget;
-                    f.AccumulutiveValue = f.Value;
-                    f.AccumulutiveTarget = f.Target;
-                    f.AccumulutiveStatus = f.Status;
+                    if(f.Status != "NAS")
+                    {
+                        f.AccumulutiveOutOfTarget = f.OutOfTarget;
+                        f.AccumulutiveValue = f.Value;
+                        f.AccumulutiveTarget = f.Target;
+                        f.AccumulutiveStatus = f.Status;
+                    }
                 });
             }
 
