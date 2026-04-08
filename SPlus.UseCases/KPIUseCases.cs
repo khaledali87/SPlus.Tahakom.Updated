@@ -297,7 +297,7 @@ namespace SPlus.UseCases
 
         public List<KPIDetailsDTO> ReadChangeRequestKpis(string username, int? Year)
         {
-            var kpis = KPIBLL.ReadReportKPIs(username, Year , false);
+            var kpis = KPIBLL.ReadReportKPIsAllMeasures(username, Year);
             if (kpis != null)
             {
                 if (Year.HasValue)

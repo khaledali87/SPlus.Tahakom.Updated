@@ -342,7 +342,7 @@ namespace SPlus.BLL
             }
         }
 
-        public List<KPI> ReadReportKPIs(string username, int? year , bool? filterHasNoTarget = true)
+        public List<KPI> ReadReportKPIs(string username, int? year)
         {
             using (var dataAccess = _factory.Create())
             {
@@ -376,20 +376,60 @@ namespace SPlus.BLL
                 if (kpis != null)
                     kpis = kpis.SecureListObj(dataAccess, username).Cast<KPI>().ToList();
 
-                if(filterHasNoTarget == true)
-                {
+                
                     foreach (var item in kpis)
                     {
                         item.KPIMeasures = item.KPIMeasures.Where(x => x.HasNoTarget != true).ToList();
                     }
-                }
-                
 
                 MapKPIProperties(kpis.ToList());
 
                 return kpis.ToList();
             }
         }
+
+        public List<KPI> ReadReportKPIsAllMeasures(string username, int? year)
+        {
+            using (var dataAccess = _factory.Create())
+            {
+                IEnumerable<KPI> kpis = dataAccess.KPI.Query(a => !year.HasValue || a.StartDate.Year == year.Value)
+                    .IncludeOptimized(a => a.KPIComments)
+                    .IncludeOptimized(a => a.KPIMeasures)
+                    .IncludeOptimized(a => a.KPIType)
+                    .IncludeOptimizedByPath("KPIType.KPIThresholds")
+                    .IncludeOptimizedByPath("KPIType.KPIThresholds.Status")
+                    .IncludeOptimizedByPath("KPIType.Workflows")
+                    .IncludeOptimizedByPath("KPIType.Workflows.BaseWorkflow")
+                    .IncludeOptimized(a => a.StrategicObjective)
+                    .IncludeOptimizedByPath("StrategicObjective.Theme")
+                    .IncludeOptimizedByPath("StrategicObjective.Theme.Strategy")
+                    .IncludeOptimized(a => a.Perspective)
+                    .IncludeOptimizedByPath("Perspective.Strategy")
+                    .IncludeOptimized(a => a.Parameters)
+                    .IncludeOptimized(a => a.ChampionModel)
+                    .IncludeOptimizedByPath("ChampionModel.UsersGroups")
+                    .IncludeOptimizedByPath("ChampionModel.UsersGroups.Group")
+                    .IncludeOptimized(a => a.OwnerModel)
+                    .IncludeOptimizedByPath("OwnerModel.UsersGroups")
+                    .IncludeOptimizedByPath("OwnerModel.UsersGroups.Group")
+                    .IncludeOptimized(a => a.DivisionalObjective)
+                    .IncludeOptimizedByPath("DivisionalObjective.OrgStructure")
+                    .IncludeOptimized(a => a.OrgStructure)
+                    .ToList();
+
+
+
+                if (kpis != null)
+                    kpis = kpis.SecureListObj(dataAccess, username).Cast<KPI>().ToList();
+
+
+
+                MapKPIPropertiesAdmin(kpis.ToList());
+
+                return kpis.ToList();
+            }
+        }
+
 
         public List<KPI> ReadDashboardKPIs(string username, int? year)
         {
@@ -730,7 +770,7 @@ namespace SPlus.BLL
                     List<OrgStructure> OrgStructures = GetOrgStructures();
                     List<DivisionalObjective> DivisionalObjective = GetDivisionalObjectives();
 
-                    MapKPIProperties(kpi, KPIs, OrgStructures, DivisionalObjective);
+                    MapKPIPropertiesAdmin(kpi, KPIs, OrgStructures, DivisionalObjective);
                     kpi.KPIType.MapAttachment(dataAccess);
                     if (kpi.Perspective != null)
                         kpi.Perspective.MapAttachment(dataAccess);
@@ -966,7 +1006,6 @@ namespace SPlus.BLL
                             if (measure.ID == 0 && ChangeType.Contains((int)KPIChangeRequestType.ChangeKPITarget))
                             {
                                 measure.Status = "NA";
-
                                 measure.Created = DateTime.Now;
                                 measure.Modified = DateTime.Now;
                                 measure.KPIID = kpi.ID;
@@ -980,10 +1019,11 @@ namespace SPlus.BLL
                             else if (measure.ID != 0 && ChangeType.Contains((int)KPIChangeRequestType.ChangeKPITarget))
                             {
                                 KPIMeasure currentMeasure = current.KPIMeasures.Where(w => w.ID == measure.ID && DateTime.Now.Date <= w.DueDate.Date).FirstOrDefault();
-                                if (currentMeasure != null && measure.Target != currentMeasure.Target)
+                                if (currentMeasure != null && (measure.Target != currentMeasure.Target || 
+                                                               measure.HasNoTarget != currentMeasure.HasNoTarget))
                                 {
-
-                                    currentMeasure.Target = measure.Target;
+                                    currentMeasure.Target = measure.HasNoTarget ? 0 : measure.Target;
+                                    currentMeasure.HasNoTarget = measure.HasNoTarget;
                                     currentMeasure.Modified = DateTime.Now;
                                     if (changeCalculation)
                                         measure.CalculationMethod = kpi.CalculationMethod;
@@ -2958,6 +2998,64 @@ namespace SPlus.BLL
             if (calculateCode)
                 CreateKPICode(kpi, kpis, orgStructures, divisionalObjectives);
         }
+
+        private void MapKPIPropertiesAdmin(KPI kpi, List<KPI> kpis, List<OrgStructure> orgStructures, List<DivisionalObjective> divisionalObjectives, bool calculateCode = true)
+        {
+            kpi.KPIMeasures = SetActiveMeasure(kpi.KPIMeasures.ToList());
+            if (kpi.Direction == null)
+                kpi.Direction = "Same";
+            kpi.Target = kpi.KPIMeasures.Where(a => a.IsActive).LastOrDefault()?.Target ?? 0;
+
+            //Based on the meeting with Samman Hamzah if calculation method is Last value the accumulative will be same as periodic
+            //This change is made based on a github item opened by the client after a year of applying the "Last Change on formula"
+            // 3/DEC/2024
+            if (kpi.CalculationMethod == (int)CalculationMethodsEnum.LastValue)
+            {
+                kpi.KPIMeasures.ToList().ForEach(f =>
+                {
+                    if (f.Status != "NAS" && f.Status != "NAU")
+                    {
+                        f.AccumulutiveOutOfTarget = f.OutOfTarget;
+                        f.AccumulutiveValue = f.Value;
+                        f.AccumulutiveTarget = f.Target;
+                        f.AccumulutiveStatus = f.Status;
+                    }
+                });
+            }
+
+            //Changed Status to always take AccumulutiveStatus to effect all system without changing FE on all system, if you want the Periodic status you need to access it from the KPI Measures 
+            kpi.Status = kpi.KPIMeasures.Where(a => a.IsActive).LastOrDefault()?.AccumulutiveStatus ?? "NA";
+            kpi.AccumulutiveStatus = kpi.KPIMeasures.Where(a => a.IsActive).LastOrDefault()?.AccumulutiveStatus ?? "NA";
+            kpi.OutOfTarget = kpi.KPIMeasures.Where(a => a.IsActive).LastOrDefault()?.OutOfTarget ?? 0;
+
+            if (kpi.OutOfTarget > 100)
+            {
+                kpi.OutOfTarget = 100;
+            }
+            else if (kpi.OutOfTarget < 0)
+            {
+                kpi.OutOfTarget = 0;
+            }
+            kpi.AccumulutiveOutOfTarget = kpi.KPIMeasures.Where(a => a.IsActive).LastOrDefault()?.AccumulutiveOutOfTarget ?? 0;
+
+            if (kpi.AccumulutiveOutOfTarget > 100)
+            {
+                kpi.AccumulutiveOutOfTarget = 100;
+            }
+            else if (kpi.AccumulutiveOutOfTarget < 0)
+            {
+                kpi.AccumulutiveOutOfTarget = 0;
+            }
+            kpi.Value = kpi.KPIMeasures.Where(a => a.IsActive).LastOrDefault()?.Value ?? 0;
+
+            kpi.AccumulutiveTarget = kpi.KPIMeasures.Where(a => a.IsActive).LastOrDefault()?.AccumulutiveTarget ?? 0;
+            kpi.AccumulutiveValue = kpi.KPIMeasures.Where(a => a.IsActive).LastOrDefault()?.AccumulutiveValue ?? 0;
+
+            if (calculateCode)
+                CreateKPICode(kpi, kpis, orgStructures, divisionalObjectives);
+        }
+
+
         public void CreateKPICode(KPI kpi, List<KPI> kpis, List<OrgStructure> orgStructures, List<DivisionalObjective> divisionalObjectives)
         {
             if (!kpi.IsCoded)
@@ -3017,6 +3115,7 @@ namespace SPlus.BLL
                                     break;
                             }
                         }
+                        
                         kpi.IsCoded = true;
                     }
                     else if (kpi.DivisionalObjectiveID.HasValue && kpis != null)
@@ -3103,6 +3202,31 @@ namespace SPlus.BLL
             {
                 kpi.KPIMeasures= kpi.KPIMeasures.Where(x=> x.HasNoTarget != true).ToList(); 
                 MapKPIProperties(kpi, AllKPIs, AllOrgStructures, DivisionalObjectives);
+            }
+
+
+        }
+
+
+        public void MapKPIPropertiesAdmin(List<KPI> kpis, bool CalculateCode = true)
+        {
+            kpis = GetKPIsActiveMeasures(kpis).ToList();
+
+
+            List<KPI> AllKPIs = new List<KPI>();
+            List<OrgStructure> AllOrgStructures = new List<OrgStructure>();
+            List<DivisionalObjective> DivisionalObjectives = new List<DivisionalObjective>();
+
+            if (CalculateCode)
+            {
+                AllKPIs = ReadAll();
+                AllOrgStructures = GetOrgStructures();
+                DivisionalObjectives = GetDivisionalObjectives();
+            }
+
+            foreach (var kpi in kpis)
+            {
+                MapKPIPropertiesAdmin(kpi, AllKPIs, AllOrgStructures, DivisionalObjectives);
             }
 
 

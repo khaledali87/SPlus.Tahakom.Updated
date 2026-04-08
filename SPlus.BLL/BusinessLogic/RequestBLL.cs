@@ -519,7 +519,7 @@ namespace SPlus.BLL
                     Request.IsActive = isActive;
                     Request.Form = form;
                     Request.RelatedRequestID = relatedRequestIID;
-                    Request.Status = RequestAction != (int)EnumRequestAction.Save ? (int)EnumWFStatuses.Pending : (int)EnumWFStatuses.New; //(int)EnumWFStatuses.Pending;
+                    Request.Status = workflowID == 104 ? (int)EnumWFStatuses.Completed : RequestAction != (int)EnumRequestAction.Save ? (int)EnumWFStatuses.Pending : (int)EnumWFStatuses.New; //(int)EnumWFStatuses.Pending;
                     dataAccess.Request.Save(Request);
                     dataAccess.Complete();
                     Request = GetRequestByID(Request.ID, userName);
@@ -537,7 +537,7 @@ namespace SPlus.BLL
                             step.Modified = DateTime.Now;
                             if (wfStep.Order == 1)
                             {
-                                step.Status = (int)EnumWFStatuses.NA;
+                                step.Status = workflowID == 104 ? (int)EnumWFStatuses.Approved : (int)EnumWFStatuses.NA;
                                 step.ActionBy = DelegationUserName != null ? DelegationUserName.ToLower() : null;
                             }
                             else if (wfStep.Order == 2)
