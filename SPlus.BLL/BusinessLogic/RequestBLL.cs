@@ -538,7 +538,7 @@ namespace SPlus.BLL
                             if (wfStep.Order == 1)
                             {
                                 step.Status = (int)EnumWFStatuses.NA;
-                                step.ActionBy = DelegationUserName.ToLower();
+                                step.ActionBy = DelegationUserName != null ? DelegationUserName.ToLower() : null;
                             }
                             else if (wfStep.Order == 2)
                                 step.Status = (int)EnumWFStatuses.Pending;

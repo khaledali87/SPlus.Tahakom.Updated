@@ -18,6 +18,7 @@ namespace SPlus.Helper
                 if (finishDate.DayOfWeek == DayOfWeek.Friday || finishDate.DayOfWeek == DayOfWeek.Saturday)
                     Duration = Duration + 1;
             }
+
             return finishDate;
         }
 
@@ -30,7 +31,16 @@ namespace SPlus.Helper
                 if (finishDate.DayOfWeek == DayOfWeek.Friday || finishDate.DayOfWeek == DayOfWeek.Saturday || holidays.Any(h => h.Date == finishDate.Date))
                     Duration = Duration + 1;
             }
+
             return finishDate;
+        }
+
+        static public bool IsTodayWorkingDay(List<DateTime> holidays = default)
+        {
+            if (DateTime.Now.DayOfWeek == DayOfWeek.Friday || DateTime.Now.DayOfWeek == DayOfWeek.Saturday || holidays.Any(h => h.Date == DateTime.Today.Date))
+                   return false;
+
+            return true;
         }
     }
 }

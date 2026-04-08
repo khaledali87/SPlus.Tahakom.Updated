@@ -491,7 +491,7 @@ namespace SPlus.API.Controllers
                 string userName = Encryption.GetCurrentUser(Token.FirstOrDefault().ToString());
                 try
                 {
-                    var res = KPIUseCases.ReadByID(id, userName);
+                    var res = KPIUseCases.ReadByIDAdmin(id, userName);
                     result.Data = res;
 
                 }

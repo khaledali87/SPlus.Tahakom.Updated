@@ -101,9 +101,9 @@ namespace SPlus.UseCases
             List<MyRequestDTO> ApprovalList_WorkProctmp = new List<MyRequestDTO>();
             List<MyRequestDTO> ApprovalList_ReUpdatetmp = new List<MyRequestDTO>();
 
-            var steps = RequestSteps.Where(x => x.Request.Status == (int)EnumWFStatuses.Pending).ToList();
+            var steps = RequestSteps.GroupBy(s => s.RequestID).Select(s => s.LastOrDefault()).ToList();
 
-            foreach (var step in steps.GroupBy(s=> s.RequestID).Select(s=> s.LastOrDefault()))
+            foreach (var step in steps)
             {
                 try
                 {
@@ -203,7 +203,7 @@ namespace SPlus.UseCases
 
                         myRequest.ReviewedBy = previousStep.ActionBy != null ? Mapper.Map<UserListDTO>(users.Where(w => w.UserName.ToLower() == previousStep?.ActionBy.ToLower()).FirstOrDefault()) : null;
                         myRequest.CreatedBy = Mapper.Map<UserListDTO>(users.Where(w => w.UserName.ToLower() == step.Request.CreatedBy.ToLower()).FirstOrDefault());
-                        myRequest.Status = step.Request.Status;
+                        myRequest.Status = pendingStep != null ? pendingStep.Status : step.Status != 0 ? step.Status : step.Request.Status;
 
                         ApprovalList_ReUpdatetmp.Add(myRequest);
 

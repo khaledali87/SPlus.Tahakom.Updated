@@ -44,6 +44,7 @@ namespace SPlus.Model
         StrategicKPI = 8,
         DepartmentalKPI = 9,
         ReUpdate = 10,
+        AutoApprove =11,    
     }
     public enum EnumRequestAction
     {

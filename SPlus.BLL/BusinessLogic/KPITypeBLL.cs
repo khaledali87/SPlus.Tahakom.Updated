@@ -114,15 +114,19 @@ namespace SPlus.BLL
                     .Include(a => a.Workflows.Select(s => s.WorkflowSteps));
 
                 Status na = dataAccess.Status.Query().ToList().Where(a=>a.Code == "NA").FirstOrDefault();
-                //Status fin = dataAccess.Status.Query().ToList().Where(a => a.Code == "FIN").FirstOrDefault();
+                Status nau = dataAccess.Status.Query().ToList().Where(a => a.Code == "NAU").FirstOrDefault();
+                Status nas = dataAccess.Status.Query().ToList().Where(a => a.Code == "NAS").FirstOrDefault();
 
 
                 foreach (var kPIType in kpiTypes)
                 {
-                    KPIThreshold th = new KPIThreshold();
-                    th.Status = na;
+                    KPIThreshold th = new KPIThreshold() { Status = na };
+                    KPIThreshold nasth = new KPIThreshold() { Status = nas };
+                    KPIThreshold nauth = new KPIThreshold() { Status = nau };
 
                     kPIType.KPIThresholds.Add(th);
+                    kPIType.KPIThresholds.Add(nasth);
+                    kPIType.KPIThresholds.Add(nauth);
 
                     //KPIThreshold fi = new KPIThreshold();
                     //fi.Status = fin;

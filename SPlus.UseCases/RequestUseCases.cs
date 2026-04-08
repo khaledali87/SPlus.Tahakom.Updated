@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data.Metadata.Edm;
 using System.Linq;
+using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using System.Threading.Tasks;
 namespace SPlus.UseCases
 {
@@ -65,7 +66,8 @@ namespace SPlus.UseCases
                     int workflowID = kpi.KPIType.Workflows.Where(a => a.BaseWorkflowID == (int)EnumWFBaseWorkflows.Update).FirstOrDefault().WorkflowID;
                     if (kpi != null)
                     {
-                        List<Request> requests = RequestBLL.GetRequests(userName).Where(a => a.WorkflowID == workflowID || a.WorkflowID == 103).ToList();
+                        List<Request> requests = RequestBLL.GetRequests(userName).Where(a => a.WorkflowID == workflowID || a.WorkflowID == 103 || a.WorkflowID == 104).ToList();
+                        
                         foreach (Request request in requests)
                         {
                             var data = (JObject)JsonConvert.DeserializeObject(request.Form);
@@ -101,17 +103,44 @@ namespace SPlus.UseCases
 
                         }
 
-                        return dtos.GroupBy(x => ((UpdateKPIForm)x.Form).RelatedID)
-                                   .Select(g => 
+
+                        var list = dtos.GroupBy(x => ((UpdateKPIForm)x.Form).RelatedID)
+                                   .Select(g =>
                                    {
                                        var item = g.OrderByDescending(x => x.ID).FirstOrDefault();
-                                       var canApprove  = g.FirstOrDefault(x=> x.CanApprove);
-                                       item.CanApprove = g.Any(x => x.CanApprove);  
-                                       item.ID = canApprove == null ? item.ID : canApprove.ID;  
+                                       var canApprove = g.FirstOrDefault(x => x.CanApprove);
+                                       item.CanApprove = g.Any(x => x.CanApprove);
+                                       item.ID = canApprove == null ? item.ID : canApprove.ID;
                                        return item;
                                    })
                                    .OrderBy(a => ((UpdateKPIForm)a.Form).RelatedID)
                                    .ToList();
+
+                        //foreach (var m in kpi.KPIMeasures)
+                        //{
+                        //    list = list ?? new List<RequestDTO> (); 
+                        //    if(!list.Select(a => ((UpdateKPIForm)a.Form).RelatedID).Any(l=> l == m.ID))
+                        //    {
+                        //        list.Add(new RequestDTO
+                        //        {
+                        //            ID = m.ID,
+                        //            CanApprove = false,
+                        //            WorkflowID = 2,
+                        //            Form = new
+                        //            {
+                        //                Value = m.Value,
+                        //                Target = m.Target,
+                        //                DueDate = m.DueDate,
+                        //            },
+                        //            RequestedBy = new UserListDTO
+                        //            {
+                        //                DisplayName = "System"
+                        //            },
+                        //            Status = (int)EnumWFStatuses.Completed
+                        //        });
+                        //    }
+                        //}
+                        return list;
                     }
                 }
             }
@@ -304,7 +333,8 @@ namespace SPlus.UseCases
 
                     RequestDetailsDTO related = AutoMapper.Mapper.Map<RequestDetailsDTO>(req);
 
-                   related.Status = previous?.Status ?? related.Status;
+                   related.Status = previous?.Status == null || 
+                                    previous?.Status == 0 ? related.Status : previous?.Status ?? 0;
 
                     UpdateKPIForm relatedForm = JsonConvert.DeserializeObject<UpdateKPIForm>(req.Form);
                     JObject formm = new JObject();
@@ -330,7 +360,7 @@ namespace SPlus.UseCases
                         relatedForm.AccumulutiveTarget = measure.AccumulutiveTarget;
                         relatedForm.AccumulutiveValue = measure.AccumulutiveValue;
 
-                        relatedForm.ReviewedBy = Mapper.Map<UserListDTO>(users.FirstOrDefault(w => w.UserName.ToLower() == previous?.ActionBy.ToLower()));
+                        relatedForm.ReviewedBy = previous.ActionBy == null ? null : Mapper.Map<UserListDTO>(users.FirstOrDefault(w => w.UserName.ToLower() == previous?.ActionBy.ToLower()));
                         relatedForm.ActionBy = Mapper.Map<UserListDTO>(users.FirstOrDefault(w => w.UserName.ToLower() == step?.Request?.CreatedBy.ToLower()));
                         //relatedForm.CreatedBy = 
                         relatedForm.ActionDate = previous?.Modified;
@@ -730,7 +760,8 @@ namespace SPlus.UseCases
                                         var KPIRequests = RequestBLL.GetLevelPendingRequest(currentKPI.KPIMeasures.Select(s => s.ID).ToList(), LevelTypeEnum.KPI);
                                         if (KPIRequests.Any())
                                         {
-                                            IsActive = false;
+                                            if(workflowID != 103)
+                                             IsActive = false;
                                             requestID = RequestBLL.Submit(formPayload, kpi, currentRequestID, groups, UserName, DelegationUserName, workflowID, (int)LevelTypeEnum.KPI, IsActive, KPIRequests.LastOrDefault().ID);
                                         }
                                         else
@@ -922,16 +953,7 @@ namespace SPlus.UseCases
                                     bool IsActive = true;
                                     if (currentKPI != null)
                                     {
-                                        var KPIRequests = RequestBLL.GetLevelPendingRequest(currentKPI.KPIMeasures.Select(s => s.ID).ToList(), LevelTypeEnum.KPI);
-                                        if (KPIRequests.Any())
-                                        {
-                                            IsActive = false;
-                                            requestID = RequestBLL.Submit(formPayload, kpi, currentRequestID, groups, UserName, DelegationUserName, workflowID, (int)LevelTypeEnum.KPI, IsActive, KPIRequests.LastOrDefault().ID);
-                                        }
-                                        else
-                                        {
-                                            requestID = RequestBLL.Submit(formPayload, kpi, currentRequestID, groups, UserName, DelegationUserName, workflowID, (int)LevelTypeEnum.KPI, IsActive);
-                                        }
+                                        requestID = RequestBLL.Submit(formPayload, kpi, currentRequestID, groups, UserName, DelegationUserName, workflowID, (int)LevelTypeEnum.KPI, IsActive);
                                     }
                                     else
                                     {
@@ -946,16 +968,7 @@ namespace SPlus.UseCases
                                     bool IsActive = true;
                                     if (currentKPI != null)
                                     {
-                                        var KPIRequests = RequestBLL.GetLevelPendingRequest(currentKPI.KPIMeasures.Select(s => s.ID).ToList(), LevelTypeEnum.KPI);
-                                        if (KPIRequests.Any())
-                                        {
-                                            IsActive = false;
-                                            requestID = RequestBLL.Submit(formPayload, kpi, currentRequestID, groups, UserName, DelegationUserName, workflowID, (int)LevelTypeEnum.KPI, IsActive, KPIRequests.LastOrDefault().ID);
-                                        }
-                                        else
-                                        {
-                                            requestID = RequestBLL.Submit(formPayload, kpi, currentRequestID, groups, UserName, DelegationUserName, workflowID, (int)LevelTypeEnum.KPI, IsActive);
-                                        }
+                                        requestID = RequestBLL.Submit(formPayload, kpi, currentRequestID, groups, UserName, DelegationUserName, workflowID, (int)LevelTypeEnum.KPI, IsActive);
                                     }
                                     else
                                     {
@@ -993,7 +1006,7 @@ namespace SPlus.UseCases
                             }
                        
 
-                        ValidateRequestSequance(kpi);
+                        //ValidateRequestSequance(kpi);
                     }
                     else
                     {

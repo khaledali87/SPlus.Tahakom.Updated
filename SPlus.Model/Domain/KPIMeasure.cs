@@ -24,6 +24,10 @@ namespace SPlus.Model.Domain
         public bool AllowUpdate { get; set; }
         [NotMapped]
         public bool IsActive { get; set; }
+
+        [NotMapped]
+        public bool NeedRequest { get; set; } = false;
+
         public virtual KPI KPI { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ParameterValue> ParameterValues { get; set; }
