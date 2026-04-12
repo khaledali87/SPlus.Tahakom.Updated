@@ -685,18 +685,22 @@ namespace SPlus.UseCases
 
                     AutoApproveRejectedRequests(KPI, rejectedRequests, holidays);
 
-//                    foreach (var m in KPI.KPIMeasures)
-//                    {
-//                        if(m.Status == "NAS" &&  !CompletedRequests.Any(c => ((UpdateKPIForm)c.Form).RelatedID == m.ID));
-//))
+                    //                    foreach (var m in KPI.KPIMeasures)
+                    //                    {
+                    //                        if(m.Status == "NAS" &&  !CompletedRequests.Any(c => ((UpdateKPIForm)c.Form).RelatedID == m.ID));
+                    //))
 
-//                        UpdateKPIForm Form = request.UpdateKPIForm;
-//                        if (KPI.KPIMeasures.Any(a => a.ID == Form.RelatedID))
-//                        {
-//                            OccupiedRequests.Add(request);
-//                        }
-//                    }
+                    //                        UpdateKPIForm Form = request.UpdateKPIForm;
+                    //                        if (KPI.KPIMeasures.Any(a => a.ID == Form.RelatedID))
+                    //                        {
+                    //                            OccupiedRequests.Add(request);
+                    //                        }
+                    //                    }
 
+                    if (!measures.Any(a => a.AllowUpdate && a.HasNoTarget != true))
+                    {
+                        KPI.RequireUpdate = false;
+                    }
 
                     KPIsToUpdate.Add(KPI);
                 }

@@ -2459,12 +2459,18 @@ namespace SPlus.BLL
                 measure.Status = "NAU";
                 measure.OutOfTarget = 0;
                 measure.Value = 0;
-
+                measure.AllowUpdate = false;
 
                 measure.AccumulutiveValue = previous?.AccumulutiveValue ?? 0;
                 measure.AccumulutiveStatus = "NAU"; 
                 measure.AccumulutiveTarget = previous?.AccumulutiveTarget ?? 0; 
                 measure.AccumulutiveOutOfTarget = previous?.AccumulutiveOutOfTarget ?? 0; 
+
+                if(!kpi.KPIMeasures.Any(m=> m.AllowUpdate))
+                {
+                    kpi.RequireUpdate = false;
+                }
+
                 dataAccess.KPI.Save(kpi);
                 dataAccess.Complete();
             }
