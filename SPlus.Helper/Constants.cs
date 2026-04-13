@@ -13,6 +13,7 @@ namespace SPlus.Helper
         public static string _SMOGroup =ConfigurationManager.AppSettings["SMOGroup"];
         public static string _CPMDirectorGroup = ConfigurationManager.AppSettings["CPMDirector"];
         public static string _CPMSupervisorGroup = ConfigurationManager.AppSettings["CPMSupervisor"];
+        public static string _EPMSpecialistGroup = ConfigurationManager.AppSettings["EPMSpecialist"];
 
         public static string AddMitigationActionGroup = ConfigurationManager.AppSettings["AddMitigationActionGroup"];
         #endregion

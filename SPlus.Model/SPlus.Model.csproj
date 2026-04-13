@@ -126,6 +126,7 @@
     <Compile Include="ENums\LevelTypeEnum.cs" />
     <Compile Include="ENums\ENUMNotifications.cs" />
     <Compile Include="Common\ResultWrapper.cs" />
+    <Compile Include="JsonExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ENums\WFEnums.cs" />
   </ItemGroup>

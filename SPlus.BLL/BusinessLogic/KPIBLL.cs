@@ -288,12 +288,24 @@ namespace SPlus.BLL
             using (var dataAccess = _factory.Create())
             {
                 IEnumerable<KPI> kpis = dataAccess.KPI.Query(a => !Year.HasValue || a.StartDate.Year == Year.Value)
-
                     .SecureListObj(dataAccess, username).Cast<KPI>().ToList();
 
                 return kpis.ToList();
             }
         }
+
+        public List<KPI> Read_LessDataWithMeasures(string username, int? Year)
+        {
+            using (var dataAccess = _factory.Create())
+            {
+                IEnumerable<KPI> kpis = dataAccess.KPI.Query(a => !Year.HasValue || a.StartDate.Year == Year.Value)
+                    .Include(k=> k.KPIMeasures)
+                    .SecureListObj(dataAccess, username).Cast<KPI>().ToList();
+
+                return kpis.ToList();
+            }
+        }
+
         public List<KPI> Read(int? Year)
         {
             using (var dataAccess = _factory.Create())
@@ -2879,13 +2891,15 @@ namespace SPlus.BLL
             return kpis;
         }
 
-        public bool IsInGracePeriod(KPI kpi, List<DateTime> holidays = default)
+        public bool IsInGracePeriod(KPI kpi, List<DateTime> holidays = default , bool IsLocking = false)
         {
             holidays = holidays ?? new List<DateTime>();
             if (kpi.KPIType.GracePeriod == 0)
                 return true;
             else
             {
+                if (IsLocking)
+                    kpi.KPIType.GracePeriod = kpi.KPIType.GracePeriod + 1;
                 KPIMeasure currentMeasure = kpi.KPIMeasures.Where(m=> m.HasNoTarget != true).OrderBy(a => a.ID).Where(a => a.DueDate.Date <= DateTime.Now.Date && a.Status == "NA").LastOrDefault();
                 if (currentMeasure != null)
                 {

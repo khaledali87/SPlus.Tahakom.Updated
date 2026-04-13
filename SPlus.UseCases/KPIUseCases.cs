@@ -162,7 +162,7 @@ namespace SPlus.UseCases
                 //item.IsDeletable = false;
                 //item.IsEditable = false;
 
-                if (KPIBLL.IsInGracePeriod(item, holidays))
+                if (KPIBLL.IsInGracePeriod(item, holidays , true))
                     item.AllowLock = false;
                 else
                     item.AllowLock = true;
@@ -223,6 +223,27 @@ namespace SPlus.UseCases
                 }
                 else
                     KPI.CanCR = false;
+
+                if(kpi.RequireUpdate)
+                {
+                    var holidays = HolidayBLL.HolidayDays();
+
+                    KPIMeasure currentMeasure = kpi.KPIMeasures.Where(m => m.HasNoTarget != true).OrderBy(a => a.ID).Where(a => a.DueDate.Date <= DateTime.Now.Date && a.Status == "NA").LastOrDefault();
+                    if (currentMeasure != null)
+                    {
+                        var GetEndDateWorkingDays = DateHelper.GetEndDateWorkingDays(currentMeasure.DueDate.Date, kpi.KPIType.GracePeriod + 1, holidays);
+                        if (DateTime.Now.Date >= currentMeasure.DueDate.Date && DateTime.Now.Date <= GetEndDateWorkingDays.Date)
+                        {
+                            KPI.ArabicUpdateMessage = null;
+                            KPI.EnglishUpdateMessage = null;
+                        }
+                        else
+                        {
+                            KPI.ArabicUpdateMessage = $"هذا المؤشر سيتم اغلاقه فى موعد اقصاه ({GetEndDateWorkingDays.Date.ToString("dd-MMM-yyyy")})";
+                            KPI.EnglishUpdateMessage = $"Your kpi closing date will be ({GetEndDateWorkingDays.Date.ToString("dd-MMM-yyyy")})";
+                        }
+                    }
+                }
 
                 return KPI;
             }
@@ -552,7 +573,7 @@ namespace SPlus.UseCases
 
                         //var measureTog = KPI.KPIMeasures.Where(a => a.ID == measure.ID).FirstOrDefault()
 
-                        if (KPIBLL.IsInGracePeriod(KPI, holidays))
+                        if (KPIBLL.IsInGracePeriod(KPI, holidays , true))
                         {
                             KPI.ManualUnLock = false;
                             KPI.UnlockDate = null;

@@ -12,7 +12,7 @@ namespace SPlus.Helper
         static public DateTime GetEndDateWorkingDays(DateTime startDate, int Duration)
         {
             DateTime finishDate = startDate;
-            for (int i = 1; i <= Duration; i++)
+            for (int i = 0; i < Duration; i++)
             {
                 finishDate = finishDate.AddDays(1);
                 if (finishDate.DayOfWeek == DayOfWeek.Friday || finishDate.DayOfWeek == DayOfWeek.Saturday)
@@ -25,7 +25,7 @@ namespace SPlus.Helper
         static public DateTime GetEndDateWorkingDays(DateTime startDate, int Duration, List<DateTime> holidays = default)
         {
             DateTime finishDate = startDate;
-            for (int i = 1; i <= Duration; i++)
+            for (int i = 0; i < Duration; i++)
             {
                 finishDate = finishDate.AddDays(1);
                 if (finishDate.DayOfWeek == DayOfWeek.Friday || finishDate.DayOfWeek == DayOfWeek.Saturday || holidays.Any(h => h.Date == finishDate.Date))

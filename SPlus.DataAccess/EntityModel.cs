@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Linq;
 using SPlus.Model.Domain;
 using System.Configuration;
+using SPlus.Model;
 
 namespace SPlus.DataAccess
 {
@@ -75,8 +76,6 @@ namespace SPlus.DataAccess
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-
-
             #region LookUp
 
             modelBuilder.Entity<Lookup>()

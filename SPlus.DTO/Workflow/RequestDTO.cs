@@ -12,6 +12,7 @@ namespace SPlus.DTO
         public int WorkflowID { get; set; }
         public string RequestedBy { get; set; }
         public int Status { get; set; }
+        public int RequestType { get; set; }
         public bool CanApprove { get; set; }
         public virtual object Form { get; set; }
         public DateTime Created { get; set; }

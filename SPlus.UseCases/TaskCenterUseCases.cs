@@ -70,7 +70,7 @@ namespace SPlus.UseCases
           //  var myTasks = RequestBLL.GetRequests_new(UserName,false);
 
             
-            List<KPI> kpis = KPIBLL.Read_LessData(UserName, null);
+            List<KPI> kpis = KPIBLL.Read_LessDataWithMeasures(UserName, null);
             List<User> users = UserBLL.Read();
             taskCenter = MyRequestList(myTasks, kpis, users, type);
             return taskCenter;
@@ -179,9 +179,7 @@ namespace SPlus.UseCases
 
                         int itemID = updateKPIForm.RelatedID;
 
-
-
-                        var kpi = KPIBLL.GetKPIByMeasureID_All(itemID);
+                        var kpi = kpis.FirstOrDefault(x=> x.KPIMeasures.Any(m=> m.ID == itemID));
                         var measure = kpi.KPIMeasures.FirstOrDefault(x => x.ID == itemID);
                         //if (!kpiIndex.TryGetValue(itemID, out var row))
                         //    continue;
@@ -478,7 +476,7 @@ namespace SPlus.UseCases
         {
             TaskCenterListDTO<List<ApprovalDTO>> taskCenter = new TaskCenterListDTO<List<ApprovalDTO>>();
             // var myTasks1 = RequestBLL.GetMyTasks(UserName, false);
-            List<User> users = UserBLL.Read();
+            List<User> users =  UserBLL.Read();
 
 
             var myTasks = RequestBLL.GetActiveRequests(UserName, false);

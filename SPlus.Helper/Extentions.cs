@@ -13,7 +13,7 @@ namespace SPlus.Helper
 {
     public static partial class Extentions
     {
-
+        
         public static string ToEcryptedString(this string val)
         {
             return Encryption.Encrypt(val);

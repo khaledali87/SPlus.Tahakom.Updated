@@ -9,7 +9,7 @@ namespace SPlus.DataAccess
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly EntityModel Context;
+        public readonly EntityModel Context;
         public IRepository<KPI> KPI { get; private set; }
         public IRepository<Holiday> Holiday { get; private set; }
         public IRepository<KPIComment> KPIComment { get; private set; }

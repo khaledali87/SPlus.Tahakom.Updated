@@ -99,7 +99,13 @@ namespace SPlus.UseCases
 
                 var UsersGroups = res.Where(w => w.ID == group.ID).SelectMany(s => s.UsersGroups).ToList();
                 group.UsersCount = UsersGroups.Count();
-                if (group.Title.ToLower() == AdminGroup.ToLower())
+                if (group.Title.ToLower() == Constants._AdminGroup.ToLower() || 
+                    group.Title.ToLower() == Constants._ChampionGroup.ToLower() ||
+                    group.Title.ToLower() == Constants._CPMSupervisorGroup.ToLower() ||
+                    group.Title.ToLower() == Constants._SMOGroup.ToLower() ||
+                    group.Title.ToLower() == Constants._SMOGroup.ToLower() ||
+                    group.Title.ToLower() == Constants._EPMSpecialistGroup.ToLower() ||
+                    group.Title.ToLower() == Constants._CPMDirectorGroup.ToLower())
                 {
                     group.IsDeletable = false;
                     group.IsReadOnly = true;

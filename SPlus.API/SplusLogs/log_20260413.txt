@@ -1,0 +1,24 @@
+13-Apr-26 11:18:00 AM	RequestController
+ReadByKPIID
+A network-related or instance-specific error occurred while establishing a connection to SQL Server. The server was not found or was not accessible. Verify that the instance name is correct and that SQL Server is configured to allow remote connections. (provider: Named Pipes Provider, error: 40 - Could not open a connection to SQL Server)
+
+13-Apr-26 11:20:52 AM	RequestController
+ReadByKPIID
+The specified method 'System.String JsonValue(System.String, System.String)' on the type 'SPlus.BLL.JsonExtensions' cannot be translated into a LINQ to Entities store expression.
+
+13-Apr-26 11:57:25 AM	RequestController
+ReadByKPIID
+Sequence contains no elements
+
+13-Apr-26 12:02:35 PM	RequestController
+ReadByKPIID
+Sequence contains no elements
+
+13-Apr-26 12:06:00 PM	RequestController
+ReadByKPIID
+The model backing the 'EntityModel' context has changed since the database was created. Consider using Code First Migrations to update the database (http://go.microsoft.com/fwlink/?LinkId=238269).
+
+13-Apr-26 12:06:54 PM	RequestController
+ReadByKPIID
+The model backing the 'EntityModel' context has changed since the database was created. Consider using Code First Migrations to update the database (http://go.microsoft.com/fwlink/?LinkId=238269).
+

@@ -16,6 +16,8 @@ namespace SPlus.DTO
         public string UnitOfMeasure { get; set; }
         public string EnglishUnitDetails { get; set; }
         public string ArabicUnitDetails { get; set; }
+        public string ArabicUpdateMessage { get; set; }
+        public string EnglishUpdateMessage { get; set; }
         public int CalculationMethod { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime FinishDate { get; set; }

@@ -13,6 +13,8 @@ using Z.EntityFramework.Plus;
 using System.CodeDom;
 using SPlus.DTO;
 using System.Configuration;
+using System.Linq.Expressions;
+using System.Text.Json.Nodes;
 
 namespace SPlus.BLL
 {
@@ -67,7 +69,7 @@ namespace SPlus.BLL
         public List<RequestStep> GetMyRequests(string userName)
         {
             var definition = new { IsDraft = false, CreatedBy = string.Empty, BaseWorkflow = 0 };
-            var requests = GetRequests(userName,false)
+            var requests = GetRequests(userName,false , a => a.CreatedBy.ToLower() == userName.ToLower())
                           .Where(a => a.CreatedBy.ToLower() == userName.ToLower() ||  JsonConvert.DeserializeAnonymousType(a.Form, definition).CreatedBy?.ToLower() == userName.ToLower()).ToList();
            
             var steps = requests.SelectMany(r => r.RequestSteps)
@@ -103,7 +105,7 @@ namespace SPlus.BLL
             using (var dataAccess = _factory.Create())
             {
                 var definition = new { RelatedID = 0, Type = 0 };
-                List<Request> requests = dataAccess.Request.Query(w => w.Status == (int)EnumWFStatuses.Pending).IncludeOptimized(a => a.RequestSteps)
+                List<Request> requests = dataAccess.Request.Query(w => w.Status == (int)EnumWFStatuses.Pending && RelatedIDs.Contains(w.RelatedID ?? 0)).IncludeOptimized(a => a.RequestSteps)
                     .ToList().Where(a => RelatedIDs.Contains(JsonConvert.DeserializeAnonymousType(a.Form, definition).RelatedID) && JsonConvert.DeserializeAnonymousType(a.Form, definition).Type == (int)Level).ToList();
                 return requests.OrderBy(a => a.ID).ToList();
             }
@@ -176,7 +178,7 @@ namespace SPlus.BLL
             }
         }
 
-        public List<Request> GetRequests(string userName, bool includActtchment = true)
+        public List<Request> GetRequests(string userName, bool includActtchment = true, Expression<Func<Request, bool>> predicate = null)
         {
             var user = userName.MapUserWithGroups();
             using (var dataAccess = _factory.Create())
@@ -185,7 +187,10 @@ namespace SPlus.BLL
                 var requestsQuery = dataAccess.Request.Query()
                 .Include(r => r.RequestSteps);
 
-
+                if(predicate != null)
+                {
+                    requestsQuery = requestsQuery.Where(predicate);
+                }
 
                 var requests = requestsQuery.ToList();
 
@@ -242,6 +247,7 @@ namespace SPlus.BLL
 
                
                 var requestsQuery = dataAccess.Request.Query()
+                    .Where(r => r.IsActive || r.WorkflowID == 103)
                 .Include(r => r.RequestSteps);
 
             
@@ -289,9 +295,7 @@ namespace SPlus.BLL
             
             // 5️⃣ Only return steps from requests that are active
             return requests
-                .Where(r => r.IsActive || r.WorkflowID == 103)
                 .SelectMany(r => r.RequestSteps)
-                //.Where(s => !s.IsCancelled && s.CanApprove)
                 .Where(s => !s.IsCancelled)
                 .ToList();
         }}
@@ -390,7 +394,7 @@ namespace SPlus.BLL
             using (var dataAccess = _factory.Create())
             {
                 var definition = new { RelatedID = 0, type = 0 };
-                List<Request> requests = dataAccess.Request.Query().Include(a => a.RequestSteps).Where(r => !r.RequestSteps.Any(rr => !rr.IsCancelled))
+                List<Request> requests = dataAccess.Request.Query().Where(x => x.RelatedID == relatedID).Include(a => a.RequestSteps).Where(r => !r.RequestSteps.Any(rr => !rr.IsCancelled))
                     .ToList().Where(a => JsonConvert.DeserializeAnonymousType(a.Form, definition).RelatedID == relatedID && JsonConvert.DeserializeAnonymousType(a.Form, definition).type == type).ToList();
                 return requests.OrderBy(a => a.ID).ToList();
             }
@@ -402,6 +406,7 @@ namespace SPlus.BLL
             {
                 var definition = new { RelatedID = 0, Type = 0 };
                 List<Request> requests = dataAccess.Request.Query()
+                    .Where(x=> x.RelatedID == relatedID)
                     .AsNoTracking()
                     .Include(a => a.RequestSteps)
                     .ToList();
@@ -418,7 +423,7 @@ namespace SPlus.BLL
             using (var dataAccess = _factory.Create())
             {
                 var definition = new { RelatedID = 0, type = 0, BaseWorkflowID = 0 };
-                List<Request> requests = dataAccess.Request.Query().IncludeOptimized(a => a.RequestSteps).Where(r => !r.RequestSteps.Any(rr => rr.IsCancelled)).ToList();
+                List<Request> requests = dataAccess.Request.Query().Where(x => x.RelatedID == relatedID).IncludeOptimized(a => a.RequestSteps).Where(r => !r.RequestSteps.Any(rr => rr.IsCancelled)).ToList();
                 requests = requests.Where(a => JsonConvert.DeserializeAnonymousType(a.Form, definition).RelatedID == relatedID && JsonConvert.DeserializeAnonymousType(a.Form, definition).type == (int)Level).ToList();
                 return requests.OrderBy(a => a.ID).ToList();
             }
@@ -428,7 +433,7 @@ namespace SPlus.BLL
             using (var dataAccess = _factory.Create())
             {
                 var definition = new { Type = 0, BaseWorkflowID = 0 };
-                List<Request> requests = dataAccess.Request.Query().Include(a => a.RequestSteps)
+                List<Request> requests = dataAccess.Request.Query().Where(r =>  relatedIDs.Any(x=> x== r.RelatedID)).Include(a => a.RequestSteps)
                     //.Where(r => !r.RequestSteps.Any(rr => !rr.IsCancelled))
                     .ToList();
 

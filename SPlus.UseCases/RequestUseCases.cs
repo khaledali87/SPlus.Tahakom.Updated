@@ -62,11 +62,13 @@ namespace SPlus.UseCases
             {
                 if (kpi.KPIType.Workflows.Where(a => a.BaseWorkflowID == (int)EnumWFBaseWorkflows.Update).Count() > 0)
                 {
-
                     int workflowID = kpi.KPIType.Workflows.Where(a => a.BaseWorkflowID == (int)EnumWFBaseWorkflows.Update).FirstOrDefault().WorkflowID;
                     if (kpi != null)
                     {
-                        List<Request> requests = RequestBLL.GetRequests(userName).Where(a => a.WorkflowID == workflowID || a.WorkflowID == 103 || a.WorkflowID == 104).ToList();
+                        var measureIds = kpi.KPIMeasures.Select(m=> m.ID).ToList() ?? new List<int>();
+                        var workflowIds = new List<int> { workflowID, 103, 104 };
+                        List<Request> requests = RequestBLL.GetRequests(userName , true , a => measureIds.Any(m=> m == a.RelatedID) && 
+                                                                                               workflowIds.Contains(a.WorkflowID)).ToList();
                         
                         foreach (Request request in requests)
                         {
@@ -93,7 +95,11 @@ namespace SPlus.UseCases
                                 form.Attachments = new List<Attachment>();
                                 form.Attachments.Add(form.Attachment);
                             }
-                          
+
+                            dto.RequestType = form.IsSkipped ? (int)EnumKPIRequestType.Skipped : 
+                                       form.BaseWorkflowID == 103 ? (int)EnumKPIRequestType.UpdateHistorical : 
+                                       form.BaseWorkflowID == 104 ? (int)EnumKPIRequestType.NoAchivementSubmiited : (int)EnumKPIRequestType.UpdateKPI;
+
                             form.Value = form.Value.FormatDecimal();
                             form.Target = kpi.KPIMeasures.Where(a => a.ID == form.RelatedID).Select(s => s.Target).FirstOrDefault();
                             form.DueDate = kpi.KPIMeasures.Where(a => a.ID == form.RelatedID).Select(s => s.DueDate).FirstOrDefault();

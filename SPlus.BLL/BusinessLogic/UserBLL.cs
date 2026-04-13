@@ -102,6 +102,7 @@ namespace SPlus.BLL
         {
             using (var dataAccess = _factory.Create())
             {
+                
                 IEnumerable<User> user = dataAccess.User.Query()
                     .Include(a => a.ChampionKPIs)
                     .Include(a => a.OwnerKPIs)

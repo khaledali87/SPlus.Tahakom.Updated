@@ -35,6 +35,15 @@ namespace SPlus.Model
         UPdateKPIStrategic = 3,
     }
 
+
+    public enum EnumKPIRequestType
+    {
+        Skipped = 1,
+        UpdateHistorical = 2,
+        NoAchivementSubmiited = 3,
+        UpdateKPI
+    }
+
     public enum EnumWFBaseWorkflows
     {
         Update = 1,

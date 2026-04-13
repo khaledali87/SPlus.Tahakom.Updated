@@ -38,7 +38,8 @@ namespace SPlus.Model.Domain
 
         public virtual ICollection<RequestStep> RequestSteps { get; set; }
 
-
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public int? RelatedID { get; set; }
 
         [NotMapped]
         public bool CanApprove { get; set; }

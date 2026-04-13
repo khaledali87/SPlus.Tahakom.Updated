@@ -692,6 +692,10 @@
     <Compile Include="Migrations\202603160844267_IsSkippedMeasure.Designer.cs">
       <DependentUpon>202603160844267_IsSkippedMeasure.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202604131010519_computed_column.cs" />
+    <Compile Include="Migrations\202604131010519_computed_column.Designer.cs">
+      <DependentUpon>202604131010519_computed_column.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="EntityModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -1180,6 +1184,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202603160844267_IsSkippedMeasure.resx">
       <DependentUpon>202603160844267_IsSkippedMeasure.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202604131010519_computed_column.resx">
+      <DependentUpon>202604131010519_computed_column.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
