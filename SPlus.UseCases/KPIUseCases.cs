@@ -209,7 +209,9 @@ namespace SPlus.UseCases
                         item.OutOfTarget = 0;
                     }
                 }
-                var requests = RequestBLL.GetAllRequests();
+
+                var measureIds = kpi.KPIMeasures.Select(x=> x.ID).ToList() ?? new List<int>();
+                var requests = RequestBLL.GetAllRequests(x=> measureIds.Contains(x.RelatedID ?? 0));
                 var definition = new { ID = 0 };
                 if (username.ToLower() == kpi.ChampionModel.UserName.ToLower())
                 {
@@ -231,16 +233,16 @@ namespace SPlus.UseCases
                     KPIMeasure currentMeasure = kpi.KPIMeasures.Where(m => m.HasNoTarget != true).OrderBy(a => a.ID).Where(a => a.DueDate.Date <= DateTime.Now.Date && a.Status == "NA").LastOrDefault();
                     if (currentMeasure != null)
                     {
-                        var GetEndDateWorkingDays = DateHelper.GetEndDateWorkingDays(currentMeasure.DueDate.Date, kpi.KPIType.GracePeriod + 1, holidays);
+                        var GetEndDateWorkingDays = DateHelper.GetEndDateWorkingDays(currentMeasure.DueDate.Date, kpi.KPIType.GracePeriod - 1, holidays);
                         if (DateTime.Now.Date >= currentMeasure.DueDate.Date && DateTime.Now.Date <= GetEndDateWorkingDays.Date)
                         {
-                            KPI.ArabicUpdateMessage = null;
-                            KPI.EnglishUpdateMessage = null;
+                            KPI.ArabicUpdateMessage = $"الموعد النهائي للتحديث ({GetEndDateWorkingDays.Date.ToString("dd-MM-yyyy")})";
+                            KPI.EnglishUpdateMessage = $"Update deadline ({GetEndDateWorkingDays.Date.ToString("dd-MM-yyyy")})";
                         }
                         else
                         {
-                            KPI.ArabicUpdateMessage = $"هذا المؤشر سيتم اغلاقه فى موعد اقصاه ({GetEndDateWorkingDays.Date.ToString("dd-MMM-yyyy")})";
-                            KPI.EnglishUpdateMessage = $"Your kpi closing date will be ({GetEndDateWorkingDays.Date.ToString("dd-MMM-yyyy")})";
+                            KPI.ArabicUpdateMessage = null;
+                            KPI.EnglishUpdateMessage = null;
                         }
                     }
                 }
@@ -288,7 +290,10 @@ namespace SPlus.UseCases
                         item.OutOfTarget = 0;
                     }
                 }
-                var requests = RequestBLL.GetAllRequests();
+
+                var measureIds = kpi.KPIMeasures.Select(x => x.ID).ToList() ?? new List<int>();
+                var requests = RequestBLL.GetAllRequests(x => measureIds.Contains(x.RelatedID ?? 0));
+
                 var definition = new { ID = 0 };
                 if (username.ToLower() == kpi.ChampionModel.UserName.ToLower())
                 {
@@ -503,8 +508,7 @@ namespace SPlus.UseCases
             {
                 foreach (KPI KPI in kpis)
                 {
-
-                    if (KPI.ID == 4355)
+                    if (KPI.ID == 4411)
                     {
 
                     }
@@ -562,8 +566,7 @@ namespace SPlus.UseCases
                         {
                             if (measure != null)
                             {
-                                var request = requests.Where(w => w.Status == (int)EnumWFStatuses.Pending || w.Status == (int)EnumWFStatuses.New || w.Status == (int)EnumWFStatuses.Completed).Where(w => w.UpdateKPIForm.RelatedID == measure.ID).FirstOrDefault();
-                                //var request = RequestBLL.GetRequestsByFormRelatedID(measure.ID, LevelTypeEnum.KPI).Where(w => w.Status == (int)EnumWFStatuses.Pending || w.Status == (int)EnumWFStatuses.New || w.Status == (int)EnumWFStatuses.Completed).FirstOrDefault();
+                                var request = requests.Where(w => w.Status == (int)EnumWFStatuses.Pending || w.Status == (int)EnumWFStatuses.New || w.Status == (int)EnumWFStatuses.Completed).Where(w => w.RelatedID == measure.ID).FirstOrDefault();
                                 if (measure.AllowUpdate && request != null)
                                 {
                                     KPI.KPIMeasures.Where(a => a.ID == measure.ID).FirstOrDefault().AllowUpdate = false;
@@ -721,6 +724,7 @@ namespace SPlus.UseCases
                     if (!measures.Any(a => a.AllowUpdate && a.HasNoTarget != true))
                     {
                         KPI.RequireUpdate = false;
+                        KPI.IsLocked = false;
                     }
 
                     KPIsToUpdate.Add(KPI);
@@ -938,7 +942,7 @@ namespace SPlus.UseCases
     //}
 }
 
-            if (KPI.ID == 4355)
+            if (KPI.ID == 4411)
             {
 
             }
@@ -954,7 +958,10 @@ namespace SPlus.UseCases
 
                 string formPayload = JsonConvert.SerializeObject(form);
 
+
                 RequestBLL.Submit(formPayload, approvedMeasure, 0, groups, "Auto Approve", null, 104, (int)LevelTypeEnum.KPI, true);
+
+                m.NeedRequest = false;
 
             }
         }

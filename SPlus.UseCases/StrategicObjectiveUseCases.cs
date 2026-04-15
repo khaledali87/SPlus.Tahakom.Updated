@@ -110,7 +110,7 @@ namespace SPlus.UseCases
                 foreach (var item in strategicObjective.KPIs)
                 {
                     item.IsDeletable = true;
-                    if (KPIBLL.IsInGracePeriod(item))
+                    if (KPIBLL.IsInGracePeriod(item , holidays : HolidayBLL.HolidayDays() , true))
                         item.AllowLock = false;
                     else
                         item.AllowLock = true;
@@ -181,7 +181,7 @@ namespace SPlus.UseCases
                 strategicObjective.KPIs = kpis.Where(a => a.StrategicObjectiveID == strategicObjective.ID).ToList();
                 foreach (var item in strategicObjective.KPIs)
                 {
-                    if (KPIBLL.IsInGracePeriod(item, holidays))
+                    if (KPIBLL.IsInGracePeriod(item, holidays , IsLocking: true))
                         item.AllowLock = false;
                     else
                         item.AllowLock = true;

@@ -2535,7 +2535,7 @@ namespace SPlus.BLL
 
         public KPIMeasure SetKPIMeasuresNoAchievementSubmitted(KPI kpi)
         {
-            if(kpi.ID == 4355)
+            if(kpi.ID == 4411)
             {
 
             }
@@ -2560,7 +2560,7 @@ namespace SPlus.BLL
                     {
                         measure.Status = "NAS";
                         measure.Value = 0;
-                        measure.OutOfTarget = 0;//CalculateTarget(measure, kpi, kpi.KPIMeasures.ToList());
+                        measure.OutOfTarget = 0;
                         measure.AllowUpdate = false;
                         measure.AccumulutiveStatus = "NAS";
                         measure.AccumulutiveValue = previous?.AccumulutiveValue ?? 0;
@@ -2568,8 +2568,8 @@ namespace SPlus.BLL
                         measure.AccumulutiveTarget = previous?.AccumulutiveTarget ?? 0;
                         measure.NeedRequest = true;
 
-                       
-                }
+                        autoApproved = true;
+                    }
 
                     if (measure.ID == next?.ID && measure.DueDate.Date <= DateTime.Now.Date && measure.Status == "NA")
                     {
@@ -2583,6 +2583,7 @@ namespace SPlus.BLL
             if (!kpi.KPIMeasures.Any(m => m.AllowUpdate && m.Status == "NA"))
             {
                 kpi.RequireUpdate = false;
+                kpi.IsLocked = false;
             }
                 
             return autoApproved ? current : null;   
@@ -2898,11 +2899,14 @@ namespace SPlus.BLL
                 return true;
             else
             {
-                if (IsLocking)
-                    kpi.KPIType.GracePeriod = kpi.KPIType.GracePeriod + 1;
+                //if (IsLocking)
+                //    kpi.KPIType.GracePeriod = kpi.KPIType.GracePeriod + 1;
                 KPIMeasure currentMeasure = kpi.KPIMeasures.Where(m=> m.HasNoTarget != true).OrderBy(a => a.ID).Where(a => a.DueDate.Date <= DateTime.Now.Date && a.Status == "NA").LastOrDefault();
                 if (currentMeasure != null)
                 {
+                    if(kpi.KPIType.GracePeriod == 1)
+                       return currentMeasure.DueDate.Date > DateTime.Now.Date;
+
                     var GetEndDateWorkingDays = DateHelper.GetEndDateWorkingDays(currentMeasure.DueDate.Date, kpi.KPIType.GracePeriod, holidays);
                     if (DateTime.Now.Date >= currentMeasure.DueDate.Date && DateTime.Now.Date <= GetEndDateWorkingDays.Date)
                         return true;
@@ -2915,6 +2919,10 @@ namespace SPlus.BLL
 
         public bool IsInGracePeriodUpdated(KPI kpi, List<DateTime> holidays = default)
         {
+            if(kpi.ID == 4411)
+            {
+
+            }
             holidays = holidays ?? new List<DateTime>();
             if (kpi.KPIType.GracePeriod == 0)
                 return true;
@@ -2924,6 +2932,9 @@ namespace SPlus.BLL
                     .Where(a => a.HasNoTarget != true && a.AllowUpdate == true && a.DueDate.Date <= DateTime.Now.Date && a.Status == "NA").FirstOrDefault();
                 if (currentMeasure != null)
                 {
+                    if (kpi.KPIType.GracePeriod == 1)
+                        return currentMeasure.DueDate.Date > DateTime.Now.Date;
+
                     var GetEndDateWorkingDays = DateHelper.GetEndDateWorkingDays(currentMeasure.DueDate.Date, kpi.KPIType.GracePeriod, holidays);
                     if (DateTime.Now.Date >= currentMeasure.DueDate.Date && DateTime.Now.Date <= GetEndDateWorkingDays.Date)
                         return true;

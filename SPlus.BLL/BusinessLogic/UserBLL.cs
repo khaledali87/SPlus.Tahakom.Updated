@@ -17,6 +17,7 @@ using SPlus.Helper;
 using System.Configuration;
 using Z.EntityFramework.Plus;
 using SPlus.Model;
+using SPlus.BLL.Caching;
 
 namespace SPlus.BLL
 {
@@ -71,6 +72,10 @@ namespace SPlus.BLL
                 }
                 result = dataAccess.Complete();
                 dataAccess.Dispose();
+
+                CacheService.Reset("users");
+
+
                 return user;
             }
         }
@@ -83,6 +88,10 @@ namespace SPlus.BLL
                 dataAccess.Group.Save(group);
                 result = dataAccess.Complete();
                 dataAccess.Dispose();
+
+                CacheService.Reset("groups");
+
+
                 return ReadGroupByID(group.ID);
             }
         }
@@ -90,26 +99,36 @@ namespace SPlus.BLL
 
         #region Read 
 
-        public List<Group> ReadGroup()
+        public List<Group> ReadGroup(int minutes = 10)
         {
-            using (var dataAccess = _factory.Create())
+            var data = CacheService.GetOrSet("groups", () =>
             {
-                IEnumerable<Group> groups = dataAccess.Group.Query().Include(a => a.UsersGroups.Select(s => s.User)).Include(a => a.Matrices.Select(s => s.Resource)).Include(a => a.Matrices.Select(s => s.Role));
-                return groups.ToList();
-            }
+                using (var dataAccess = _factory.Create())
+                {
+                    IEnumerable<Group> groups = dataAccess.Group.Query().Include(a => a.UsersGroups.Select(s => s.User)).Include(a => a.Matrices.Select(s => s.Resource)).Include(a => a.Matrices.Select(s => s.Role));
+                    return groups.ToList();
+                }
+            }, minutes);
+
+            return data;
         }
-        public List<User> Read()
+        public List<User> Read(int minutes = 10)
         {
-            using (var dataAccess = _factory.Create())
+            var data = CacheService.GetOrSet("users", () =>
             {
-                
-                IEnumerable<User> user = dataAccess.User.Query()
-                    .Include(a => a.ChampionKPIs)
-                    .Include(a => a.OwnerKPIs)
-                    .Include(a => a.UsersGroups.Select(s => s.Group))
-                    .Where(w => !w.Deleted);
-                return user.ToList();
-            }
+                using (var dataAccess = _factory.Create())
+                {
+
+                    IEnumerable<User> user = dataAccess.User.Query()
+                        .Include(a => a.ChampionKPIs)
+                        .Include(a => a.OwnerKPIs)
+                        .Include(a => a.UsersGroups.Select(s => s.Group))
+                        .Where(w => !w.Deleted);
+                    return user.ToList();
+                }
+            }, minutes);
+            
+            return data;
         }
         public User ReadByUserName(string user)
         {
@@ -206,6 +225,10 @@ namespace SPlus.BLL
                 context.UsersGroups = usersGroups;
                 dataAccess.User.Save(context, true);
                 result = dataAccess.Complete();
+
+                CacheService.Reset("users");
+                CacheService.Reset("groups");
+
                 dataAccess.Dispose();
                 return context;
             }
@@ -259,6 +282,11 @@ namespace SPlus.BLL
                 dataAccess.Group.Save(context);
                 result = dataAccess.Complete();
                 dataAccess.Dispose();
+
+                CacheService.Reset("users");
+                CacheService.Reset("groups");
+
+
                 return ReadGroupByID(context.ID);
             }
         }
@@ -321,6 +349,10 @@ namespace SPlus.BLL
                 }
 
                 result = dataAccess.Complete();
+
+                CacheService.Reset("users");
+                CacheService.Reset("groups");
+
                 if (result > 1)
                     return true;
                 else
@@ -350,6 +382,10 @@ namespace SPlus.BLL
                     dataAccess.User.Save(User);
                     result = dataAccess.Complete();
                     dataAccess.Dispose();
+
+                    CacheService.Reset("users");
+                    CacheService.Reset("groups");
+
                 }
                 if (result >= 1)
                     return true;
@@ -376,6 +412,9 @@ namespace SPlus.BLL
                     dataAccess.Group.Delete(Group);
                     result = dataAccess.Complete();
                     dataAccess.Dispose();
+                    CacheService.Reset("users");
+                    CacheService.Reset("groups");
+
                 }
                 if (result >= 1)
                     return true;
@@ -626,6 +665,9 @@ namespace SPlus.BLL
                     dataAccess.User.Save(user);
                 }
                 dataAccess.Complete();
+                CacheService.Reset("users");
+                CacheService.Reset("groups");
+
             }
         }
         public void UpdateDatabaseUsers(List<User> UpdatedUsers)
@@ -638,6 +680,9 @@ namespace SPlus.BLL
                     dataAccess.User.Save(user);
                 }
                 dataAccess.Complete();
+
+                CacheService.Reset("users");
+
             }
         }
         public void CleanResources()

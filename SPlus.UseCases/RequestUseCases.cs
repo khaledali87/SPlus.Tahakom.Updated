@@ -97,8 +97,8 @@ namespace SPlus.UseCases
                             }
 
                             dto.RequestType = form.IsSkipped ? (int)EnumKPIRequestType.Skipped : 
-                                       form.BaseWorkflowID == 103 ? (int)EnumKPIRequestType.UpdateHistorical : 
-                                       form.BaseWorkflowID == 104 ? (int)EnumKPIRequestType.NoAchivementSubmiited : (int)EnumKPIRequestType.UpdateKPI;
+                                       request.WorkflowID == 103 ? (int)EnumKPIRequestType.UpdateHistorical : 
+                                       request.WorkflowID == 104 ? (int)EnumKPIRequestType.NoAchivementSubmiited : (int)EnumKPIRequestType.UpdateKPI;
 
                             form.Value = form.Value.FormatDecimal();
                             form.Target = kpi.KPIMeasures.Where(a => a.ID == form.RelatedID).Select(s => s.Target).FirstOrDefault();

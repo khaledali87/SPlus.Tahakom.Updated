@@ -324,11 +324,34 @@ namespace SPlus.BLL
                 return requests.OrderBy(a => a.ID).ToList();
             }
         }
-        public List<Request> GetAllRequests()
+        //public List<Request> GetAllRequests()
+        //{
+        //    using (var dataAccess = _factory.Create())
+        //    {
+        //        List<Request> requests = dataAccess.Request.Query().IncludeOptimized(a => a.RequestSteps).Where(a => a.RequestSteps.Any(r => !r.IsCancelled)).ToList();
+        //        requests.MapUsers();
+
+        //        requests = requests.MapAttachment(dataAccess).ToList();
+        //        requests = requests.MapAttachments(dataAccess).ToList();
+        //        return requests.OrderBy(a => a.ID).ToList();
+        //    }
+        //}
+
+        public List<Request> GetAllRequests(Expression<Func<Request, bool>> predicate = null)
         {
             using (var dataAccess = _factory.Create())
             {
-                List<Request> requests = dataAccess.Request.Query().IncludeOptimized(a => a.RequestSteps).Where(a => a.RequestSteps.Any(r => !r.IsCancelled)).ToList();
+                IQueryable<Request> query = dataAccess.Request.Query().IncludeOptimized(a => a.RequestSteps);
+
+                if(predicate != null)
+                {
+                    query = query.Where(predicate);
+                }
+
+                List<Request>  requests = query.Where(a => a.RequestSteps.Any(r => !r.IsCancelled)).ToList();
+                
+                
+                
                 requests.MapUsers();
 
                 requests = requests.MapAttachment(dataAccess).ToList();
@@ -336,6 +359,7 @@ namespace SPlus.BLL
                 return requests.OrderBy(a => a.ID).ToList();
             }
         }
+
         public List<Request> ReadCRDashboardSubmitedChangeRequest()
         {
             var requests = GetAllRequests().Where(a => a.WorkflowID == Convert.ToInt32(ConfigurationManager.AppSettings["KPIChangeRequestWorkflowID"])
