@@ -228,21 +228,30 @@ namespace SPlus.UseCases
 
                 if(kpi.RequireUpdate)
                 {
-                    var holidays = HolidayBLL.HolidayDays();
 
                     KPIMeasure currentMeasure = kpi.KPIMeasures.Where(m => m.HasNoTarget != true).OrderBy(a => a.ID).Where(a => a.DueDate.Date <= DateTime.Now.Date && a.Status == "NA").LastOrDefault();
                     if (currentMeasure != null)
                     {
-                        var GetEndDateWorkingDays = DateHelper.GetEndDateWorkingDays(currentMeasure.DueDate.Date, kpi.KPIType.GracePeriod - 1, holidays);
-                        if (DateTime.Now.Date >= currentMeasure.DueDate.Date && DateTime.Now.Date <= GetEndDateWorkingDays.Date)
+                        if(kpi.KPIType.GracePeriod > 0)
                         {
-                            KPI.ArabicUpdateMessage = $"الموعد النهائي للتحديث ({GetEndDateWorkingDays.Date.ToString("dd-MM-yyyy")})";
-                            KPI.EnglishUpdateMessage = $"Update deadline ({GetEndDateWorkingDays.Date.ToString("dd-MM-yyyy")})";
+                            var holidays = HolidayBLL.HolidayDays();
+
+                            var GetEndDateWorkingDays = DateHelper.GetEndDateWorkingDays(currentMeasure.DueDate.Date, kpi.KPIType.GracePeriod, holidays);
+                            if (DateTime.Now.Date >= currentMeasure.DueDate.Date && DateTime.Now.Date <= GetEndDateWorkingDays.Date)
+                            {
+                                KPI.ArabicUpdateMessage = $"الموعد النهائي للتحديث ({GetEndDateWorkingDays.Date.ToString("dd-MM-yyyy")})";
+                                KPI.EnglishUpdateMessage = $"Update deadline ({GetEndDateWorkingDays.Date.ToString("dd-MM-yyyy")})";
+                            }
+                            else
+                            {
+                                KPI.ArabicUpdateMessage = null;
+                                KPI.EnglishUpdateMessage = null;
+                            }
                         }
                         else
                         {
-                            KPI.ArabicUpdateMessage = null;
-                            KPI.EnglishUpdateMessage = null;
+                            KPI.ArabicUpdateMessage = $"لا يوجد موعد نهائي (فترة السماح = 0)";
+                            KPI.EnglishUpdateMessage = $"No deadline (grace period is zero)";
                         }
                     }
                 }
@@ -506,16 +515,15 @@ namespace SPlus.UseCases
 
             if(DateHelper.IsTodayWorkingDay(holidays))
             {
+                
                 foreach (KPI KPI in kpis)
                 {
-                    if (KPI.ID == 4411)
+                    if(KPI.ID == 4431)
                     {
 
                     }
-                    //  KPI KPI = KPIBLL.ReadForHangfireByID(kpi.ID);
-                    List<Request> OccupiedRequests = new List<Request>();
 
-                   
+                    List<Request> OccupiedRequests = new List<Request>();
 
                     foreach (Request request in PendingRequests)
                     {
@@ -537,8 +545,8 @@ namespace SPlus.UseCases
 
                     var measures = KPI.KPIMeasures.Where(a => a.DueDate.Date <= DateTime.Now.Date && a.Status == "NA").OrderBy(a => a.ID).ToList();
 
-                    bool isFree = !OccupiedRequests.Where(w => measures.Any(a => a.ID == w.UpdateKPIForm.RelatedID)).Any()
-                        || OccupiedRequests.Where(w => measures.Any(a => a.ID == w.UpdateKPIForm.RelatedID)).Any();
+                    bool isFree = !OccupiedRequests.Where(w => measures.Any(a => a.ID == w.RelatedID)).Any()
+                        || OccupiedRequests.Where(w => measures.Any(a => a.ID == w.RelatedID)).Any();
 
 
                     if (measures.Count() > 0 && isFree)
@@ -573,8 +581,6 @@ namespace SPlus.UseCases
                                 }
                             }
                         }
-
-                        //var measureTog = KPI.KPIMeasures.Where(a => a.ID == measure.ID).FirstOrDefault()
 
                         if (KPIBLL.IsInGracePeriod(KPI, holidays , true))
                         {
@@ -691,10 +697,6 @@ namespace SPlus.UseCases
                             }
                         }
 
-
-
-
-
                         KPIsToUpdate.Add(KPI);
                     }
                     else
@@ -704,27 +706,18 @@ namespace SPlus.UseCases
                             KPI.RequireUpdate = false;
                         }
 
-                        continue;
+                        //KPIsToUpdate.Add(KPI);
+                        //continue;
                     }
 
-                    AutoApproveRejectedRequests(KPI, rejectedRequests, holidays);
-
-                    //                    foreach (var m in KPI.KPIMeasures)
-                    //                    {
-                    //                        if(m.Status == "NAS" &&  !CompletedRequests.Any(c => ((UpdateKPIForm)c.Form).RelatedID == m.ID));
-                    //))
-
-                    //                        UpdateKPIForm Form = request.UpdateKPIForm;
-                    //                        if (KPI.KPIMeasures.Any(a => a.ID == Form.RelatedID))
-                    //                        {
-                    //                            OccupiedRequests.Add(request);
-                    //                        }
-                    //                    }
-
-                    if (!measures.Any(a => a.AllowUpdate && a.HasNoTarget != true))
+                    if(KPI.RequireUpdate)
                     {
-                        KPI.RequireUpdate = false;
-                        KPI.IsLocked = false;
+                        AutoApproveRejectedRequests(KPI, rejectedRequests, holidays);
+                        if (!measures.Any(a => a.AllowUpdate && a.HasNoTarget != true))
+                        {
+                            KPI.RequireUpdate = false;
+                            KPI.IsLocked = false;
+                        }
                     }
 
                     KPIsToUpdate.Add(KPI);
@@ -734,87 +727,14 @@ namespace SPlus.UseCases
                 KPIBLL.OpenKPIForUpdate(KPIsToUpdate);
             }
              
-
-            #region Commented
-            //var kpis = KPIBLL.ReadForHangfire();
-            //List<KPI> KPIsToUpdate = new List<KPI>();
-            //List<Request> requests = RequestBLL.GetRequests(LevelTypeEnum.KPI, EnumWFBaseWorkflows.Update).Where(w => w.Status == (int)EnumWFStatuses.Pending).ToList();
-            //foreach (KPI kpi in kpis)
-            //{
-            //    KPI KPI = KPIBLL.ReadForHangfireByID(kpi.ID);
-            //    List<Request> OccupiedRequests = new List<Request>();
-            //    foreach (Request request in requests)
-            //    {
-            //        UpdateKPIForm Form = JsonConvert.DeserializeObject<UpdateKPIForm>(request.Form);
-            //        if (kpi.KPIMeasures.Any(a => a.ID == Form.RelatedID))
-            //        {
-            //            OccupiedRequests.Add(request);
-            //        }
-            //    }
-            //    var measures = KPI.KPIMeasures.Where(a => a.DueDate.Date <= DateTime.Now.Date && a.Status == "NA").OrderBy(a => a.ID).ToList();
-
-            //    bool isFree = !OccupiedRequests.Where(w => measures.Any(a => a.ID == JsonConvert.DeserializeObject<UpdateKPIForm>(w.Form).RelatedID)).Any()
-            //        || OccupiedRequests.Where(w => measures.Any(a => a.ID == JsonConvert.DeserializeObject<UpdateKPIForm>(w.Form).RelatedID)).Any();
-
-            //    if (measures.Count() > 0 && isFree)
-            //    {
-            //        if (!KPI.RequireUpdate)
-            //        {
-            //            KPI.RequireUpdate = true;
-            //        }
-            //        foreach (var measure in measures.Where(a => !a.AllowUpdate))
-            //        {
-            //            if (measure != null)
-            //            {
-            //                var request = RequestBLL.GetRequestsByFormRelatedID(measure.ID, LevelTypeEnum.KPI, EnumWFBaseWorkflows.Update).Where(w => w.Status == (int)EnumWFStatuses.Pending || w.Status == (int)EnumWFStatuses.New).FirstOrDefault();
-            //                if (!measure.AllowUpdate && request == null)
-            //                {
-            //                    KPI.KPIMeasures.Where(a => a.ID == measure.ID).FirstOrDefault().AllowUpdate = true;
-            //                    if (measure.DueDate.Date == DateTime.Now.Date)
-            //                        Task.Run(() => { NotificationConfigurationBLL.SendNotificationWorkflow(KPI.ID, 0, 0, enumNotificationEventType.UpdateSameDayReminder, LevelTypeEnum.KPI); });
-            //                }
-            //            }
-            //        }
-
-            //        foreach (var measure in measures.Where(a => a.AllowUpdate))
-            //        {
-            //            if (measure != null)
-            //            {
-            //                var request = RequestBLL.GetRequestsByFormRelatedID(measure.ID, LevelTypeEnum.KPI, EnumWFBaseWorkflows.Update).Where(w => w.Status == (int)EnumWFStatuses.Pending || w.Status == (int)EnumWFStatuses.New || w.Status == (int)EnumWFStatuses.Completed).FirstOrDefault();
-            //                if (measure.AllowUpdate && request != null)
-            //                {
-            //                    KPI.KPIMeasures.Where(a => a.ID == measure.ID).FirstOrDefault().AllowUpdate = false;
-            //                }
-            //            }
-            //        }
-
-            //        if (KPIBLL.IsInGracePeriod(KPI))
-            //        {
-            //            KPI.ManualUnLock = false;
-            //            KPI.UnlockDate = null;
-            //            KPI.IsLocked = false;
-            //        }
-            //        else if (!KPI.IsLocked)
-            //        {
-            //            if (!KPI.ManualUnLock)
-            //            {
-            //                KPI.IsLocked = true;
-            //                Task.Run(() => { NotificationConfigurationBLL.SendNotificationWorkflow(KPI.ID, 0, 0, enumNotificationEventType.KPILock, LevelTypeEnum.KPI); });
-            //            }
-            //            else
-            //                KPI.IsLocked = false;
-            //        }
-
-            //        KPIsToUpdate.Add(KPI);
-            //    }
-
-            //}
-            //KPIBLL.OpenKPIForUpdate(KPIsToUpdate);
-            #endregion
         }
 
         public void AutoApproveRejectedRequests(KPI KPI , List<Request> rejectedRequests , List<DateTime> holidays)
         {
+            if(KPI.ID == 4431)
+            {
+
+            }
             KPIMeasure approvedMeasure = null;
              if (KPIBLL.IsInGracePeriodUpdated(KPI, holidays))
                 {
@@ -921,28 +841,9 @@ namespace SPlus.UseCases
                     }
                 }
 
-               
-
-    //if (!rejectedRequests.Any(a => KPI.KPIMeasures.Any(measure => measure.ID == a.UpdateKPIForm?.RelatedID)))
-    //{
-
-    //    KPI.IsLocked = true;
-    //    Task.Run(() => { NotificationConfigurationBLL.SendNotificationWorkflow(KPI.ID, 0, 0, enumNotificationEventType.KPILock, LevelTypeEnum.KPI); });
-    //}
-    //else
-    //{
-    //    var rejectrequest = rejectedRequests.Where(a => KPI.KPIMeasures.Any(measure => measure.ID == a.UpdateKPIForm?.RelatedID)).FirstOrDefault();
-    //    if (rejectrequest != null && KPIBLL.IsInGracePeriod_Rejected(rejectrequest.Modified.Date, KPI))
-    //    {
-    //        KPI.IsLocked = false;
-    //    }
-    //    else
-    //        KPI.IsLocked = true;
-
-    //}
 }
 
-            if (KPI.ID == 4411)
+            if (KPI.ID == 4431)
             {
 
             }
@@ -965,267 +866,6 @@ namespace SPlus.UseCases
 
             }
         }
-
-        //public void AutoApproveRejectedRequests()
-        //{
-        //    var kpis = KPIBLL.ReadForHangfire();
-        //    List<KPI> KPIsToUpdate = new List<KPI>();
-        //    List<Request> requests = RequestBLL.GetRequests(LevelTypeEnum.KPI, EnumWFBaseWorkflows.Update).ToList();
-        //    List<Request> PendingRequests = requests.Where(w => w.Status == (int)EnumWFStatuses.Pending).ToList();
-        //    List<Request> rejectedRequests = requests.Where(w => w.Status == (int)EnumWFStatuses.Rejected).ToList();
-        //    List<DateTime> holidays = HolidayBLL.HolidayDays();
-
-
-        //    foreach (KPI KPI in kpis)
-        //    {
-        //        if (KPIBLL.IsInGracePeriodUpdated(KPI, holidays))
-        //        {
-        //            //KPI.ManualUnLock = false;
-        //            //KPI.UnlockDate = null;
-        //            //KPI.IsLocked = false;
-        //        }
-        //        else if (!KPI.IsLocked)
-        //        {
-        //            if (!KPI.ManualUnLock)
-        //            {
-        //                if (!rejectedRequests.Any(a => KPI.KPIMeasures.Any(measure => measure.ID == a.UpdateKPIForm?.RelatedID)))
-        //                {
-
-        //                    KPIBLL.SetKPIMeasuresNoAchievementSubmitted(KPI.ID);
-        //                    //Task.Run(() => { NotificationConfigurationBLL.SendNotificationWorkflow(KPI.ID, 0, 0, enumNotificationEventType.KPILock, LevelTypeEnum.KPI); });
-        //                }
-        //                else
-        //                {
-        //                    var rejectrequest = rejectedRequests.Where(a => KPI.KPIMeasures.Any(measure => measure.ID == a.UpdateKPIForm?.RelatedID)).FirstOrDefault();
-        //                    if (rejectrequest != null && KPIBLL.IsInGracePeriod_Rejected(rejectrequest.Modified.Date, KPI, holidays))
-        //                    {
-        //                    }
-        //                    else
-        //                    {
-        //                        KPIBLL.SetKPIMeasuresNoAchievementSubmitted(KPI.ID);
-
-        //                        //Task.Run(() => { NotificationConfigurationBLL.SendNotificationWorkflow(KPI.ID, 0, 0, enumNotificationEventType.KPILock, LevelTypeEnum.KPI); });
-        //                    }
-
-        //                }
-        //            }
-        //            else
-        //            {
-        //                if (!rejectedRequests.Any(a => KPI.KPIMeasures.Any(measure => measure.ID == a.UpdateKPIForm?.RelatedID)))
-        //                {
-
-        //                    //Task.Run(() => { NotificationConfigurationBLL.SendNotificationWorkflow(KPI.ID, 0, 0, enumNotificationEventType.KPILock, LevelTypeEnum.KPI); });
-        //                }
-        //                else
-        //                {
-        //                    var rejectrequest = rejectedRequests.Where(a => KPI.KPIMeasures.Any(measure => measure.ID == a.UpdateKPIForm?.RelatedID)).FirstOrDefault();
-        //                    if (rejectrequest != null && KPIBLL.IsInGracePeriod_Rejected(rejectrequest.Modified.Date, KPI, holidays))
-        //                    {
-        //                    }
-
-        //                    else
-        //                    {
-        //                        KPIBLL.SetKPIMeasuresNoAchievementSubmitted(KPI.ID);
-
-        //                        //Task.Run(() => { NotificationConfigurationBLL.SendNotificationWorkflow(KPI.ID, 0, 0, enumNotificationEventType.KPILock, LevelTypeEnum.KPI); });
-        //                    }
-
-        //                }
-        //            }
-
-        //            //KPI.IsLocked = false;
-        //        }
-        //        else
-        //        {
-
-
-        //            if (!KPI.ManualUnLock)
-        //            {
-        //                if (!rejectedRequests.Any(a => KPI.KPIMeasures.Any(measure => measure.ID == a.UpdateKPIForm?.RelatedID)))
-        //                {
-
-        //                    KPIBLL.SetKPIMeasuresNoAchievementSubmitted(KPI.ID);
-
-        //                    //Task.Run(() => { NotificationConfigurationBLL.SendNotificationWorkflow(KPI.ID, 0, 0, enumNotificationEventType.KPILock, LevelTypeEnum.KPI); });
-        //                }
-        //                else
-        //                {
-        //                    var rejectrequest = rejectedRequests.Where(a => KPI.KPIMeasures.Any(measure => measure.ID == a.UpdateKPIForm?.RelatedID)).FirstOrDefault();
-        //                    if (rejectrequest != null && KPIBLL.IsInGracePeriod_Rejected(rejectrequest.Modified.Date, KPI, holidays))
-        //                    {
-        //                    }
-        //                    else
-        //                    {
-        //                        KPIBLL.SetKPIMeasuresNoAchievementSubmitted(KPI.ID);
-
-        //                        //Task.Run(() => { NotificationConfigurationBLL.SendNotificationWorkflow(KPI.ID, 0, 0, enumNotificationEventType.KPILock, LevelTypeEnum.KPI); });
-        //                    }
-
-        //                }
-        //            }
-        //            else
-        //            {
-        //                if (!rejectedRequests.Any(a => KPI.KPIMeasures.Any(measure => measure.ID == a.UpdateKPIForm?.RelatedID)))
-        //                {
-
-        //                    // Task.Run(() => { NotificationConfigurationBLL.SendNotificationWorkflow(KPI.ID, 0, 0, enumNotificationEventType.KPILock, LevelTypeEnum.KPI); });
-        //                }
-        //                else
-        //                {
-        //                    var rejectrequest = rejectedRequests.Where(a => KPI.KPIMeasures.Any(measure => measure.ID == a.UpdateKPIForm?.RelatedID)).FirstOrDefault();
-        //                    if (rejectrequest != null && KPIBLL.IsInGracePeriod_Rejected(rejectrequest.Modified.Date, KPI, holidays))
-        //                    {
-        //                    }
-        //                    else
-        //                    {
-        //                        KPIBLL.SetKPIMeasuresNoAchievementSubmitted(KPI.ID);
-
-        //                        //Task.Run(() => { NotificationConfigurationBLL.SendNotificationWorkflow(KPI.ID, 0, 0, enumNotificationEventType.KPILock, LevelTypeEnum.KPI); });
-        //                    }
-
-        //                }
-        //            }
-
-
-        //            //if (!rejectedRequests.Any(a => KPI.KPIMeasures.Any(measure => measure.ID == a.UpdateKPIForm?.RelatedID)))
-        //            //{
-
-        //            //    KPI.IsLocked = true;
-        //            //    Task.Run(() => { NotificationConfigurationBLL.SendNotificationWorkflow(KPI.ID, 0, 0, enumNotificationEventType.KPILock, LevelTypeEnum.KPI); });
-        //            //}
-        //            //else
-        //            //{
-        //            //    var rejectrequest = rejectedRequests.Where(a => KPI.KPIMeasures.Any(measure => measure.ID == a.UpdateKPIForm?.RelatedID)).FirstOrDefault();
-        //            //    if (rejectrequest != null && KPIBLL.IsInGracePeriod_Rejected(rejectrequest.Modified.Date, KPI))
-        //            //    {
-        //            //        KPI.IsLocked = false;
-        //            //    }
-        //            //    else
-        //            //        KPI.IsLocked = true;
-
-        //            //}
-        //        }
-
-        //        //KPIsToUpdate.Add(KPI);
-        //    }
-
-
-        //    //KPIBLL.OpenKPIForUpdate(KPIsToUpdate);
-
-        //    #region Commented
-        //    //var kpis = KPIBLL.ReadForHangfire();
-        //    //List<KPI> KPIsToUpdate = new List<KPI>();
-        //    //List<Request> requests = RequestBLL.GetRequests(LevelTypeEnum.KPI, EnumWFBaseWorkflows.Update).Where(w => w.Status == (int)EnumWFStatuses.Pending).ToList();
-        //    //foreach (KPI kpi in kpis)
-        //    //{
-        //    //    KPI KPI = KPIBLL.ReadForHangfireByID(kpi.ID);
-        //    //    List<Request> OccupiedRequests = new List<Request>();
-        //    //    foreach (Request request in requests)
-        //    //    {
-        //    //        UpdateKPIForm Form = JsonConvert.DeserializeObject<UpdateKPIForm>(request.Form);
-        //    //        if (kpi.KPIMeasures.Any(a => a.ID == Form.RelatedID))
-        //    //        {
-        //    //            OccupiedRequests.Add(request);
-        //    //        }
-        //    //    }
-        //    //    var measures = KPI.KPIMeasures.Where(a => a.DueDate.Date <= DateTime.Now.Date && a.Status == "NA").OrderBy(a => a.ID).ToList();
-
-        //    //    bool isFree = !OccupiedRequests.Where(w => measures.Any(a => a.ID == JsonConvert.DeserializeObject<UpdateKPIForm>(w.Form).RelatedID)).Any()
-        //    //        || OccupiedRequests.Where(w => measures.Any(a => a.ID == JsonConvert.DeserializeObject<UpdateKPIForm>(w.Form).RelatedID)).Any();
-
-        //    //    if (measures.Count() > 0 && isFree)
-        //    //    {
-        //    //        if (!KPI.RequireUpdate)
-        //    //        {
-        //    //            KPI.RequireUpdate = true;
-        //    //        }
-        //    //        foreach (var measure in measures.Where(a => !a.AllowUpdate))
-        //    //        {
-        //    //            if (measure != null)
-        //    //            {
-        //    //                var request = RequestBLL.GetRequestsByFormRelatedID(measure.ID, LevelTypeEnum.KPI, EnumWFBaseWorkflows.Update).Where(w => w.Status == (int)EnumWFStatuses.Pending || w.Status == (int)EnumWFStatuses.New).FirstOrDefault();
-        //    //                if (!measure.AllowUpdate && request == null)
-        //    //                {
-        //    //                    KPI.KPIMeasures.Where(a => a.ID == measure.ID).FirstOrDefault().AllowUpdate = true;
-        //    //                    if (measure.DueDate.Date == DateTime.Now.Date)
-        //    //                        Task.Run(() => { NotificationConfigurationBLL.SendNotificationWorkflow(KPI.ID, 0, 0, enumNotificationEventType.UpdateSameDayReminder, LevelTypeEnum.KPI); });
-        //    //                }
-        //    //            }
-        //    //        }
-
-        //    //        foreach (var measure in measures.Where(a => a.AllowUpdate))
-        //    //        {
-        //    //            if (measure != null)
-        //    //            {
-        //    //                var request = RequestBLL.GetRequestsByFormRelatedID(measure.ID, LevelTypeEnum.KPI, EnumWFBaseWorkflows.Update).Where(w => w.Status == (int)EnumWFStatuses.Pending || w.Status == (int)EnumWFStatuses.New || w.Status == (int)EnumWFStatuses.Completed).FirstOrDefault();
-        //    //                if (measure.AllowUpdate && request != null)
-        //    //                {
-        //    //                    KPI.KPIMeasures.Where(a => a.ID == measure.ID).FirstOrDefault().AllowUpdate = false;
-        //    //                }
-        //    //            }
-        //    //        }
-
-        //    //        if (KPIBLL.IsInGracePeriod(KPI))
-        //    //        {
-        //    //            KPI.ManualUnLock = false;
-        //    //            KPI.UnlockDate = null;
-        //    //            KPI.IsLocked = false;
-        //    //        }
-        //    //        else if (!KPI.IsLocked)
-        //    //        {
-        //    //            if (!KPI.ManualUnLock)
-        //    //            {
-        //    //                KPI.IsLocked = true;
-        //    //                Task.Run(() => { NotificationConfigurationBLL.SendNotificationWorkflow(KPI.ID, 0, 0, enumNotificationEventType.KPILock, LevelTypeEnum.KPI); });
-        //    //            }
-        //    //            else
-        //    //                KPI.IsLocked = false;
-        //    //        }
-
-        //    //        KPIsToUpdate.Add(KPI);
-        //    //    }
-
-        //    //}
-        //    //KPIBLL.OpenKPIForUpdate(KPIsToUpdate);
-        //    #endregion
-        //}
-
-
-
-        //public void LockUnlockKPIs()
-        //{
-        //    var kpis = KPIBLL.ReadForHangfire();
-        //    foreach (KPI kpi in kpis)
-        //    {
-        //        if(kpi.ID == 62)
-        //        {
-
-        //        }
-        //        if (KPIBLL.IsInGracePeriod(kpi))
-        //        {
-        //            kpi.IsLocked = false;
-        //           // KPIBLL.LockUnlockKPI(kpi);
-
-        //        }
-        //        else if (kpi.ManualUnLock)
-        //        {
-        //           //KPIBLL.LockUnlockKPI(kpi);
-        //            kpi.IsLocked = false;
-        //        }
-        //        else if (!kpi.IsLocked)
-        //        {
-        //            if (!kpi.ManualUnLock)
-        //            {
-        //                kpi.IsLocked = true;
-        //                KPIBLL.LockUnlockKPI(kpi);
-        //                Task.Run(() => { NotificationConfigurationBLL.SendNotificationWorkflow(kpi.ID, 0, 0, enumNotificationEventType.KPILock, LevelTypeEnum.KPI, "Reminder"); });
-        //                //NotificationConfigurationBLL.SendNotificationWorkflow(kpi.ID, 0, 0, enumNotificationEventType.KPILock, LevelTypeEnum.KPI, "Reminder");
-        //            }
-        //        }
-        //    }
-        //    KPIBLL.LockUnlockKPIs(kpis);
-        //}
-
 
         public void KPIUpdateReminder()
         {

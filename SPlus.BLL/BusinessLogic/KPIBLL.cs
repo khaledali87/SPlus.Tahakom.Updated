@@ -2535,7 +2535,7 @@ namespace SPlus.BLL
 
         public KPIMeasure SetKPIMeasuresNoAchievementSubmitted(KPI kpi)
         {
-            if(kpi.ID == 4411)
+            if(kpi.ID == 4431)
             {
 
             }
@@ -2894,6 +2894,11 @@ namespace SPlus.BLL
 
         public bool IsInGracePeriod(KPI kpi, List<DateTime> holidays = default , bool IsLocking = false)
         {
+            if (kpi.ID == 4431)
+            {
+
+            }
+
             holidays = holidays ?? new List<DateTime>();
             if (kpi.KPIType.GracePeriod == 0)
                 return true;
@@ -2904,8 +2909,8 @@ namespace SPlus.BLL
                 KPIMeasure currentMeasure = kpi.KPIMeasures.Where(m=> m.HasNoTarget != true).OrderBy(a => a.ID).Where(a => a.DueDate.Date <= DateTime.Now.Date && a.Status == "NA").LastOrDefault();
                 if (currentMeasure != null)
                 {
-                    if(kpi.KPIType.GracePeriod == 1)
-                       return currentMeasure.DueDate.Date > DateTime.Now.Date;
+                    //if(kpi.KPIType.GracePeriod == 1 )
+                    //   return currentMeasure.DueDate.Date > DateTime.Now.Date;
 
                     var GetEndDateWorkingDays = DateHelper.GetEndDateWorkingDays(currentMeasure.DueDate.Date, kpi.KPIType.GracePeriod, holidays);
                     if (DateTime.Now.Date >= currentMeasure.DueDate.Date && DateTime.Now.Date <= GetEndDateWorkingDays.Date)
@@ -2919,7 +2924,7 @@ namespace SPlus.BLL
 
         public bool IsInGracePeriodUpdated(KPI kpi, List<DateTime> holidays = default)
         {
-            if(kpi.ID == 4411)
+            if(kpi.ID == 4431)
             {
 
             }
@@ -2932,9 +2937,6 @@ namespace SPlus.BLL
                     .Where(a => a.HasNoTarget != true && a.AllowUpdate == true && a.DueDate.Date <= DateTime.Now.Date && a.Status == "NA").FirstOrDefault();
                 if (currentMeasure != null)
                 {
-                    if (kpi.KPIType.GracePeriod == 1)
-                        return currentMeasure.DueDate.Date > DateTime.Now.Date;
-
                     var GetEndDateWorkingDays = DateHelper.GetEndDateWorkingDays(currentMeasure.DueDate.Date, kpi.KPIType.GracePeriod, holidays);
                     if (DateTime.Now.Date >= currentMeasure.DueDate.Date && DateTime.Now.Date <= GetEndDateWorkingDays.Date)
                         return true;
