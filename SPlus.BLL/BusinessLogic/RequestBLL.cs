@@ -303,14 +303,17 @@ namespace SPlus.BLL
      
 
 
-        public List<Request> GetRequests(LevelTypeEnum Type, EnumWFBaseWorkflows baseWorkflow)
+        public List<Request> GetRequests(List<int> relatedIds, LevelTypeEnum Type, EnumWFBaseWorkflows baseWorkflow)
         {
             using (var dataAccess = _factory.Create())
             {
                 var definition = new { Type = 0, BaseWorkflow = 0 };
                 List<Request> requests = dataAccess.Request.Query()
+                    .Where(r=> relatedIds.Contains(r.RelatedID ?? 0))
                     .IncludeOptimized(a => a.RequestSteps).ToList()
-                    .Where(w => JsonConvert.DeserializeAnonymousType(w.Form, definition).Type == (int)Type && (JsonConvert.DeserializeAnonymousType(w.Form, definition).BaseWorkflow == (int)baseWorkflow || JsonConvert.DeserializeAnonymousType(w.Form, definition).BaseWorkflow == 0)).ToList();
+                    .Where(w => 
+                    JsonConvert.DeserializeAnonymousType(w.Form, definition).Type == (int)Type && 
+                    (JsonConvert.DeserializeAnonymousType(w.Form, definition).BaseWorkflow == (int)baseWorkflow || JsonConvert.DeserializeAnonymousType(w.Form, definition).BaseWorkflow == 0)).ToList();
                 requests.MapUsers();
 
                 foreach (var request in requests)

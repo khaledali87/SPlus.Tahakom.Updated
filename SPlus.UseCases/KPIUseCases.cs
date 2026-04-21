@@ -505,30 +505,25 @@ namespace SPlus.UseCases
         public void OpenKPIsForUpdate()
         {
             var kpis = KPIBLL.ReadForHangfire();
+
+            var measureIds =kpis.SelectMany(m=>m.KPIMeasures).Select(m=>  m.ID).ToList() ?? new List<int>();
             List<KPI> KPIsToUpdate = new List<KPI>();
-            List<Request> requests = RequestBLL.GetRequests(LevelTypeEnum.KPI, EnumWFBaseWorkflows.Update).ToList();
+            List<Request> requests = RequestBLL.GetRequests(measureIds, LevelTypeEnum.KPI, EnumWFBaseWorkflows.Update).ToList();
             List<Request> CompletedRequests = requests.Where(w => w.Status == (int)EnumWFStatuses.Completed).ToList();
             List<Request> PendingRequests = requests.Where(w => w.Status == (int)EnumWFStatuses.Pending).ToList();
             List<Request> rejectedRequests = requests.Where(w => w.Status == (int)EnumWFStatuses.Rejected).ToList();
             List<DateTime> holidays = HolidayBLL.HolidayDays();
 
 
-            if(DateHelper.IsTodayWorkingDay(holidays))
+            if (DateHelper.IsTodayWorkingDay(holidays))
             {
-                
                 foreach (KPI KPI in kpis)
                 {
-                    if(KPI.ID == 4431)
-                    {
-
-                    }
-
                     List<Request> OccupiedRequests = new List<Request>();
 
                     foreach (Request request in PendingRequests)
                     {
-                        UpdateKPIForm Form = request.UpdateKPIForm;
-                        if (KPI.KPIMeasures.Any(a => a.ID == Form.RelatedID))
+                        if (KPI.KPIMeasures.Any(a => a.ID == request.RelatedID))
                         {
                             OccupiedRequests.Add(request);
                         }
@@ -536,8 +531,7 @@ namespace SPlus.UseCases
 
                     foreach (Request request in rejectedRequests)
                     {
-                        UpdateKPIForm Form = request.UpdateKPIForm;
-                        if (KPI.KPIMeasures.Any(a => a.ID == Form.RelatedID))
+                        if (KPI.KPIMeasures.Any(a => a.ID == request.RelatedID))
                         {
                             OccupiedRequests.Add(request);
                         }
@@ -561,7 +555,6 @@ namespace SPlus.UseCases
                             {
                                 var request = requests.Where(w => w.Status == (int)EnumWFStatuses.Pending ||
                                                                   w.Status == (int)EnumWFStatuses.New).Where(w => w.UpdateKPIForm.RelatedID == measure.ID).FirstOrDefault();
-                                //var request = RequestBLL.GetRequestsByFormRelatedID(measure.ID, LevelTypeEnum.KPI).Where(w => w.Status == (int)EnumWFStatuses.Pending || w.Status == (int)EnumWFStatuses.New).FirstOrDefault();
                                 if (!measure.AllowUpdate && request == null)
                                 {
                                     KPI.KPIMeasures.Where(a => a.ID == measure.ID).FirstOrDefault().AllowUpdate = true;
@@ -726,7 +719,7 @@ namespace SPlus.UseCases
 
                 KPIBLL.OpenKPIForUpdate(KPIsToUpdate);
             }
-             
+
         }
 
         public void AutoApproveRejectedRequests(KPI KPI , List<Request> rejectedRequests , List<DateTime> holidays)
