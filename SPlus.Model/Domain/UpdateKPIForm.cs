@@ -13,6 +13,7 @@
         public int RelatedID { get; set; }
         public decimal Value { get; set; }
         public decimal OldValue { get; set; }
+        public decimal OldAchivment { get; set; }
         public decimal Target { get; set; }
         public string UnitOfMeasure { get; set; }
         public string EnglishUnitDetails { get; set; }

@@ -1480,7 +1480,7 @@ namespace SPlus.BLL
         //    }
         //}
 
-        public void UpdateKPIPeriod(UpdateKPIForm form)
+        public void UpdateKPIPeriod(UpdateKPIForm form, int workflowid=0)
         {
             using (var dataAccess = _factory.Create())
             {
@@ -1829,10 +1829,46 @@ namespace SPlus.BLL
                 dataAccess.KPI.Save(kpi);
                 dataAccess.Complete();
 
+                if (workflowid == (int)EnumWFBaseWorkflows.ReUpdate)
+                {
+                    List<int> allmeasure = kpi.KPIMeasures.Where(a => a.ID > measure.ID).Select(i => i.ID).ToList();
 
+
+                    foreach (var item in allmeasure)
+                    {
+                        RecalculateMeasureIsSkipped(item, kpi.ID);
+
+                    }
+                }
             }
         }
+        public void RecalculateMeasureIsSkipped(int measureID, int kpiID)
+        {
+            using (var dataAccess = _factory.Create())
+            {
+                KPI kpi = dataAccess.KPI.Query().Include(a => a.KPIMeasures).Where(a => a.ID==kpiID).FirstOrDefault();
+                var measure = kpi.KPIMeasures.Where(a => a.ID == measureID).FirstOrDefault();
 
+                if (measure.Status== "NAU"|| measure.Status == "NAS")
+                {
+                    var previous = kpi.KPIMeasures
+                        .Where(x => x.HasNoTarget != true && x.DueDate < measure.DueDate)
+                        .OrderByDescending(x => x.DueDate)
+                        .FirstOrDefault();
+
+
+
+                    measure.AccumulutiveValue = previous?.AccumulutiveValue ?? 0;
+                    //measure.AccumulutiveTarget = previous?.AccumulutiveTarget ?? 0;
+                    measure.AccumulutiveOutOfTarget = previous?.AccumulutiveOutOfTarget ?? 0;
+
+
+
+                    dataAccess.KPI.Save(kpi);
+                    dataAccess.Complete();
+                }
+            }
+        }
 
         public void UpdateKPIPeriod_Script(UpdateKPIForm form)
         {
@@ -2578,7 +2614,11 @@ namespace SPlus.BLL
 
                 measure.AccumulutiveValue = previous?.AccumulutiveValue ?? 0;
                 measure.AccumulutiveStatus = "NAU";
-                measure.AccumulutiveTarget = previous?.AccumulutiveTarget ?? 0;
+
+                List<KPIMeasure> oldFrequenciesMeasures = kpi.KPIMeasures.Where(w => w.HasNoTarget != true&&w.ID <= measure.ID).ToList();
+             
+                decimal Target = CalculateTarget(measure, kpi, oldFrequenciesMeasures);
+                measure.AccumulutiveTarget = Target; //previous?.AccumulutiveTarget ?? 0;
                 measure.AccumulutiveOutOfTarget = previous?.AccumulutiveOutOfTarget ?? 0;
 
                 if (!kpi.KPIMeasures.Any(m => m.AllowUpdate))
@@ -2668,7 +2708,12 @@ namespace SPlus.BLL
                     measure.AccumulutiveStatus = "NAS";
                     measure.AccumulutiveValue = previous?.AccumulutiveValue ?? 0;
                     measure.AccumulutiveOutOfTarget = previous?.AccumulutiveOutOfTarget ?? 0;
-                    measure.AccumulutiveTarget = previous?.AccumulutiveTarget ?? 0;
+
+
+                    List<KPIMeasure> oldFrequenciesMeasures = kpi.KPIMeasures.Where(w => w.HasNoTarget != true && w.ID <= measure.ID).ToList();
+
+                    decimal Target = CalculateTarget(measure, kpi, oldFrequenciesMeasures);
+                    measure.AccumulutiveTarget = Target;//previous?.AccumulutiveTarget ?? 0;
                     measure.NeedRequest = true;
 
                     autoApproved = true;

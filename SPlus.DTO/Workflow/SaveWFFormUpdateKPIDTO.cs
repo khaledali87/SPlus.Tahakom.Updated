@@ -15,6 +15,7 @@ namespace SPlus.DTO
         public int RelatedID { get; set; }
         public decimal Value { get; set; }
         public decimal OldValue { get; set; }
+        public decimal OldAchivment { get; set; }
         public DateTime DueDate { get; set; }
         public decimal Target { get; set; }
 

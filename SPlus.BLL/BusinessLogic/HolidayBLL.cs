@@ -27,7 +27,7 @@ namespace SPlus.BLL
         {
             using (var dataAccess = _factory.Create())
             {
-                IEnumerable<Holiday> holidays   = dataAccess.Holiday.Query();
+                IEnumerable<Holiday> holidays   = dataAccess.Holiday.Query().OrderBy(a=>a.StartDate);
 
                 return holidays.ToList();
             }

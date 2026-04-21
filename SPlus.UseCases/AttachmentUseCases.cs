@@ -112,9 +112,13 @@ namespace SPlus.UseCases
                 foreach (var measure in kpi.KPIMeasures)
                 {
                     var definition = new { RelatedID = 0 };
-                    var request = requests.Where(a => JsonConvert.DeserializeAnonymousType(a.Form, definition).RelatedID == measure.ID).FirstOrDefault();
-                    if (request != null)
-                        finalRequests.Add(request);
+                    var measureRequests = requests.Where(a => JsonConvert.DeserializeAnonymousType(a.Form, definition).RelatedID == measure.ID).ToList();
+                    foreach (var item in measureRequests)
+                    {
+                        if (item != null)
+                            finalRequests.Add(item);
+                    }
+                 
                 }
 
                 KPIAttachmentDTO attach = null;

@@ -171,7 +171,7 @@ namespace SPlus.UseCases
                       .OrderByDescending(x => x.Order)
                       .FirstOrDefault(): RequestSteps
                       .Where(x => x.RequestID == step.RequestID
-                               && x.Order < step.Order
+                               && x.Order <= step.Order
                                && x.IsCancelled != true)
                       .OrderByDescending(x => x.Order)
                       .FirstOrDefault();
@@ -190,8 +190,13 @@ namespace SPlus.UseCases
                         myRequest.Type = (int)LevelTypeEnum.KPI;
                         myRequest.Created = step.Request.Created;
 
-                        myRequest.AccumulutiveTarget = measure?.AccumulutiveTarget;
-                        myRequest.AccumulutiveValue = measure?.AccumulutiveValue;
+                        //Ahmad
+                        // myRequest.AccumulutiveTarget = measure?.AccumulutiveTarget;
+                        // myRequest.AccumulutiveValue = measure?.AccumulutiveValue;
+                        myRequest.AccumulutiveTarget = updateKPIForm.OldAchivment; ;//measure.AccumulutiveTarget;
+                        myRequest.AccumulutiveValue = CalculateAccumulutiveOutOfTarget(measure, kpi, measure.Target, updateKPIForm.Value); //measure.AccumulutiveValue;
+
+
                         myRequest.DueDate = measure?.DueDate;
 
                         myRequest.BaseWorkflowID = baseWFID;
@@ -199,7 +204,7 @@ namespace SPlus.UseCases
                         myRequest.OldActualValue = updateKPIForm.OldValue;
                         myRequest.ActualValue = updateKPIForm.Value;
 
-                        myRequest.ReviewedBy = previousStep.ActionBy != null ? Mapper.Map<UserListDTO>(users.Where(w => w.UserName.ToLower() == previousStep?.ActionBy.ToLower()).FirstOrDefault()) : null;
+                        myRequest.ReviewedBy = previousStep.Order!=1&& previousStep.ActionBy != null ? Mapper.Map<UserListDTO>(users.Where(w => w.UserName.ToLower() == previousStep?.ActionBy.ToLower()).FirstOrDefault()) : null;
                         myRequest.CreatedBy = Mapper.Map<UserListDTO>(users.Where(w => w.UserName.ToLower() == step.Request.CreatedBy.ToLower()).FirstOrDefault());
                         myRequest.Status = pendingStep != null ? pendingStep.Status : step.Status != 0 ? step.Status : step.Request.Status;
 
@@ -600,8 +605,9 @@ namespace SPlus.UseCases
                     approval.DueDate = measure.DueDate;
                     approval.BaseWorkflowID = baseWFID;
 
-                    approval.AccumulutiveTarget = measure.AccumulutiveTarget;
-                    approval.AccumulutiveValue = measure.AccumulutiveValue;
+                    //Ahmad
+                    approval.AccumulutiveTarget = updateKPIForm.OldAchivment; ;//measure.AccumulutiveTarget;
+                    approval.AccumulutiveValue = CalculateAccumulutiveOutOfTarget(measure, kpi, measure.Target, updateKPIForm.Value); //measure.AccumulutiveValue;
 
                     approval.OldActualValue = updateKPIForm.OldValue;
                     approval.ActualValue = updateKPIForm.Value;
@@ -709,7 +715,60 @@ namespace SPlus.UseCases
             return taskCenter;
         }
 
+        public decimal CalculateAccumulutiveOutOfTarget(KPIMeasure measure, KPI kpi, decimal Target, decimal Value)
+        {
+            decimal AccumulutiveOutOfTarget;
+            //Accumulative values
+            if (kpi?.Polarity?.ToLower() == "positive")
+            {
+                //((Sum of the Actuals Values - Baseline) / (Sum of the Target Values -Baseline)) *100 %
+                if (Target - kpi.Baseline != 0)
+                    AccumulutiveOutOfTarget = ((Value - kpi.Baseline) / (Target - kpi.Baseline)) * 100;
+                else
+                    AccumulutiveOutOfTarget = 0;
+            }
+            else if (kpi?.Polarity?.ToLower() == "negative")
+            {
+                //based on client commnet 2024074
+                //if value=0, baseline=0 , and taregt =0 > 100
+                //baseline=0, target=0 >0
 
+                if (kpi.Baseline == 0 && Target == 0 && Value == 0)
+                {
+                    AccumulutiveOutOfTarget = 100;
+                }
+
+                else if (kpi.Baseline == 0 && Target == 0)
+                {
+                    AccumulutiveOutOfTarget = 0;
+                }
+                else
+
+                {
+                    //1-(( Sum of Actuals - Sum of Targets)/ (Baseline - Sum of Targets)) *100 %
+                    if (Target - kpi.Baseline != 0)
+                        AccumulutiveOutOfTarget = (1 - (Value - Target) / (Target - kpi.Baseline)) * 100;
+                    else
+                        AccumulutiveOutOfTarget = 0;
+                }
+            }
+            else
+                AccumulutiveOutOfTarget = 0;
+
+            if (AccumulutiveOutOfTarget > 100)
+            {
+                AccumulutiveOutOfTarget = 100;
+            }
+
+            if (AccumulutiveOutOfTarget < 0)
+            {
+                AccumulutiveOutOfTarget = 0;
+            }
+            //start Accu
+            AccumulutiveOutOfTarget = (decimal)Math.Round(AccumulutiveOutOfTarget, 2);
+
+            return AccumulutiveOutOfTarget;
+        }
         //ASS
         private TaskCenterListDTO<List<ApprovalDTO>> GetApprovalList1(List<RequestStep> RequestSteps, List<KPI> kpis, string baseworkflow)
         {

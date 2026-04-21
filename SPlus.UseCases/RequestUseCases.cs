@@ -65,11 +65,11 @@ namespace SPlus.UseCases
                     int workflowID = kpi.KPIType.Workflows.Where(a => a.BaseWorkflowID == (int)EnumWFBaseWorkflows.Update).FirstOrDefault().WorkflowID;
                     if (kpi != null)
                     {
-                        var measureIds = kpi.KPIMeasures.Select(m=> m.ID).ToList() ?? new List<int>();
+                        var measureIds = kpi.KPIMeasures.Select(m => m.ID).ToList() ?? new List<int>();
                         var workflowIds = new List<int> { workflowID, 103, 104 };
-                        List<Request> requests = RequestBLL.GetRequests(userName , true , a => measureIds.Any(m=> m == a.RelatedID) && 
-                                                                                               workflowIds.Contains(a.WorkflowID)).ToList();
-                        
+                        List<Request> requests = RequestBLL.GetRequests(userName, true, a => measureIds.Any(m => m == a.RelatedID) &&
+                                                                                             workflowIds.Contains(a.WorkflowID)).ToList();
+
                         foreach (Request request in requests)
                         {
                             var data = (JObject)JsonConvert.DeserializeObject(request.Form);
@@ -96,11 +96,11 @@ namespace SPlus.UseCases
                                 form.Attachments.Add(form.Attachment);
                             }
 
-                            dto.RequestType = form.IsSkipped ? (int)EnumKPIRequestType.Skipped : 
-                                       request.WorkflowID == 103 ? (int)EnumKPIRequestType.UpdateHistorical : 
+                            dto.RequestType = form.IsSkipped ? (int)EnumKPIRequestType.Skipped :
+                                       request.WorkflowID == 103 ? (int)EnumKPIRequestType.UpdateHistorical :
                                        request.WorkflowID == 104 ? (int)EnumKPIRequestType.NoAchivementSubmiited : (int)EnumKPIRequestType.UpdateKPI;
 
-                            form.Value = form.Value.FormatDecimal();
+                            form.Value = kpi.KPIMeasures.Where(a => a.ID == form.RelatedID).Select(s => s.Value.Value).FirstOrDefault();//form.Value.FormatDecimal();
                             form.Target = kpi.KPIMeasures.Where(a => a.ID == form.RelatedID).Select(s => s.Target).FirstOrDefault();
                             form.DueDate = kpi.KPIMeasures.Where(a => a.ID == form.RelatedID).Select(s => s.DueDate).FirstOrDefault();
                             dto.Form = form;
@@ -307,7 +307,7 @@ namespace SPlus.UseCases
                     form.UnitOfMeasure = kpi.UnitOfMeasure;
                     form.EnglishUnitDetails = kpi.EnglishUnitDetails;
                     form.ArabicUnitDetails = kpi.ArabicUnitDetails;
-                    
+
                 }
 
                 foreach (var step in requestDTO.Steps)
@@ -323,78 +323,115 @@ namespace SPlus.UseCases
                 //requestDTO.CanApprove = req
                 requestDTO.Form = form;
                 requestDTO.Related = new List<RequestDetailsDTO>();
-                if(Requests.Count() > 1)
-                foreach (var req in Requests.Where(r=> r.ID != mainRequest.ID))
-                {
-                    var step = req.RequestSteps.FirstOrDefault(x => x.Status == (int)EnumWFStatuses.Pending);
-                    var previous = step != null ? req.RequestSteps
-                          .Where(x => x.RequestID == step.RequestID
-                                   && x.Order < step.Order
-                                   && x.IsCancelled != true)
-                          .OrderByDescending(x => x.Order)
-                          .FirstOrDefault() : req.RequestSteps
-                          .Where(x => x.IsCancelled != true)
-                          .OrderByDescending(x => x.Order)
-                          .FirstOrDefault();
-
-                    RequestDetailsDTO related = AutoMapper.Mapper.Map<RequestDetailsDTO>(req);
-
-                   related.Status = previous?.Status == null || 
-                                    previous?.Status == 0 ? related.Status : previous?.Status ?? 0;
-
-                    UpdateKPIForm relatedForm = JsonConvert.DeserializeObject<UpdateKPIForm>(req.Form);
-                    JObject formm = new JObject();
-                    if (kpi != null)
+                if (Requests.Count() > 1)
+                    foreach (var req in Requests.Where(r => r.ID != mainRequest.ID))
                     {
+                        var step = req.RequestSteps.FirstOrDefault(x => x.Status == (int)EnumWFStatuses.Pending);
+                        var previous = step != null ? req.RequestSteps
+                              .Where(x => x.RequestID == step.RequestID
+                                       && x.Order < step.Order
+                                       && x.IsCancelled != true)
+                              .OrderByDescending(x => x.Order)
+                              .FirstOrDefault() : req.RequestSteps
+                              .Where(x => x.IsCancelled != true)
+                              .OrderByDescending(x => x.Order)
+                              .FirstOrDefault();
+
+                        RequestDetailsDTO related = AutoMapper.Mapper.Map<RequestDetailsDTO>(req);
+
+                        related.Status = previous?.Status == null ||
+                                         previous?.Status == 0 ? related.Status : previous?.Status ?? 0;
+
+                        UpdateKPIForm relatedForm = JsonConvert.DeserializeObject<UpdateKPIForm>(req.Form);
+                        JObject formm = new JObject();
+                        if (kpi != null)
+                        {
                             //if (kpi.KPIMeasures.Where(a => a.Status != "NA").Count() > 0)
                             //    form.OldValue = kpi.KPIMeasures.Where(a => a.Status != "NA").FirstOrDefault().Value.Value;
                             //else
                             //    form.OldValue = kpi.Baseline;
+                            ///
+
+                            //Ahmad comment
+                            /*   if (kpi.KPIMeasures.Min(x => x.ID) == form.RelatedID)
+                                   relatedForm.OldValue = kpi.Baseline;
+                               else
+                                   relatedForm.OldValue = kpi.KPIMeasures.Where(w => w.ID < form.RelatedID && w.Status != "NA").LastOrDefault()?.Value ?? default;
+
+                               */
 
 
-                        if (kpi.KPIMeasures.Min(x => x.ID) == form.RelatedID)
-                            relatedForm.OldValue = kpi.Baseline;
-                        else
-                            relatedForm.OldValue = kpi.KPIMeasures.Where(w => w.ID < form.RelatedID && w.Status != "NA").LastOrDefault()?.Value ?? default;
-
-                        relatedForm.Target = measure.Target;
-                        relatedForm.Value = relatedForm.Value.FormatDecimal();//kpi.KPIMeasures.Where(a => a.ID == form.RelatedID).FirstOrDefault().Value.Value.FormatDecimal();
-                        relatedForm.DueDate = measure.DueDate;
-                        relatedForm.UnitOfMeasure = kpi.UnitOfMeasure;
-                        relatedForm.EnglishUnitDetails = kpi.EnglishUnitDetails;
-                        relatedForm.ArabicUnitDetails = kpi.ArabicUnitDetails;
-                        relatedForm.AccumulutiveTarget = measure.AccumulutiveTarget;
-                        relatedForm.AccumulutiveValue = measure.AccumulutiveValue;
-
-                        relatedForm.ReviewedBy = previous.ActionBy == null ? null : Mapper.Map<UserListDTO>(users.FirstOrDefault(w => w.UserName.ToLower() == previous?.ActionBy.ToLower()));
-                        relatedForm.ActionBy = Mapper.Map<UserListDTO>(users.FirstOrDefault(w => w.UserName.ToLower() == step?.Request?.CreatedBy.ToLower()));
-                        //relatedForm.CreatedBy = 
-                        relatedForm.ActionDate = previous?.Modified;
 
 
-                        formm = JObject.FromObject(relatedForm);
+                            //Ahmad add
 
-                        formm["CreatedBy"] = JObject.FromObject(Mapper.Map<UserListDTO>(users.FirstOrDefault(w => w.UserName.ToLower() == req.CreatedBy.ToLower())));
+                            var reqdata = (JObject)JsonConvert.DeserializeObject(req.Form);
+                            decimal reqvalue = reqdata.SelectToken("Value").Value<decimal>();
+                            decimal reqoldvalue = reqdata.SelectToken("OldValue").Value<decimal>();
+                            decimal reqOldAchivment;
+
+                            try
+                            {
+                                reqOldAchivment = reqdata.SelectToken("OldAchivment").Value<decimal>();
+                            }
+                            catch
+                            {
+                                reqOldAchivment = measure.AccumulutiveOutOfTarget.Value;
+                            }
+
+                            relatedForm.OldValue = reqoldvalue;
+                            relatedForm.Value = reqvalue;
+
+
+                            relatedForm.AccumulutiveTarget = reqOldAchivment;
+
+                            relatedForm.AccumulutiveValue = CalculateAccumulutiveOutOfTarget(measure, kpi, measure.Target, reqvalue);
+
+                            ///
+
+
+
+                            relatedForm.Target = measure.Target;
+                            //Ahmad comment
+                            //  relatedForm.Value = relatedForm.Value.FormatDecimal();//kpi.KPIMeasures.Where(a => a.ID == form.RelatedID).FirstOrDefault().Value.Value.FormatDecimal();
+                            relatedForm.DueDate = measure.DueDate;
+                            relatedForm.UnitOfMeasure = kpi.UnitOfMeasure;
+                            relatedForm.EnglishUnitDetails = kpi.EnglishUnitDetails;
+                            relatedForm.ArabicUnitDetails = kpi.ArabicUnitDetails;
+                            //Ahmad comment
+                            /*
+                            relatedForm.AccumulutiveTarget = measure.AccumulutiveTarget;
+                            relatedForm.AccumulutiveValue = measure.AccumulutiveValue;
+                            */
+                            relatedForm.ReviewedBy = previous.ActionBy == null ? null : Mapper.Map<UserListDTO>(users.FirstOrDefault(w => w.UserName.ToLower() == previous?.ActionBy.ToLower()));
+                            relatedForm.ActionBy = Mapper.Map<UserListDTO>(users.FirstOrDefault(w => w.UserName.ToLower() == step?.Request?.CreatedBy.ToLower()));
+                            //relatedForm.CreatedBy = 
+                            relatedForm.ActionDate = previous?.Modified;
+
+
+                            formm = JObject.FromObject(relatedForm);
+
+                            formm["CreatedBy"] = JObject.FromObject(Mapper.Map<UserListDTO>(users.FirstOrDefault(w => w.UserName.ToLower() == req.CreatedBy.ToLower())));
 
                             //related.Steps = new List<RequestStepDTO>();
                         }
 
-                    foreach (var stepp in related.Steps)
-                    {
-                        var actionBy = stepp.ActionBy == null ? null : Mapper.Map<UserListDTO>(users.FirstOrDefault(w => w.UserName.ToLower() == stepp.ActionBy.ToString().ToLower()));
-                        stepp.ActionBy = actionBy;
-                        stepp.ActionByModel = stepp.ActionBy == null ? null : new UserDTO
+                        foreach (var stepp in related.Steps)
                         {
-                            DisplayName = actionBy?.DisplayName,
-                        };
+                            var actionBy = stepp.ActionBy == null ? null : Mapper.Map<UserListDTO>(users.FirstOrDefault(w => w.UserName.ToLower() == stepp.ActionBy.ToString().ToLower()));
+                            stepp.ActionBy = actionBy;
+                            stepp.ActionByModel = stepp.ActionBy == null ? null : new UserDTO
+                            {
+                                DisplayName = actionBy?.DisplayName,
+                            };
+                        }
+
+                        related.Form = formm.ToObject<object>();
+
+                        requestDTO.Related.Add(related);
                     }
 
-                    related.Form = formm.ToObject<object>();
-                    
-                    requestDTO.Related.Add(related);
-                }
 
-               
 
                 return requestDTO;
             }
@@ -403,7 +440,60 @@ namespace SPlus.UseCases
                 return new RequestDetailsDTO();
             }
         }
+        public decimal CalculateAccumulutiveOutOfTarget(KPIMeasure measure, KPI kpi, decimal Target, decimal Value)
+        {
+            decimal AccumulutiveOutOfTarget;
+            //Accumulative values
+            if (kpi?.Polarity?.ToLower() == "positive")
+            {
+                //((Sum of the Actuals Values - Baseline) / (Sum of the Target Values -Baseline)) *100 %
+                if (Target - kpi.Baseline != 0)
+                    AccumulutiveOutOfTarget = ((Value - kpi.Baseline) / (Target - kpi.Baseline)) * 100;
+                else
+                    AccumulutiveOutOfTarget = 0;
+            }
+            else if (kpi?.Polarity?.ToLower() == "negative")
+            {
+                //based on client commnet 2024074
+                //if value=0, baseline=0 , and taregt =0 > 100
+                //baseline=0, target=0 >0
 
+                if (kpi.Baseline == 0 && Target == 0 && Value == 0)
+                {
+                    AccumulutiveOutOfTarget = 100;
+                }
+
+                else if (kpi.Baseline == 0 && Target == 0)
+                {
+                    AccumulutiveOutOfTarget = 0;
+                }
+                else
+
+                {
+                    //1-(( Sum of Actuals - Sum of Targets)/ (Baseline - Sum of Targets)) *100 %
+                    if (Target - kpi.Baseline != 0)
+                        AccumulutiveOutOfTarget = (1 - (Value - Target) / (Target - kpi.Baseline)) * 100;
+                    else
+                        AccumulutiveOutOfTarget = 0;
+                }
+            }
+            else
+                AccumulutiveOutOfTarget = 0;
+
+            if (AccumulutiveOutOfTarget > 100)
+            {
+                AccumulutiveOutOfTarget = 100;
+            }
+
+            if (AccumulutiveOutOfTarget < 0)
+            {
+                AccumulutiveOutOfTarget = 0;
+            }
+            //start Accu
+            AccumulutiveOutOfTarget = (decimal)Math.Round(AccumulutiveOutOfTarget, 2);
+
+            return AccumulutiveOutOfTarget;
+        }
 
         public void CorrectValue()
         {
@@ -530,9 +620,9 @@ namespace SPlus.UseCases
                                         //Update KPI Parameters And Parameters Value Tables
                                         if (form.Parameters != null && form.Parameters.Count() > 0)
                                             ParameterBLL.UpdateParameterValues(form.RelatedID, form.Parameters);
-                                        KPIBLL.UpdateKPIPeriod(updateKPIForm);
+                                        KPIBLL.UpdateKPIPeriod(updateKPIForm, workflow.BaseWorkflowID);
                                     }
-                                  
+
                                     kpi = KPIBLL.GetKPIByMeasureID(form.RelatedID, UserName);
                                     var updatedMeasure = kpi.KPIMeasures.Where(w => w.ID == form.RelatedID).FirstOrDefault();
                                     Task.Run(() => NotificationConfigurationBLL.SendNotificationWorkflow(kpi.ID, form.RelatedID, request.ID, enumNotificationEventType.Completed, LevelTypeEnum.KPI));
@@ -704,7 +794,7 @@ namespace SPlus.UseCases
                         forms = forms.OrderBy(o => o.RelatedID).ToList();
                         foreach (SaveWFFormUpdateKPIDTO form in forms)
                         {
-                            
+
 
                             string formula = kpi.Formula;
 
@@ -730,7 +820,7 @@ namespace SPlus.UseCases
                                 {
                                     throw new System.Exception("This KPI Does not have Parameters While it's Semi-Auto.");
                                 }
-                                
+
                                 form.Value = CalculateFormula(formula);
                                 //form.Value = KPIBLL.CalculatePeriodActual(kpi.KPIMeasures.FirstOrDefault(f => f.ID == form.RelatedID), kpi, true);
                             }
@@ -766,8 +856,8 @@ namespace SPlus.UseCases
                                         var KPIRequests = RequestBLL.GetLevelPendingRequest(currentKPI.KPIMeasures.Select(s => s.ID).ToList(), LevelTypeEnum.KPI);
                                         if (KPIRequests.Any())
                                         {
-                                            if(workflowID != 103)
-                                             IsActive = false;
+                                            if (workflowID != 103)
+                                                IsActive = false;
                                             requestID = RequestBLL.Submit(formPayload, kpi, currentRequestID, groups, UserName, DelegationUserName, workflowID, (int)LevelTypeEnum.KPI, IsActive, KPIRequests.LastOrDefault().ID);
                                         }
                                         else
@@ -868,7 +958,7 @@ namespace SPlus.UseCases
         public bool ReUpdateKPIValue(List<SaveWFFormUpdateKPIDTO> forms, string[] Credential)
         {
             (string Username, string DelegationName) GetCredintials()
-                {
+            {
                 string Username;
                 string DelegationName;
                 if (Credential.Count() != 4)
@@ -895,144 +985,146 @@ namespace SPlus.UseCases
 
             string UserName = GetCredintials().Username;
             string DelegationUserName = GetCredintials().DelegationName;
-           
+
 
             KPI kpi = KPIBLL.GetKPIByMeasureID(forms.FirstOrDefault().RelatedID, UserName);
 
             List<KPIType> types = KPITypeBLL.Read();
             int requestID = 0;
             int currentRequestID = 0;
-            
-                if (kpi != null)
+
+            if (kpi != null)
+            {
+                if (kpi.KPIType != null)
                 {
-                    if (kpi.KPIType != null)
+                    int workflowID = 103;
+                    List<Group> groups = UserBLL.ReadGroup();
+                    var form = forms.FirstOrDefault();
+
+                    string formula = kpi.Formula;
+
+
+                    #region Calculate Semi-Auto Value
+                    if (kpi.DataSource == "semi-auto" || kpi.DataSource == "auto")
                     {
-                        int workflowID = 103;
-                        List<Group> groups = UserBLL.ReadGroup();
-                        var form = forms.FirstOrDefault();
-                        
-                            string formula = kpi.Formula;
-
-
-                            #region Calculate Semi-Auto Value
-                            if (kpi.DataSource == "semi-auto" || kpi.DataSource == "auto")
+                        //kpi.Parameters= kpi.Parameters.ToList().Sort((a, b) => b.ParameterName.Length.CompareTo(a.ParameterName.Length));
+                        if (kpi.Parameters != null && kpi.Parameters.Count() > 0 && form.Parameters != null && form.Parameters.Count() > 0)
+                        {
+                            form.Parameters.Sort((a, b) => b.ParameterName.Length.CompareTo(a.ParameterName.Length));
+                            foreach (var parameter in form.Parameters)
                             {
-                                //kpi.Parameters= kpi.Parameters.ToList().Sort((a, b) => b.ParameterName.Length.CompareTo(a.ParameterName.Length));
-                                if (kpi.Parameters != null && kpi.Parameters.Count() > 0 && form.Parameters != null && form.Parameters.Count() > 0)
+                                if (parameter.IsConstant)
                                 {
-                                    form.Parameters.Sort((a, b) => b.ParameterName.Length.CompareTo(a.ParameterName.Length));
-                                    foreach (var parameter in form.Parameters)
-                                    {
-                                        if (parameter.IsConstant)
-                                        {
-                                            formula = formula.Replace(parameter.ParameterName, kpi.Parameters.Where(a => a.ParameterName == parameter.ParameterName).FirstOrDefault()?.ConstantValue.ToString());
-                                        }
-                                        else
-                                            formula = formula.Replace(parameter.ParameterName, parameter.Value.ToString());
-                                    }
+                                    formula = formula.Replace(parameter.ParameterName, kpi.Parameters.Where(a => a.ParameterName == parameter.ParameterName).FirstOrDefault()?.ConstantValue.ToString());
                                 }
                                 else
-                                {
-                                    throw new System.Exception("This KPI Does not have Parameters While it's Semi-Auto.");
-                                }
-                                form.Value = CalculateFormula(formula);
-                                //form.Value = KPIBLL.CalculatePeriodActual(kpi.KPIMeasures.FirstOrDefault(f => f.ID == form.RelatedID), kpi, true);
+                                    formula = formula.Replace(parameter.ParameterName, parameter.Value.ToString());
                             }
+                        }
+                        else
+                        {
+                            throw new System.Exception("This KPI Does not have Parameters While it's Semi-Auto.");
+                        }
+                        form.Value = CalculateFormula(formula);
+                        //form.Value = KPIBLL.CalculatePeriodActual(kpi.KPIMeasures.FirstOrDefault(f => f.ID == form.RelatedID), kpi, true);
+                    }
 
-                            #endregion
-
-
-                            form.Type = (int)LevelTypeEnum.KPI;
-                            form.BaseWorkflowID = (int)EnumWFBaseWorkflows.ReUpdate;
-                            form.IsReUpdate = true; 
-                            form.OldValue = kpi.KPIMeasures.FirstOrDefault(m=> m.ID == form.RelatedID)?.Value ?? 0;
-                            form.Value = form.Value.TrimDecimal();
-                            string formPayload = JsonConvert.SerializeObject(form);
-
-                            
-                                Request request = new Request();
-                                if (form.RelatedID == forms.FirstOrDefault().RelatedID)
-                                {
-                                    //First measure
-                                    KPIBLL.UpdateMeasureAllowUpdate(form.RelatedID, false);
-                                    var currentKPI = KPIBLL.GetKPIByMeasureID(form.RelatedID, UserName);
-                                    bool IsActive = true;
-                                    if (currentKPI != null)
-                                    {
-                                        requestID = RequestBLL.Submit(formPayload, kpi, currentRequestID, groups, UserName, DelegationUserName, workflowID, (int)LevelTypeEnum.KPI, IsActive);
-                                    }
-                                    else
-                                    {
-                                        requestID = RequestBLL.Submit(formPayload, kpi, currentRequestID, groups, UserName, DelegationUserName, workflowID, (int)LevelTypeEnum.KPI, IsActive);
-                                    }
-                                }
-                                else
-                                {
-                                    currentRequestID = 0;
-                                    KPIBLL.UpdateMeasureAllowUpdate(form.RelatedID, false);
-                                    var currentKPI = KPIBLL.GetKPIByMeasureID(form.RelatedID, UserName);
-                                    bool IsActive = true;
-                                    if (currentKPI != null)
-                                    {
-                                        requestID = RequestBLL.Submit(formPayload, kpi, currentRequestID, groups, UserName, DelegationUserName, workflowID, (int)LevelTypeEnum.KPI, IsActive);
-                                    }
-                                    else
-                                    {
-                                        requestID = RequestBLL.Submit(formPayload, kpi, currentRequestID, groups, UserName, DelegationUserName, workflowID, (int)LevelTypeEnum.KPI, false, requestID);
-                                    }
-                                }
+                    #endregion
 
 
+                    form.Type = (int)LevelTypeEnum.KPI;
+                    form.BaseWorkflowID = (int)EnumWFBaseWorkflows.ReUpdate;
+                    form.IsReUpdate = true;
+                    form.OldValue = kpi.KPIMeasures.FirstOrDefault(m => m.ID == form.RelatedID)?.Value ?? 0;
+                    form.OldAchivment = kpi.KPIMeasures.FirstOrDefault(m => m.ID == form.RelatedID)?.AccumulutiveOutOfTarget ?? 0;
+
+                    form.Value = form.Value.TrimDecimal();
+                    string formPayload = JsonConvert.SerializeObject(form);
 
 
-
-
-
-                            // Request request = new Request();
-
-                            //form.Value = form.Value.TrimDecimal();
-
-                            //if (form.RelatedID == forms.FirstOrDefault().RelatedID)
-                            //{
-                            //    //First measure
-                            //    KPIBLL.UpdateMeasureAllowUpdate(form.RelatedID, false);
-                            //    requestID = RequestBLL.Submit(formPayload, kpi, currentRequestID, groups, UserName, DelegationUserName, workflowID, (int)LevelTypeEnum.KPI, true);
-                            //}
-                            //else
-                            //{
-                            //    KPIBLL.UpdateMeasureAllowUpdate(form.RelatedID, false);
-                            //    requestID = RequestBLL.Submit(formPayload, kpi, currentRequestID, groups, UserName, DelegationUserName, workflowID, (int)LevelTypeEnum.KPI, false, requestID);
-                            //}
-                            if (form.Attachments != null)
-                            {
-                                //Attachment attachment = AutoMapper.Mapper.Map<List<Attachment>>(form.Attachment);
-                                //AttachmentBLL.CreateRequestAttachment(attachment, requestID);
-                                List<Attachment> attachments = AutoMapper.Mapper.Map<List<Attachment>>(form.Attachments);
-                                AttachmentBLL.CreateRequestAttachment_List(attachments, requestID);
-                            }
-                       
-
-                        //ValidateRequestSequance(kpi);
+                    Request request = new Request();
+                    if (form.RelatedID == forms.FirstOrDefault().RelatedID)
+                    {
+                        //First measure
+                        KPIBLL.UpdateMeasureAllowUpdate(form.RelatedID, false);
+                        var currentKPI = KPIBLL.GetKPIByMeasureID(form.RelatedID, UserName);
+                        bool IsActive = true;
+                        if (currentKPI != null)
+                        {
+                            requestID = RequestBLL.Submit(formPayload, kpi, currentRequestID, groups, UserName, DelegationUserName, workflowID, (int)LevelTypeEnum.KPI, IsActive);
+                        }
+                        else
+                        {
+                            requestID = RequestBLL.Submit(formPayload, kpi, currentRequestID, groups, UserName, DelegationUserName, workflowID, (int)LevelTypeEnum.KPI, IsActive);
+                        }
                     }
                     else
                     {
-                        //Reflect to measure immediatly as no workflow available
-                        SaveWFFormUpdateKPIDTO form = forms.FirstOrDefault();
-                        
-                            form.Type = (int)LevelTypeEnum.KPI;
-
-                            // var Form = AutoMapper.Mapper.Map<UpdateKPIForm>(form);
-                            UpdateKPIForm updateKPIForm = new UpdateKPIForm();
-                            updateKPIForm.RelatedID = form.RelatedID;
-                            updateKPIForm.OldValue = form.OldValue;
-                            updateKPIForm.Target = form.Target;
-                            updateKPIForm.Value = form.Value;
-                            KPIBLL.UpdateKPIPeriod(updateKPIForm);
-                        
+                        currentRequestID = 0;
+                        KPIBLL.UpdateMeasureAllowUpdate(form.RelatedID, false);
+                        var currentKPI = KPIBLL.GetKPIByMeasureID(form.RelatedID, UserName);
+                        bool IsActive = true;
+                        if (currentKPI != null)
+                        {
+                            requestID = RequestBLL.Submit(formPayload, kpi, currentRequestID, groups, UserName, DelegationUserName, workflowID, (int)LevelTypeEnum.KPI, IsActive);
+                        }
+                        else
+                        {
+                            requestID = RequestBLL.Submit(formPayload, kpi, currentRequestID, groups, UserName, DelegationUserName, workflowID, (int)LevelTypeEnum.KPI, false, requestID);
+                        }
                     }
-                    Task.Run(() => NotificationConfigurationBLL.SendNotificationWorkflow(kpi.ID, 0, requestID, enumNotificationEventType.Submit, LevelTypeEnum.KPI));
+
+
+
+
+
+
+
+                    // Request request = new Request();
+
+                    //form.Value = form.Value.TrimDecimal();
+
+                    //if (form.RelatedID == forms.FirstOrDefault().RelatedID)
+                    //{
+                    //    //First measure
+                    //    KPIBLL.UpdateMeasureAllowUpdate(form.RelatedID, false);
+                    //    requestID = RequestBLL.Submit(formPayload, kpi, currentRequestID, groups, UserName, DelegationUserName, workflowID, (int)LevelTypeEnum.KPI, true);
+                    //}
+                    //else
+                    //{
+                    //    KPIBLL.UpdateMeasureAllowUpdate(form.RelatedID, false);
+                    //    requestID = RequestBLL.Submit(formPayload, kpi, currentRequestID, groups, UserName, DelegationUserName, workflowID, (int)LevelTypeEnum.KPI, false, requestID);
+                    //}
+                    if (form.Attachments != null)
+                    {
+                        //Attachment attachment = AutoMapper.Mapper.Map<List<Attachment>>(form.Attachment);
+                        //AttachmentBLL.CreateRequestAttachment(attachment, requestID);
+                        List<Attachment> attachments = AutoMapper.Mapper.Map<List<Attachment>>(form.Attachments);
+                        AttachmentBLL.CreateRequestAttachment_List(attachments, requestID);
+                    }
+
+
+                    //ValidateRequestSequance(kpi);
                 }
-            
+                else
+                {
+                    //Reflect to measure immediatly as no workflow available
+                    SaveWFFormUpdateKPIDTO form = forms.FirstOrDefault();
+
+                    form.Type = (int)LevelTypeEnum.KPI;
+
+                    // var Form = AutoMapper.Mapper.Map<UpdateKPIForm>(form);
+                    UpdateKPIForm updateKPIForm = new UpdateKPIForm();
+                    updateKPIForm.RelatedID = form.RelatedID;
+                    updateKPIForm.OldValue = form.OldValue;
+                    updateKPIForm.Target = form.Target;
+                    updateKPIForm.Value = form.Value;
+                    KPIBLL.UpdateKPIPeriod(updateKPIForm);
+
+                }
+                Task.Run(() => NotificationConfigurationBLL.SendNotificationWorkflow(kpi.ID, 0, requestID, enumNotificationEventType.Submit, LevelTypeEnum.KPI));
+            }
+
 
             return true;
         }
@@ -1058,7 +1150,7 @@ namespace SPlus.UseCases
 
         public void ValidateRequestSequance(int kpiId)
         {
-            KPI kpi = KPIBLL.ReadForCalculation(null).FirstOrDefault(a=>a.ID==kpiId);
+            KPI kpi = KPIBLL.ReadForCalculation(null).FirstOrDefault(a => a.ID == kpiId);
             var KPIRequests = RequestBLL.GetLevelPendingRequest(kpi.KPIMeasures.Select(s => s.ID).ToList(), LevelTypeEnum.KPI);
             var definition = new { RelatedID = 0, Type = 0 };
             KPIRequests.ForEach(a => a.RelatedItemId = JsonConvert.DeserializeAnonymousType(a.Form, definition).RelatedID);
