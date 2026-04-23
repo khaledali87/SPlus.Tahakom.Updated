@@ -22,6 +22,12 @@ namespace SPlus.Helper
             return finishDate;
         }
 
+        public static DateTime GetEndOfMonthEndOfDay(DateTime date)
+        {
+            var endDate = new DateTime(date.Year, date.Month, DateTime.DaysInMonth(date.Year, date.Month));
+            return endDate.AddDays(1).AddTicks(-1);
+        }
+
         //static public DateTime GetEndDateWorkingDays(DateTime startDate, int Duration, List<DateTime> holidays = default)
         //{
         //    DateTime finishDate = startDate;

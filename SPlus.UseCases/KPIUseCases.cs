@@ -45,6 +45,14 @@ namespace SPlus.UseCases
 
             KPI KPI = AutoMapper.Mapper.Map<KPI>(kpi);
 
+            if(Constants._OpenKPI_DueDate_EndOfMonth)
+            {
+                foreach (var m in KPI.KPIMeasures)
+                {
+                    m.DueDate = DateHelper.GetEndOfMonthEndOfDay(m.DueDate);
+                }
+            }
+
             //kpi.ReportDate = kpi.StartDate;
             if (KPI.DivisionalObjective != null)
             {
@@ -449,6 +457,11 @@ namespace SPlus.UseCases
             //    kpi.ArabicName = kpi.EnglishName;
 
             KPI KPI = AutoMapper.Mapper.Map<KPI>(kpi);
+
+            if (Constants._OpenKPI_DueDate_EndOfMonth)
+                foreach (var m in KPI.KPIMeasures)
+                    m.DueDate = DateHelper.GetEndOfMonthEndOfDay(m.DueDate);
+
             var res = KPIBLL.Update(KPI, username);
             RequestBLL.UpdateRequestApprovers(res);
             return AutoMapper.Mapper.Map<CAKPIDTO>(res);
@@ -537,7 +550,7 @@ namespace SPlus.UseCases
                         }
                     }
 
-                    var measures = KPI.KPIMeasures.Where(a => a.DueDate.Date <= DateTime.Now.Date && a.Status == "NA").OrderBy(a => a.ID).ToList();
+                    var measures = KPI.KPIMeasures.Where(a => a.DueDate <= DateTime.Now.Date && a.Status == "NA").OrderBy(a => a.ID).ToList();
 
                     bool isFree = !OccupiedRequests.Where(w => measures.Any(a => a.ID == w.RelatedID)).Any()
                         || OccupiedRequests.Where(w => measures.Any(a => a.ID == w.RelatedID)).Any();
@@ -694,7 +707,7 @@ namespace SPlus.UseCases
                     }
                     else
                     {
-                        if (!measures.Any(a => a.DueDate.Date <= DateTime.Now.Date && a.Status == "NA"))
+                        if (!measures.Any(a => a.DueDate <= DateTime.Now.Date && a.Status == "NA"))
                         {
                             KPI.RequireUpdate = false;
                         }
@@ -706,6 +719,7 @@ namespace SPlus.UseCases
                     if(KPI.RequireUpdate)
                     {
                         AutoApproveRejectedRequests(KPI, rejectedRequests, holidays);
+                       
                         if (!measures.Any(a => a.AllowUpdate && a.HasNoTarget != true))
                         {
                             KPI.RequireUpdate = false;

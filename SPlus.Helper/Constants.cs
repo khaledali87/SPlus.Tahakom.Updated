@@ -119,6 +119,8 @@ namespace SPlus.Helper
         public static string _ItemType = ConfigurationManager.AppSettings["ItemType"];
         public static string _KPIID = ConfigurationManager.AppSettings["KPIID"];
 
+        public static bool _OpenKPI_DueDate_EndOfMonth = Convert.ToBoolean(ConfigurationManager.AppSettings["OpenKPI_DueDate_EndOfMonth"] ?? "false");
+
         public static string _PillarIDFieldName = ConfigurationManager.AppSettings["PillarIDFieldName"];
         public static string _UserImageExtenstion = ConfigurationManager.AppSettings["UserImageExtenstion"];
         public static DateTime DateTimeServiceMinDate = DateTime.MinValue.AddDays(1);
