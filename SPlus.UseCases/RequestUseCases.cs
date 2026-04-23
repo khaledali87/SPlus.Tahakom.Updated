@@ -76,8 +76,7 @@ namespace SPlus.UseCases
                             int Type = data.SelectToken("Type").Value<int>();
                             if (Type == (int)LevelTypeEnum.KPI)
                             {
-                                UpdateKPIForm Form = JsonConvert.DeserializeObject<UpdateKPIForm>(request.Form);
-                                if (kpi.KPIMeasures.Any(a => a.ID == Form.RelatedID))
+                                if (kpi.KPIMeasures.Any(a => a.ID == request.RelatedID))
                                 {
                                     final.Add(request);
                                 }
@@ -100,7 +99,7 @@ namespace SPlus.UseCases
                                        request.WorkflowID == 103 ? (int)EnumKPIRequestType.UpdateHistorical :
                                        request.WorkflowID == 104 ? (int)EnumKPIRequestType.NoAchivementSubmiited : (int)EnumKPIRequestType.UpdateKPI;
 
-                            form.Value = kpi.KPIMeasures.Where(a => a.ID == form.RelatedID).Select(s => s.Value.Value).FirstOrDefault();//form.Value.FormatDecimal();
+                            form.Value = form.Value.FormatDecimal();
                             form.Target = kpi.KPIMeasures.Where(a => a.ID == form.RelatedID).Select(s => s.Target).FirstOrDefault();
                             form.DueDate = kpi.KPIMeasures.Where(a => a.ID == form.RelatedID).Select(s => s.DueDate).FirstOrDefault();
                             dto.Form = form;
